@@ -1,0 +1,34 @@
+{
+  "name": "central_system",
+  "authors": [
+    "(Rafael Gil <celtaphp@gmail.com>)"
+  ],
+  "description": "Sistema de gerenciamento e controle de servicos",
+  "main": "index.php",
+  "keywords": [
+    "laravel",
+    "php",
+    "mysql"
+  ],
+  "license": "MIT",
+  "homepage": "www.centralsystem.com.br",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "AdminLTE": "admin-lte#2.3.11",
+    "jquery-bonsai": "^2.1.1",
+    "jquery-qubit": "^2.0.6",
+    "jquery-ui":"latest",
+    "humane":"latest"
+  },
+  "resolutions": {
+    "jquery": "^3.2.1"
+  }
+}
