@@ -7,7 +7,7 @@
 @section('header')
     <h1>
         Quantitativo de OS
-        <small>Central System</small>
+        <small>Bio-Manguinhos</small>
     </h1>
     <ol class="breadcrumb">
         <li><i class="bx bx-dashboard"></i> Home</li>

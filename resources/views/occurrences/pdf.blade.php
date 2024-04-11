@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Central System - Ocorrência Nº {{ $occurrence->id }}</title>
+    <title>Bio-Manguinhos - Ocorrência Nº {{ $occurrence->id }}</title>
     <meta charSet="utf-8"/>
 </head>
 <body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Central System {{env('APP_ENV')}} @yield('title')</title>
+    <title>Bio-Manguinhos {{env('APP_ENV')}} @yield('title')</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.6 -->
@@ -62,9 +62,9 @@
                 <!-- Logo -->
                 <a href="{{route("admin.index")}}" class="logo">
                     <!-- mini logo for sidebar mini 50x50 pixels -->
-                    <span class="logo-mini" title="Central System"><b>CS</b></span>
+                    <span class="logo-mini" title="Bio-Manguinhos"><b>CS</b></span>
                     <!-- logo for regular state and mobile devices -->
-                    <span class="logo-lg" title="Central System"><b>Central </b>System</span>
+                    <span class="logo-lg" title="Bio-Manguinhos"><b>Central </b>System</span>
                 </a>
 
                 <!-- Header Navbar -->
@@ -502,7 +502,7 @@
                         @endif
                                 ">
                             <a href="#">
-                                <i class="bx bx-key"></i> <span>Central System</span>
+                                <i class="bx bx-key"></i> <span>Bio-Manguinhos</span>
                                 <span class="pull-right-container">
                             <i class="bx bx-angle-left pull-right"></i>
                         </span>
@@ -592,7 +592,7 @@
                     <div class="pad margin no-print">
                         <div class="callout callout-danger" style="margin-bottom: 0!important;">
                             <h4><i class="bx bx-info"></i> ATENÇÃO !</h4>
-                            <p><strong>EVITE O BLOQUEIO DA SUA PLATAFORMA CENTRAL SYSTEM.</strong></p>
+                            <p><strong>EVITE O BLOQUEIO DA SUA PLATAFORMA Bio-Manguinhos.</strong></p>
                             <p>Consta em nosso sistema financeiro, debito de vossa empresa.
                                 Favor entrar em contato com financeiro@centralsystem.com.br </p>
 
@@ -617,11 +617,11 @@
             <footer class="main-footer">
                 <!-- To the right -->
                 <div class="pull-right hidden-xs">
-                    Central System
+                    Bio-Manguinhos
                 </div>
                 <!-- Default to the left -->
                 <strong>Copyright &copy; {{ date("Y")  }}
-                    <a href="http://centralsystem.com.br" target="_blank">Central System</a>.</strong> Todos os direitos reservados.
+                    <a href="https://portal.fiocruz.br/" target="_blank">Bio-Manguinhos</a>.</strong> Todos os direitos reservados.
             </footer>
 
             <!-- /.control-sidebar -->

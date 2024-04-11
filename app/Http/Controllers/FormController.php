@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Form;
 use App\Services\FormService;
 use App\Http\Requests\FormGRequest;
+use App\Models\Formulario;
 use Illuminate\Http\Request;
 
 class FormController extends Controller {
@@ -48,7 +49,7 @@ class FormController extends Controller {
 	 * @param Request $request
 	 * @return \App\Services\Response
 	 */
-	public function store(FormGRequest $request)
+	public function store(Request $request)
     {
         return $this->formService->store($request);
     }
@@ -59,7 +60,7 @@ class FormController extends Controller {
 	 * @param  int  $id
 	 * @return \App\Services\Response
 	 */
-	public function show(Form $model)
+	public function show(Formulario $model)
     {
         return $this->formService->show($model);
     }
@@ -70,7 +71,7 @@ class FormController extends Controller {
 	 * @param  int  $id
 	 * @return \App\Services\Response
 	 */
-	public function edit(Form $model)
+	public function edit(Formulario $model)
     {
         return $this->formService->edit($model);
     }
@@ -82,7 +83,7 @@ class FormController extends Controller {
 	 * @param Request $request
 	 * @return \App\Services\Response
 	 */
-	public function update(FormGRequest $request,Form $model)
+	public function update(Request $request,Formulario $model)
     {
         return $this->formService->update($model,$request);
     }
@@ -93,7 +94,7 @@ class FormController extends Controller {
 	 * @param  int  $id
 	 * @return \App\Services\Response
 	 */
-	public function destroy(Form $model)
+	public function destroy(Formulario $model)
     {
         return $this->formService->destroy($model);
     }

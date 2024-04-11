@@ -39,9 +39,9 @@ class TeamService
 
     public function addNewTeam($teamRequest)
     {
-        if (!\Auth::user()->contractor_id) {
-            return redirect()->route('teams.index')->with('error', "Apenas empresas têm acesso a criar o item.");
-        }
+        // if (!\Auth::user()->contractor_id) {
+        //     return redirect()->route('teams.index')->with('error', "Apenas empresas têm acesso a criar o item.");
+        // }
 
         $data = $teamRequest->all();
         $supervisor = User::find($data['supervisor_id']);

@@ -18,8 +18,8 @@
                         <div class="card disable-rounded-right mb-0 p-2 h-100 d-flex justify-content-center">
                             <div class="card-header pb-1">
                                 <div class="card-title">
-                                    <h4 class="text-center mb-2">RELATÓRIO FIOTEC</h4>
-                                    <h4 class="text-center mb-2">Bem-vindo!</h4>
+                                    <h3 class="text-center mb-2">BIO-MANGUINHOS</h3>
+                                    <h5 class="text-center mb-2">RELATÓRIO FIOTEC</h5>
                                 </div>
                             </div>
                             <div class="card-content">

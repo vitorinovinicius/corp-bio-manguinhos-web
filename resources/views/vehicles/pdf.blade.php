@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Central System - Checklist Veículos Nº {{ $vehicleChecklistBasic->id }}</title>
+    <title>Bio-Manguinhos - Checklist Veículos Nº {{ $vehicleChecklistBasic->id }}</title>
 
 </head>
 <body>

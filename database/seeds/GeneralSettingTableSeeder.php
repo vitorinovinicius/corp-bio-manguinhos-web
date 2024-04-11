@@ -23,7 +23,7 @@ use Illuminate\Database\Seeder;
                 'google_maps_key' => 'AIzaSyBKUHlVh1gJHr6Ni2mmBoY7FC83nNR3B60',
                 'zenvia_account' => 'systemaut.smsonline',
                 'zenvia_password' => '0H8pOUwHGg',
-                'zenvia_from' => 'Central System',
+                'zenvia_from' => 'Bio-Manguinhos',
                 'bitly_access_token' => '361fb5a0dc57e7a1912a5e64d49860b1b258114d',
                 'redirect' => 'http://cs6.co/th/',
                 'dynamodb_key' => 'AKIAJFSFBYP2L26XTSRA',

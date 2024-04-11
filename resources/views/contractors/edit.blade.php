@@ -43,24 +43,24 @@
                                             <input type="text" id="name" class="form-control" name="name" value="{{$contractor->name}}" placeholder="Nome" required>
                                         </div>
                                     </div>
-                                    <div class="col-12">
+                                    {{-- <div class="col-12">
                                         <div class="form-group">
                                             <label for="name">CNPJ</label>
                                             <input type="text" class="form-control" id="cnpj" name="cnpj" value="{{ (old('cnpj'))? old('cnpj') : $contractor->cnpj}}" placeholder="CNPJ" autocomplete="off">
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label for="name">Endereço completo*</label>
                                             <input type="text" class="form-control" id="address" name="address" value="{{ (old('address'))? old('address') : $contractor->address}}" placeholder="Endedeço completo" autocomplete="off" required>
                                         </div>
                                     </div>
-                                    <div class="col-12">
+                                    {{-- <div class="col-12">
                                         <div class="form-group">
                                             <label for="name">Coordenadas</label>
                                             <p class="form-control-static" >{{$contractor->lat}}, {{$contractor->lng}}</p>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label for="name">Telefone 1*</label>
@@ -85,13 +85,13 @@
                                             <input type="text" class="form-control" id="site" name="site" value="{{ (old('site'))? old('site') : $contractor->site}}" placeholder="Site" autocomplete="off">
                                         </div>
                                     </div>
-                                    <div class="col-12">
+                                    {{-- <div class="col-12">
                                         <div class="form-group">
                                             <label for="client_limit">Limite de clientes</label>
                                             <input type="numeric" class="form-control" id="client_limit" name="client_limit" value="{{ (old('client_limit'))? old('client_limit') : $contractor->client_limit}}" placeholder="Limite de clientes" autocomplete="off">
                                         </div>
-                                    </div>
-                                    <div class="col-12">
+                                    </div> --}}
+                                    {{-- <div class="col-12">
                                         <div class="form-group">
                                             <label for="name">Visibilidade</label>
                                             <select class="form-control select2" name="visibility" id="visibility" required>
@@ -100,16 +100,16 @@
                                                 <option value="0" {{($contractor->visibility != 1)? "selected" : ""}}>Não visível</option>
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
-                                    <div class="col-12">
+                                    {{-- <div class="col-12">
                                         <div class="form-group">
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input cs_checkbox" type="checkbox" id="inlineCheckbox1" name="send_sms" value=1 @if($contractor->send_sms == 1) checked @endif>
                                                 <label class="form-check-label" for="inlineCheckbox1">Enviar SMS</label>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-12">
                                         <div class="form-group">
                                             <div class="form-check form-check-inline">
@@ -118,17 +118,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-12">
+                                    {{-- <div class="col-12">
                                         <div class="form-group">
                                             <label for="name">Enviar copia e-mail</label>
                                             <select class="form-control select2" name="send_email_bbc" required data-placeholder="Selecione" required>
                                                 <option></option>
-                                                <option value="1" @if($contractor->send_email_bbc == 1) selected @endif>Enviar somente para cliente</option>
-                                                <option value="2" @if($contractor->send_email_bbc == 2) selected @endif>Enviar somente para o operador</option>
-                                                <option value="3" @if($contractor->send_email_bbc == 3) selected @endif>Enviar somente para ambos (cliente e operador)</option>
+                                                <option value="1" @if($contractor->send_email_bbc == 1) selected @endif>Enviar somente para setor</option>
+                                                <option value="2" @if($contractor->send_email_bbc == 2) selected @endif>Enviar somente para o gerente</option>
+                                                <option value="3" @if($contractor->send_email_bbc == 3) selected @endif>Enviar somente para ambos (setor e gerente)</option>
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     <div class="col-12">
                                         <div class="form-group">
@@ -140,17 +140,17 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-12">
+                                    {{-- <div class="col-12">
                                         <div class="form-group">
-                                            <label for="name">Pendência financeira com Central System</label>
+                                            <label for="name">Pendência financeira com Bio-Manguinhos</label>
                                             <select class="form-control select2" name="financial_pendency" id="financial_pendency" required>
                                                 <option></option>
                                                 <option value="1" {{($contractor->financial_pendency == 1)? "selected" : ""}}>Sim</option>
                                                 <option value="0" {{($contractor->financial_pendency != 1)? "selected" : ""}}>Não</option>
                                             </select>
                                         </div>
-                                    </div>
-                                    <div class="col-12">
+                                    </div> --}}
+                                    {{-- <div class="col-12">
                                         <div class="form-group">
                                             <label for="name">Icone @if($contractor->icon) - Já existe para substituir selecione outro @endif</label>
                                             @if($contractor->icon)
@@ -171,10 +171,10 @@
                                             @endif
                                             <input type="file" class="form-control" name="logo_cabecalho">
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
 
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col-12 mt-1 mb-2">
                                         <h4>Configurações de e-mail</h4>
                                         <hr>
@@ -230,7 +230,7 @@
                                             <input type="text" class="form-control" name="mail_password" value="{{ (old('mail_password'))? old('mail_password') : $contractor->mail_password }}" placeholder="Senha" autocomplete="off">
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="row">
                                     <div class="col-12 d-flex justify-content-end">

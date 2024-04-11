@@ -34,6 +34,7 @@ class CreatePlanOccurrencesTable extends Migration
                 ->references('id')->on('occurrence_types')
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
+                
 
             $table->index(["occurrence_client_id"], 'fk_plan_occurrences_occurrence_clients1_idx');
             $table->foreign('occurrence_client_id','fk_plan_occurrences_occurrence_clients1_idx')

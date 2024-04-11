@@ -14,8 +14,7 @@ class FSMPolicy extends Basic
     {
         parent::configure();
 
-        $this->addDirective(Directive::DEFAULT, "*.centralsystem.com.br");
-        $this->addDirective(Directive::DEFAULT, "*.fsm.com.br");
+        // $this->addDirective(Directive::DEFAULT, "*.url.com.br");
         $this->addDirective(Directive::DEFAULT, "*.google.com");
         $this->addDirective(Directive::DEFAULT, "data:");
 
@@ -32,7 +31,6 @@ class FSMPolicy extends Basic
         $this->addDirective(Directive::SCRIPT, "https://unpkg.com");
         $this->addDirective(Directive::SCRIPT, "https://fonts.googleapis.com");
 
-        $this->addDirective(Directive::IMG, "https://centralsystem.s3.sa-east-1.amazonaws.com");
         $this->addDirective(Directive::IMG, "*.basemaps.cartocdn.com");
         $this->addDirective(Directive::IMG, "https://www.google-analytics.com");
         $this->addDirective(Directive::IMG, "data:");
@@ -40,7 +38,7 @@ class FSMPolicy extends Basic
 
         // Restringe os URLs que podem ser carregados usando interfaces de script
         $this->addDirective(Directive::CONNECT, "https://www.google-analytics.com");
-        $this->addDirective(Directive::CONNECT, "*.centralsystem.com.br");
+        // $this->addDirective(Directive::CONNECT, "*.url.com.br");
         $this->addDirective(Directive::CONNECT, "https://unpkg.com");
         $this->addDirective(Directive::CONNECT, "https://cdnjs.cloudflare.com");
         $this->addDirective(Directive::CONNECT, "https://bernii.github.io");

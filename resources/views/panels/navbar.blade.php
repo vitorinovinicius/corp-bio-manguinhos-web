@@ -68,7 +68,7 @@
                         <div class="dropdown-menu dropdown-menu-right pb-0">
                             <a class="dropdown-item" href="{{ url('/logout') }}" onclick="event.preventDefault();
                                                      document.getElementById('logout-form2').submit();"><i
-                                    class="bx bx-power-off mr-50"></i> Logout</a>
+                                    class="bx bx-power-off mr-50"></i>Logout</a>
 
                             <form id="logout-form2" action="{{ url('/logout') }}" method="POST" style="display: none;">
                                 {{ csrf_field() }}

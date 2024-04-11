@@ -2,7 +2,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Central System - CRON de fechamentos de OS não executadas</title>
+    <title>Bio-Manguinhos - CRON de fechamentos de OS não executadas</title>
     <style nonce="{{ csp_nonce() }}">
         /* -------------------------------------
             GLOBAL RESETS
@@ -313,7 +313,7 @@
             <div class="content">
 
                 <!-- START CENTERED WHITE CONTAINER -->
-                <span class="preheader">Central System - Notificação da Ocorrência</span>
+                <span class="preheader">Bio-Manguinhos - Notificação da Ocorrência</span>
                 <table class="main">
 
                     <!-- START MAIN CONTENT AREA -->
@@ -344,7 +344,7 @@
                         <tbody>
                         <tr>
                             <td class="content-block">
-                                <span class="apple-link">Central System - Central System</span>
+                                <span class="apple-link">Bio-Manguinhos - Bio-Manguinhos</span>
                             </td>
                         </tr>
                         </tbody>

@@ -55,13 +55,13 @@
                                         <th>Nome</th>
                                         <th>Região</th>
                                         <th>Status</th>
-                                        <th>SMS</th>
+                                        {{-- <th>SMS</th> --}}
                                         <th>E-mail</th>
-                                        <th>Visibilidade</th>
-                                        <th>Limite Clientes</th>
-                                        <th>Total Clientes</th>
-                                        <th>Pendência Financeira</th>
-                                        <th>Icone</th>
+                                        {{-- <th>Visibilidade</th> --}}
+                                        {{-- <th>Limite Clientes</th> --}}
+                                        {{-- <th>Total Clientes</th> --}}
+                                        {{-- <th>Pendência Financeira</th> --}}
+                                        {{-- <th>Icone</th> --}}
                                         {{--<th>Criado</th>--}}
                                         {{--<th>Modificado</th>--}}
 
@@ -78,14 +78,14 @@
                                             </td>
                                             <td>{{$contractor->regions->implode('name',', ')}}</td>
                                             <td>{{sim_nao($contractor->send_mail)}}</td>
-                                            <td>{{sim_nao($contractor->send_sms)}}</td>
+                                            {{-- <td>{{sim_nao($contractor->send_sms)}}</td> --}}
                                             <td>{{$contractor->status()}}</td>
-                                            <td>{{$contractor->visibility()}}</td>
-                                            <td>{{$contractor->client_limit}}</td>
-                                            <td>{{$contractor->clients->count()}}</td>
-                                            <td>{{$contractor->financialPendency()}}</td>
+                                            {{-- <td>{{$contractor->visibility()}}</td> --}}
+                                            {{-- <td>{{$contractor->client_limit}}</td> --}}
+                                            {{-- <td>{{$contractor->clients->count()}}</td> --}}
+                                            {{-- <td>{{$contractor->financialPendency()}}</td> --}}
 
-                                            <td><img src="{{$contractor->icon}}"></td>
+                                            {{-- <td><img src="{{$contractor->icon}}"></td> --}}
                                             {{--                                    <td>{{ date('d/m/Y H:i:s', strtotime($contractor->created_at)) }}</td>--}}
                                             {{--                                    <td>{{ date('d/m/Y H:i:s', strtotime($contractor->updated_at)) }}</td>--}}
 

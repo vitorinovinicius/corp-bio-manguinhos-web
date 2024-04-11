@@ -90,7 +90,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="box-title">Dados da Equipe</h3>
+                    <h3 class="box-title">Dados do Setor</h3>
                 </div>
                 <div class="card-content">
                     <div class="card-body">
@@ -114,14 +114,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
+                        {{-- <div class="row">
                             <div class="col-12">
                                 <div class="form-group">
                                     <label for="name">Bairros de Atuação</label>
                                     <p class="form-control-static">{!!  nl2br($team->district) !!}</p>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -185,7 +185,7 @@
             @endif
         </div>
     </div>
-    <div class="row">
+    {{-- <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between">
@@ -225,7 +225,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="" id="schedule">
-                                        {{-- <div class="col-md-2" id="list-os">
+                                        <div class="col-md-2" id="list-os">
                                             <h5>OSs nao atribuídas</h5>
                                             <div  class="box sc_bar" id="box1">
                                                 <span class="head"><span class="time">09:00-12:00</span></span>
@@ -233,7 +233,7 @@
                                             </div>
                                             <div  class="box">B</div>
                                             <div  class="box">C</div>
-                                        </div> --}}
+                                        </div>
                                         <div class="jq-schedule col-md-10">
                                         </div>
                                     </div>
@@ -244,7 +244,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
     <!-- Modal -->
     <div class="modal fade" id="addOS" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog  modal-xl">

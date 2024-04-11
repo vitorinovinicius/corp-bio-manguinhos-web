@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.4|8.0",
+        "ext-json": "*",
         "artesaos/defender": "0.12.*",
         "baopham/dynamodb": "^6.1.2",
         "barryvdh/laravel-ide-helper": "^2.5",
@@ -29,6 +30,7 @@
         "league/flysystem-aws-s3-v3": "^1.0",
         "maatwebsite/excel": "^3.1",
         "madnest/madzipper": "^1.1",
+        "phpoffice/phpword": "^1.2",
         "prettus/l5-repository": "^2.6",
         "shivella/laravel-bitly": "^1.0",
         "spatie/laravel-activitylog": "^3.2",
@@ -36,8 +38,7 @@
         "swiftmailer/swiftmailer": "^6.2",
         "symfony/console": "^5.0",
         "tecnick.com/tcpdf": "^6.3",
-        "webpatser/laravel-uuid": "^3.0",
-      "ext-json": "*"
+        "webpatser/laravel-uuid": "^3.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.6",

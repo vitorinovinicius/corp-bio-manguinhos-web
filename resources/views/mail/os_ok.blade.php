@@ -2,7 +2,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Central System </title>
+    <title>Bio-Manguinhos </title>
     <style nonce="{{ csp_nonce() }}">
         /* -------------------------------------
             GLOBAL RESETS
@@ -313,7 +313,7 @@
             <div class="content">
 
                 <!-- START CENTERED WHITE CONTAINER -->
-                <span class="preheader">Central System</span>
+                <span class="preheader">Bio-Manguinhos</span>
                 <table class="main">
 
                     <!-- START MAIN CONTENT AREA -->
@@ -343,7 +343,7 @@
                         <tbody>
                         <tr>
                             <td class="content-block">
-                                <span class="apple-link">Central System</span>
+                                <span class="apple-link">Bio-Manguinhos</span>
                             </td>
                         </tr>
                         </tbody>

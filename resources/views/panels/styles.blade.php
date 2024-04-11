@@ -40,7 +40,7 @@
     @endif
     <!-- END: Custom CSS-->
 
-    <!--    Estilo Central System-->
+    <!--    Estilo Bio-Manguinhos-->
     <link rel="stylesheet" href="{{ url('/css/admin.css') }}">
 
 <style nonce="{{ csp_nonce() }}">
