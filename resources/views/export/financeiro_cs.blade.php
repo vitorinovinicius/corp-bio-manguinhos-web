@@ -7,7 +7,7 @@
 @section('header')
     <div class="page-header clearfix">
         <h3>
-            Exportação de relatório de cobrança Central System
+            Exportação de relatório de cobrança Bio-Manguinhos
         </h3>
         <small>Exporta para Excel as Ocorrências Realizadas pela empreiteira selecionada no período escolhido. <p>Não é permitido exportar mais que 1 mês.</p></small>
     </div>

@@ -58,14 +58,14 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label for="name">Bairros de Atuação</label>
                                             <textarea id="district" name="district" class="form-control" placeholder="Bairros de atuação">{!! $team->district !!}</textarea>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="row">
                                     <div class="col-12 d-flex justify-content-end">
                                         <button type="submit" class="btn btn-primary">Salvar</button>

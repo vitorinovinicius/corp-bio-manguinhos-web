@@ -8,10 +8,12 @@
 
 namespace App\Services;
 
-
+use App\Models\Team;
 use App\Criteria\Api\FormContractorCriteria;
 use App\Repositories\FormRepository;
+use App\Repositories\FormularioRepository;
 use App\Repositories\OccurrenceTypeRepository;
+use Carbon\Carbon;
 use Exception;
 
 class FormService
@@ -20,6 +22,10 @@ class FormService
      * @var FormRepository
      */
     private $formRepository;
+    /**
+     * @var FormularioRepository
+     */
+    private $formularioRepository;
     /**
      * @var OccurrenceTypeRepository
      */
@@ -31,10 +37,12 @@ class FormService
      * @param OccurrenceTypeRepository $occurrenceTypeRepository
      */
     public function __construct(
+        FormularioRepository $formularioRepository,
         FormRepository $formRepository,
         OccurrenceTypeRepository $occurrenceTypeRepository
     )
     {
+        $this->formularioRepository = $formularioRepository;
         $this->formRepository = $formRepository;
         $this->occurrenceTypeRepository = $occurrenceTypeRepository;
     }
@@ -42,8 +50,8 @@ class FormService
     public function index($request)
     {
         $user = \Auth::user();
-        $this->formRepository->pushCriteria(new FormContractorCriteria($user));
-        $forms = $this->formRepository->orderBy('id','desc')->paginate();
+        $this->formularioRepository->pushCriteria(new FormContractorCriteria($user));
+        $forms = $this->formularioRepository->orderBy('id','asc')->paginate();
 
         return view('forms.index', compact('forms'));
     }
@@ -56,14 +64,16 @@ class FormService
     public function create()
     {
 
-        if (\Auth::user()->contractor_id) {
-            $data['contractor_id'] = \Auth::user()->contractor_id;
-        } else {
-            return redirect()->route('forms.index')
-                ->with('error', 'Você não pode cadastrar um formulário.');
-        }
+        // if (\Auth::user()->contractor_id) {
+        //     $data['contractor_id'] = \Auth::user()->contractor_id;
+        // } else {
+        //     return redirect()->route('forms.index')
+        //         ->with('error', 'Você não pode cadastrar um formulário.');
+        // } 
+        
+        $teams = Team::all();
 
-        return view('forms.create');
+        return view('forms.create', compact('teams'));
     }
 
     /**
@@ -75,25 +85,27 @@ class FormService
     public function store($request)
     {
         $data = $request->all();
+        // dd($data);
 
         try {
-            if (\Auth::user()->contractor_id) {
-                $data['contractor_id'] = \Auth::user()->contractor_id;
-            } else {
-                return redirect()->route('forms.index')
-                    ->with('error', 'Você não pode cadastrar um formulário.');
-            }
+            // if (\Auth::user()->contractor_id) {
+            //     $data['contractor_id'] = \Auth::user()->contractor_id;
+            // } else {
+            //     return redirect()->route('forms.index')
+            //         ->with('error', 'Você não pode cadastrar um formulário.');
+            // }
 
-            $form = $this->formRepository->create($data);
+            $data['ANO'] = Carbon::now();
+            $form = $this->formularioRepository->create($data);
 
-            saveVersionForm($form);
+            // saveVersionForm($form);
         } catch (Exception $e) {
             return redirect()->back()
                 ->withInput()
                 ->with('error_form', 'Erro ao tentar salvar o item. <br>Erro: '.$e->getMessage());
         }
 
-        return redirect()->route('forms.show', $form->uuid)
+        return redirect()->route('forms.index')
             ->with('message_form', 'Formulário criado com sucesso.');
     }
 
@@ -145,33 +157,33 @@ class FormService
         try {
             //Fazendo o recursivo
 
-            foreach ($form->form_groups as $form_group){
-                foreach ($form_group->form_sections as $form_section){
-                    foreach ($form_section->form_fields as $form_field){
-                        $form_field->forceDelete();
-                    }
-                    $form_section->forceDelete();
-                }
-                $form_group->forceDelete();
-            }
+            // foreach ($form->form_groups as $form_group){
+            //     foreach ($form_group->form_sections as $form_section){
+            //         foreach ($form_section->form_fields as $form_field){
+            //             $form_field->forceDelete();
+            //         }
+            //         $form_section->forceDelete();
+            //     }
+            //     $form_group->forceDelete();
+            // }
 
-            //Associações de formulários a OSs e OTs
-            if($form->occurrence_type_forms){
-                $occurrence_type_forms = $form->occurrence_type_forms;
-                foreach ($occurrence_type_forms as $data){
-                    $data->forceDelete();
-                }
-            }
+            // //Associações de formulários a OSs e OTs
+            // if($form->occurrence_type_forms){
+            //     $occurrence_type_forms = $form->occurrence_type_forms;
+            //     foreach ($occurrence_type_forms as $data){
+            //         $data->forceDelete();
+            //     }
+            // }
 
-            //Fotos
-            if($form->occurrence_images){
-                $occurrence_images = $form->occurrence_images;
-                foreach ($occurrence_images as $data){
-                    $data->forceDelete();
-                }
-            }
+            // //Fotos
+            // if($form->occurrence_images){
+            //     $occurrence_images = $form->occurrence_images;
+            //     foreach ($occurrence_images as $data){
+            //         $data->forceDelete();
+            //     }
+            // }
 
-            $form->forceDelete();
+            $form->delete();
             return redirect()->route('forms.index')->with('message', 'Item deletado com sucesso.');
 
         } catch (Exception $e) {

@@ -12,7 +12,7 @@
             @if(!empty($configData['templateTitle']) && isset($configData['templateTitle']))
             {{$configData['templateTitle']}}
             @else
-            Central System
+            Bio-Manguinhos
             @endif
           </h2>
           </a>
@@ -28,8 +28,206 @@
       <div class="shadow-bottom"></div>
       <div class="main-menu-content">
       <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation" data-icon-style="lines">
-
+        <li class="nav-item @if(app('router')->is("word.index")){{"active"}}@endif">
+            <a href="#">
+                <i class="menu-livicon" data-icon="box"></i>
+                <span class="menu-title">Relatórios</span>
+            </a>
+            <ul class="menu-content"> 
+                <li class="{{(app('router')->is("word.index"))? "active": ""}}">
+                    <a href="{{route("word.index")}}">
+                        <i class="bx bx-right-arrow-alt"></i>
+                        <span class="menu-item">Todos</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item @if(app('router')->is("word.index")){{"active"}}@endif">
+            <a href="#">
+                <i class="menu-livicon" data-icon="envelope-pull"></i>
+                <span class="menu-title">E-mail</span>
+            </a>
+            <ul class="menu-content"> 
+                <li class="{{(app('router')->is("word.index"))? "active": ""}}">
+                    <a href="{{route("word.index")}}">
+                        <i class="bx bx-right-arrow-alt"></i>
+                        <span class="menu-item">Enviados</span>
+                    </a>
+                </li>
+                <li class="{{(app('router')->is("word.index"))? "active": ""}}">
+                    <a href="{{route("word.index")}}">
+                        <i class="bx bx-right-arrow-alt"></i>
+                        <span class="menu-item">Confirmados</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item @if(
+            app('router')->is("forms*")
+        ){{"active"}}@endif">
+            <a href="#">
+                <i class="menu-livicon" data-icon="briefcase"></i>
+                <span class="menu-title">Formulários</span>
+            </a>
+            <ul class="menu-content">
+                  @shield('form.index')
+                  <li class="{{(app('router')->is("forms.index"))? "active": ""}}">
+                      <a href="{{route("forms.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Todos</span>
+                      </a>
+                  </li>
+                  <li class="{{(app('router')->is("forms.preenchimento"))? "active": ""}}">                    
+                    <a href="{{route("forms.preenchimento")}}">
+                        <i class="bx bx-right-arrow-alt"></i>
+                        <span class="menu-item">Preenchimento</span>
+                    </a>
+                  </li>
+                  @endshield
+            </ul>
+        </li>
+        @is('superuser')
           <li class="nav-item
+            @if(
+                app('router')->is("configurations*")
+                OR app('router')->is("contractor_occurrence_types*")
+                OR app('router')->is("permissions*")
+                OR app('router')->is("roles*")
+                OR app('router')->is("occurrence_type_forms*")
+                OR app('router')->is("sms*")
+                OR app('router')->is("log_locals*")
+
+                OR app('router')->is("configuration*")
+                OR app('router')->is("plans*")
+                OR app('router')->is("districts*")
+                OR app('router')->is("contractor_districts*")
+                OR app('router')->is("contractors*")
+                OR app('router')->is("finish_work_days*")
+                OR app('router')->is("equipments*")
+
+                )
+          {{"active"}}
+          @endif ">
+              <a href="#">
+                  <i class="menu-livicon" data-icon="gears"></i>
+                  <span class="menu-title">Configurações</span>
+              </a>
+
+              <ul class="menu-content">                
+                  {{-- @shield('contractor.index')
+                  <li class="{{(app('router')->is("contractors*"))? "active": ""}}">
+                      <a href="{{route("contractors.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Empresas</span>
+                      </a>
+                  </li>
+                  @endshield --}}
+                  @shield('team.index')
+                  <li class="{{(app('router')->is("teams*"))? "active": ""}}">
+                      <a href="{{route("teams.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Setores</span>
+                      </a>
+                  </li>
+                  @endshield
+                  {{-- @shield('contractor_occurrence_type.index')
+                  <li class="{{(app('router')->is("contractor_occurrence_types*"))? "active": ""}}">
+                      <a href="{{route("contractor_occurrence_types.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Empresas x Occorrências</span>
+                      </a>
+                  </li>
+                  @endshield
+                  @shield('district.index')
+                  <li class="{{(app('router')->is("districts*"))? "active": ""}}">
+                      <a href="{{route("districts.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Bairros</span>
+                      </a>
+                  </li>
+                  @endshield
+                  @shield('contractor_district.index')
+                  <li class="{{(app('router')->is("contractor_districts*"))? "active": ""}}">
+                      <a href="{{route("contractor_districts.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Empresa x Bairros</span>
+                      </a>
+                  </li>
+                  @endshield
+                  @shield('configuration.index')
+                  <li class="{{(app('router')->is("configuration*"))? "active": ""}}">
+                      <a href="{{route("configuration.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Configurações</span>
+                      </a>
+                  </li>
+                  @endshield
+                  @shield('general_setting.index')
+                  <li class="{{(app('router')->is("general_setting*"))? "active": ""}}">
+                      <a href="{{route("general_setting.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Configurações Gerais</span>
+                      </a>
+                  </li>
+                  @endshield --}}
+
+                  <li class="{{(app('router')->is("permissions*"))? "active": ""}}">
+                      <a href="{{route("permissions.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Permissões</span>
+                      </a>
+                  </li>
+                  <li class="{{(app('router')->is("roles*"))? "active": ""}}">
+                      <a href="{{route("roles.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Perfil (regras)</span>
+                      </a>
+                  </li>
+
+                  {{-- <li class="{{(app('router')->is("sms*"))? "active": ""}}">
+                      <a href="{{route("sms.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">SMS</span>
+                      </a>
+                  </li>
+                  <li class="{{(app('router')->is("log_locals*"))? "active": ""}}">
+                      <a href="{{route("log_locals.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Log Android</span>
+                      </a>
+                  </li>
+
+                  @shield('finish_work_days.index')
+                  <li class="{{(app('router')->is("finish_work_days*"))? "active": ""}}">
+                      <a href="{{route("finish_work_days.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Jornada do Dia</span>
+                      </a>
+                  </li>
+                  @endshield
+
+                  @shield('routing.index')
+                  <li class="{{(app('router')->is("routing.*"))? "active": ""}}">
+                    <a href="{{route("routing.index")}}">
+                        <i class="bx bx-right-arrow-alt"></i>
+                        <span class="menu-item">Roteirização</span>
+                    </a>
+                </li>
+                  @endshield --}}
+
+                  
+                  {{-- @shield('occurrence_type_form.index')
+                  <li class="{{(app('router')->is("occurrence_type_forms*"))? "active": ""}}">
+                      <a href="{{route("occurrence_type_forms.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Assoçiação de formulários</span>
+                      </a>
+                  </li>
+                  @endshield --}}
+              </ul>
+          </li>
+          @endis
+          {{-- <li class="nav-item
             @if(
                 app('router')->is("admin.monitoring")
                 or app('router')->is("admin.monitoring_gastos_materiais")
@@ -39,8 +237,8 @@
                 or app('router')->is("alerts.index")
                 or app('router')->is("interferences.dashboard")
                 )
-          {{"active"}}
-          @endif
+            {{"active"}}
+            @endif
                   ">
               <a href="#">
                       <i class="menu-livicon" data-icon="desktop"></i>
@@ -114,8 +312,8 @@
                   @endif
                   @endshield
               </ul>
-          </li>
-          @if(!Defender::is('cliente'))
+          </li> --}}
+          {{-- @if(!Defender::is('cliente'))
           <li class="nav-item
                     @if(
                     app('router')->is("occurrences*")
@@ -202,9 +400,9 @@
                   @endshield
               </ul>
           </li>
-          @endif
+          @endif --}}
 
-          @if(!Defender::is('cliente'))
+          {{-- @if(!Defender::is('cliente'))
           <li class="nav-item
             @if(
                 app('router')->is("admin.occurrences.to_approved")
@@ -278,9 +476,9 @@
                   @endshield
               </ul>
           </li>
-          @endif
+          @endif --}}
 
-          @shield('occurrence_clients.index')
+          {{-- @shield('occurrence_clients.index')
           <li class="nav-item {{(app('router')->is("occurrence_clients*"))? "active": ""}}">
               <a href="{{route("occurrence_clients.index")}}">
                   <i class="menu-livicon" data-icon="user"></i>
@@ -690,9 +888,9 @@
                 <i class="menu-livicon" data-icon="morph-orientation-smartphone"></i>
                 <span class="menu-item">Aplicativo</span>
             </a>
-          </li>
+          {{-- </li> --}}
 
-          @is('superuser')
+          {{-- @is('superuser')
           <li class="nav-item
             @if(
                 app('router')->is("configurations*")
@@ -720,15 +918,23 @@
           @endif ">
               <a href="#">
                   <i class="menu-livicon" data-icon="lock"></i>
-                  <span class="menu-title">Central System</span>
+                  <span class="menu-title">Bio-Manguinhos</span>
               </a>
 
-              <ul class="menu-content">
+              <ul class="menu-content">                
                   @shield('contractor.index')
                   <li class="{{(app('router')->is("contractors*"))? "active": ""}}">
                       <a href="{{route("contractors.index")}}">
                           <i class="bx bx-right-arrow-alt"></i>
                           <span class="menu-item">Empresas</span>
+                      </a>
+                  </li>
+                  @endshield
+                  @shield('team.index')
+                  <li class="{{(app('router')->is("teams*"))? "active": ""}}">
+                      <a href="{{route("teams.index")}}">
+                          <i class="bx bx-right-arrow-alt"></i>
+                          <span class="menu-item">Setores</span>
                       </a>
                   </li>
                   @endshield
@@ -773,49 +979,49 @@
                   </li>
                   @endshield
 
-                  <li class="{{(app('router')->is("permissions*"))? "active": ""}}">
-                      <a href="{{route("permissions.index")}}">
-                          <i class="bx bx-right-arrow-alt"></i>
-                          <span class="menu-item">Permissões</span>
-                      </a>
-                  </li>
-                  <li class="{{(app('router')->is("roles*"))? "active": ""}}">
-                      <a href="{{route("roles.index")}}">
-                          <i class="bx bx-right-arrow-alt"></i>
-                          <span class="menu-item">Perfil (regras)</span>
-                      </a>
-                  </li>
-
-                  <li class="{{(app('router')->is("sms*"))? "active": ""}}">
-                      <a href="{{route("sms.index")}}">
-                          <i class="bx bx-right-arrow-alt"></i>
-                          <span class="menu-item">SMS</span>
-                      </a>
-                  </li>
-                  <li class="{{(app('router')->is("log_locals*"))? "active": ""}}">
-                      <a href="{{route("log_locals.index")}}">
-                          <i class="bx bx-right-arrow-alt"></i>
-                          <span class="menu-item">Log Android</span>
-                      </a>
-                  </li>
-
-                  @shield('finish_work_days.index')
-                  <li class="{{(app('router')->is("finish_work_days*"))? "active": ""}}">
-                      <a href="{{route("finish_work_days.index")}}">
-                          <i class="bx bx-right-arrow-alt"></i>
-                          <span class="menu-item">Jornada do Dia</span>
-                      </a>
-                  </li>
-                  @endshield
-
-                  @shield('routing.index')
-                  <li class="{{(app('router')->is("routing.*"))? "active": ""}}">
-                    <a href="{{route("routing.index")}}">
+                <li class="{{(app('router')->is("permissions*"))? "active": ""}}">
+                    <a href="{{route("permissions.index")}}">
                         <i class="bx bx-right-arrow-alt"></i>
-                        <span class="menu-item">Roteirização</span>
+                        <span class="menu-item">Permissões</span>
                     </a>
                 </li>
-                  @endshield
+                <li class="{{(app('router')->is("roles*"))? "active": ""}}">
+                    <a href="{{route("roles.index")}}">
+                        <i class="bx bx-right-arrow-alt"></i>
+                        <span class="menu-item">Perfil (regras)</span>
+                    </a>
+                </li>
+
+                <li class="{{(app('router')->is("sms*"))? "active": ""}}">
+                    <a href="{{route("sms.index")}}">
+                        <i class="bx bx-right-arrow-alt"></i>
+                        <span class="menu-item">SMS</span>
+                    </a>
+                </li>
+                <li class="{{(app('router')->is("log_locals*"))? "active": ""}}">
+                    <a href="{{route("log_locals.index")}}">
+                        <i class="bx bx-right-arrow-alt"></i>
+                        <span class="menu-item">Log Android</span>
+                    </a>
+                </li>
+
+                @shield('finish_work_days.index')
+                <li class="{{(app('router')->is("finish_work_days*"))? "active": ""}}">
+                    <a href="{{route("finish_work_days.index")}}">
+                        <i class="bx bx-right-arrow-alt"></i>
+                        <span class="menu-item">Jornada do Dia</span>
+                    </a>
+                </li>
+                @endshield
+
+                @shield('routing.index')
+                <li class="{{(app('router')->is("routing.*"))? "active": ""}}">
+                <a href="{{route("routing.index")}}">
+                    <i class="bx bx-right-arrow-alt"></i>
+                    <span class="menu-item">Roteirização</span>
+                </a>
+            </li>
+                @endshield
 
 
                   <li class="navigation-header"><span>Formulários</span></li>
@@ -838,14 +1044,14 @@
                   @endshield
               </ul>
           </li>
-          @endis
+          @endis --}}
 
-          <li class="nav-item">
+          {{-- <li class="nav-item">
               <a href="http://suporte.centralsystem.com.br" target="_blank">
                   <i class="menu-livicon" data-icon="wrench"></i>
                   <span class="menu-title">Suporte</span>
               </a>
-          </li>
+          </li>        --}}
 
           <li class="nav-item">
               <a href="{{ url('/logout') }}"
@@ -876,7 +1082,7 @@
             @if(!empty($configData['templateTitle']) && isset($configData['templateTitle']))
             {{$configData['templateTitle']}}
             @else
-            Central System
+            Bio-Manguinhos
             @endif
           </h2>
           </a>
@@ -926,7 +1132,7 @@
           @if(!empty($configData['templateTitle']) && isset($configData['templateTitle']))
           {{$configData['templateTitle']}}
           @else
-          Central System
+          Bio-Manguinhos
           @endif
         </h2>
       </a>

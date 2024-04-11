@@ -28,7 +28,6 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
 
-        $schedule->call('App\Http\Controllers\PlanOccurrenceController@createOccurrence')->daily();
         $schedule->command('activitylog:clean')->daily();
 
     }

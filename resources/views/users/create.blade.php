@@ -40,23 +40,23 @@
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label for="name">Nome*</label>
-                                            <input type="text" class="form-control" name="name" value="{{ old('name') }}" placeholder="Nome" autocomplete="off" required>
+                                            <input type="text" class="form-control" name="fileName" value="{{ old('fileName') }}" placeholder="Nome do arquivo" autocomplete="off" required>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
-                                            <label for="name">E-mail*</label>
-                                            <input type="email" class="form-control" name="email" value="{{ old('email') }}" placeholder="E-mail" autocomplete="off" required>
+                                            <label for="name">Titulo*</label>
+                                            <input type="email" class="form-control" name="title" value="{{ old('title') }}" placeholder="Titulo do arquivo" autocomplete="off" required>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
-                                            <label for="name">CPF</label>
-                                            <input type="text" class="form-control" name="cpf" value="{{ old('cpf') }}" placeholder="CPF" autocomplete="off">
+                                            <label for="name">Corpo do documento</label>
+                                            <input type="textarea" class="form-control" name="bodyFile" value="{{ old('bodyFile') }}" placeholder="Escreva o texto que deseja." autocomplete="off">
                                         </div>
                                     </div>
                                 </div>

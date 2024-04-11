@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Central System - Ocorrência Nº {{ $occurrence->id }}</title>
+    <title>Bio-Manguinhos - Ocorrência Nº {{ $occurrence->id }}</title>
 
 </head>
 <body>

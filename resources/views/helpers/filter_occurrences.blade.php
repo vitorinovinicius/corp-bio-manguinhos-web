@@ -62,7 +62,7 @@
                                     <div class="form-group">
                                         <label for="id_local">ID</label>
                                         <input class="form-control" type="text" name="id_local" id="id_local"
-                                               placeholder="ID Central System"
+                                               placeholder="ID Bio-Manguinhos"
                                                value="{{ app('request')->input('id_local') }}">
                                     </div>
                                 </div>

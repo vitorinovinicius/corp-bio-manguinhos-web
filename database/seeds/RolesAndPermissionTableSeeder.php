@@ -160,7 +160,7 @@ class RolesAndPermissionTableSeeder extends Seeder
 
         //EXPORTAÇÃO
         Defender::createPermission('export.index', 'Tela inicial de exportação de arquivos');
-        Defender::createPermission('export.financeiro_cs', 'Tela de exportação de OSs para Central System');
+        Defender::createPermission('export.financeiro_cs', 'Tela de exportação de OSs para Bio-Manguinhos');
 
         //LOG
         Defender::createPermission('log.index', 'Lista os logs de acesso ao sistema');

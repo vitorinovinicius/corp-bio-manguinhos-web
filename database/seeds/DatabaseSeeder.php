@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UsersTableSeeder::class);
 
         //Empreteiras
-        $this->call(CentralSystemSeeder::class);
+        $this->call(BioManguinhosSeeder::class);
 
         $this->call(CancelamentoStatusTableSeeder::class);
         $this->call(MovesTypeSeeder::class);

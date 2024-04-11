@@ -81,7 +81,7 @@
                             </div>
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label for="name">Pendência financeira com Central System</label>
+                                    <label for="name">Pendência financeira com Bio-Manguinhos</label>
                                     <p class="form-control-static">{{$contractor->financialPendency()}}</p>
                                 </div>
                             </div>

@@ -28,7 +28,7 @@ class UsersTableSeeder extends Seeder
             [
                 'uuid'           => \Webpatser\Uuid\Uuid::generate(),
                 'name'           => 'Usuário Bio-Manguinhos',
-                'email'          => 'centralsystem@fiotec.com',
+                'email'          => 'admin@fiotec.com',
                 'password'       => bcrypt('123456'),
 //                'contractor_id'  => 1,
                 'remember_token' => str_random(10),

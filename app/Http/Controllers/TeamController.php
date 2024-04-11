@@ -51,9 +51,9 @@ class TeamController extends Controller {
 	 */
 	public function create()
 	{
-        if (!\Auth::user()->contractor_id) {
-            return redirect()->route('teams.index')->with('error', "Apenas empresas têm acesso a criar o item.");
-        }
+        // if (!\Auth::user()->contractor_id) {
+        //     return redirect()->route('teams.index')->with('error', "Apenas empresas têm acesso a criar o item.");
+        // }
 
         $this->userRepository->pushCriteria(new TeamCreateCriteria());
         $supervisors = $this->userRepository->all();

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Central System {{env('APP_ENV')}} @yield('title')</title>
+    <title>Bio-Manguinhos {{env('APP_ENV')}} @yield('title')</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.6 -->
@@ -52,10 +52,10 @@
         <footer style="margin: 30px">
             <!-- To the right -->
             <div class="pull-right hidden-xs">
-                Central System
+                Bio-Manguinhos
             </div>
             <!-- Default to the left -->
-            <strong>Copyright &copy; {{ date("Y")  }} <a href="http://centralsystem.com.br" target="_blank">Central System</a>.</strong> Todos os direitos reservados.
+            <strong>Copyright &copy; {{ date("Y")  }} <a href="https://portal.fiocruz.br/" target="_blank">Bio-Manguinhos</a>.</strong> Todos os direitos reservados.
         </footer>
 
         <!-- REQUIRED JS SCRIPTS -->

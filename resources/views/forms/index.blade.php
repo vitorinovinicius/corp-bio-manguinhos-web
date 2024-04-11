@@ -41,9 +41,10 @@
                                     <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Nome</th>
-                                        <th>Descrição</th>
-                                        <th>Status</th>
+                                        <th>Titulo</th>
+                                        <th>Sub-titulo</th>
+                                        <th>Setor responsável</th>
+                                        <th>Ano</th>
 
                                         <th class="text-right">OPÇÕES</th>
                                     </tr>
@@ -53,9 +54,10 @@
                                     @foreach($forms as $form)
                                         <tr>
                                             <td>{{$form->id}}</td>
-                                            <td>{{$form->name}}</td>
-                                            <td>{!! $form->description !!}</td>
-                                            <td>{{ativo_inativo($form->status)}}</td>
+                                            <td>{{$form->titulo}}</td>
+                                            <td>{{ $form->sub_titulo }}</td>
+                                            <td>{{$form->team}}</td>
+                                            <td>{{Date('Y', strtotime($form->ANO))}}</td>
                                             <td class="text-right">
                                                 @shield('form.show')
                                                 <a href="{{ route('forms.show', $form->uuid) }}" class="btn btn-icon btn-sm btn-primary" data-toggle="tooltip" data-placement="left" title="Exibir"><i class="bx bx-book-open"></i></a>

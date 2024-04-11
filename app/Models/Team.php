@@ -34,6 +34,10 @@ class Team extends Model implements Transformable
         return $this->belongsToMany(User::class,'user_team','team_id','user_id');
     }
 
+    public function formulario(){
+        return $this->belongsTo(Formulario::class,'setor_id');
+    }
+
     public function contractor()
     {
         return $this->belongsTo(Contractor::class,'contractor_id');
