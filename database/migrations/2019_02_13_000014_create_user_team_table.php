@@ -10,7 +10,7 @@ class CreateUserTeamTable extends Migration
      * Schema table name to migrate
      * @var string
      */
-    public $set_schema_table = 'user_team';
+    public $set_schema_table = 'user_setor';
 
     /**
      * Run the migrations.
@@ -25,7 +25,7 @@ class CreateUserTeamTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->unsignedInteger('user_id');
-            $table->unsignedInteger('team_id');
+            $table->unsignedInteger('setor_id');
             $table->integer('is_supervisor')->nullable();
 
             $table->timestamps();
@@ -33,7 +33,7 @@ class CreateUserTeamTable extends Migration
 
             $table->index(["user_id"], 'user_id_idx');
 
-            $table->index(["team_id"], 'team_id_idx');
+            $table->index(["setor_id"], 'team_id_idx');
 
 
             $table->foreign('user_id', 'user_id_idx')
@@ -41,8 +41,8 @@ class CreateUserTeamTable extends Migration
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
 
-            $table->foreign('team_id', 'team_id_idx')
-                ->references('id')->on('teams')
+            $table->foreign('setor_id', 'team_id_idx')
+                ->references('id')->on('setores')
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
         });

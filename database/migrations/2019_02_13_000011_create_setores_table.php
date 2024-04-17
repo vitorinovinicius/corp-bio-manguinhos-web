@@ -4,17 +4,17 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRegionUsersTable extends Migration
+class CreateSetoresTable extends Migration
 {
     /**
      * Schema table name to migrate
      * @var string
      */
-    public $set_schema_table = 'region_users';
+    public $set_schema_table = 'setores';
 
     /**
      * Run the migrations.
-     * @table region_users
+     * @table teams
      *
      * @return void
      */
@@ -24,26 +24,20 @@ class CreateRegionUsersTable extends Migration
         Schema::create($this->set_schema_table, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->unsignedInteger('region_id');
-            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('empresa_id')->nullable();
+            $table->uuid('uuid');
+            $table->string('name');
+            $table->text('district')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(["region_id"], 'fk_region_users_regions1_idx');
+            $table->index(["empresa_id"], 'fk_teams_contractors1_idx');
 
-            $table->index(["user_id"], 'fk_region_users_users1_idx');
+            $table->unique(["uuid"], 'teams_uuid_unique');
 
-            $table->unique(["id"], 'id_UNIQUE');
-
-
-            $table->foreign('region_id', 'fk_region_users_regions1_idx')
-                ->references('id')->on('regions')
-                ->onDelete('restrict')
-                ->onUpdate('cascade');
-
-            $table->foreign('user_id', 'fk_region_users_users1_idx')
-                ->references('id')->on('users')
+            $table->foreign('empresa_id', 'fk_teams_contractors1_idx')
+                ->references('id')->on('empresas')
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
         });

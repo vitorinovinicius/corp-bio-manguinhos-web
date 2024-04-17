@@ -62,7 +62,7 @@
                 </li>
             </ul>
         </li>
-        <li class="nav-item @if(
+        {{-- <li class="nav-item @if(
             app('router')->is("forms*")
         ){{"active"}}@endif">
             <a href="#">
@@ -85,7 +85,7 @@
                   </li>
                   @endshield
             </ul>
-        </li>
+        </li> --}}
         @is('superuser')
           <li class="nav-item
             @if(
@@ -122,14 +122,14 @@
                       </a>
                   </li>
                   @endshield --}}
-                  @shield('team.index')
+                  {{-- @shield('team.index')
                   <li class="{{(app('router')->is("teams*"))? "active": ""}}">
                       <a href="{{route("teams.index")}}">
                           <i class="bx bx-right-arrow-alt"></i>
                           <span class="menu-item">Setores</span>
                       </a>
                   </li>
-                  @endshield
+                  @endshield --}}
                   {{-- @shield('contractor_occurrence_type.index')
                   <li class="{{(app('router')->is("contractor_occurrence_types*"))? "active": ""}}">
                       <a href="{{route("contractor_occurrence_types.index")}}">

@@ -19,13 +19,13 @@ class CheckStatus
     {
         if ( auth()->check() ){
 
-            $contractor = auth()->user()->contractor_id;
-            $statusContractor = Contractor::select('status')->where('id', $contractor)->first();
+            $contractor = auth()->user()->id;
+            // $statusContractor = Contractor::select('status')->where('id', $contractor)->first();
 
-            if ($statusContractor != null && ($statusContractor->status != 1 || auth()->user()->status != 1)) {
-                \Auth::logout();
-                return redirect('/login')->with('error', ' Acesso negado');
-            }
+            // if ($statusContractor != null && ($statusContractor->status != 1 || auth()->user()->status != 1)) {
+            //     \Auth::logout();
+            //     return redirect('/login')->with('error', ' Acesso negado');
+            // }
         }
         return $next($request);
     }

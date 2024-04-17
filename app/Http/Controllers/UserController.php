@@ -35,15 +35,10 @@ class UserController extends Controller {
      * @param ContractorRepository $contractorRepository
      */
     public function __construct(UserService $userService,
-                                ContractorService $contractorService,
-                                RegionService $regionService, ContractorRepository $contractorRepository,
                                 UserRepository $userRepository
     )
 	{
 		$this->userService = $userService;
-		$this->regionService = $regionService;
-		$this->contractorService = $contractorService;
-        $this->contractorRepository = $contractorRepository;
         $this->userRepository = $userRepository;
     }
 
@@ -76,11 +71,6 @@ class UserController extends Controller {
 	public function create()
 	{
 		$roles          = Defender::rolesList();
-		$contractors    = $this->contractorRepository->findWhere([
-            'status' => 1,
-            'visibility' => 1
-        ])->all();
-		$regions        = $this->regionService->listRegions();
 
 		return view('users.create', compact('roles','contractors','regions'));
 	}
@@ -119,23 +109,8 @@ class UserController extends Controller {
 	public function edit(User $user)
 	{
         $roles          = Defender::rolesList();
-        $contractors    = $this->contractorRepository->findWhere([
-            'status' => 1,
-            'visibility' => 1
-        ])->all();
-        $regions        = $this->regionService->listRegions();
-        $selectedRegions = [];
 
-        foreach($user->regions as $region) {
-            $selectedRegions[] = $region->id;
-        }
-
-        $selectedRoles = [];
-        foreach($user->roles as $role) {
-            $selectedRoles[] = $role->id;
-        }
-
-        return view('users.edit', compact('user','roles','contractors','regions','selectedRoles','selectedRegions'));
+        return view('users.edit', compact('user','roles'));
 	}
 
 	/**

@@ -30,21 +30,11 @@ class UsersTableSeeder extends Seeder
                 'name'           => 'Usuário Bio-Manguinhos',
                 'email'          => 'admin@fiotec.com',
                 'password'       => bcrypt('123456'),
-//                'contractor_id'  => 1,
                 'remember_token' => str_random(10),
                 'created_at'     => \Carbon\Carbon::now()
             ]
         ]);
         DB::table('role_user')->insert(['user_id'=>2,'role_id'=>7]);
-
-
-        DB::table('region_users')->insert([
-            [
-                'region_id'     => 1,
-                'user_id'       => 2,
-                'created_at'    => \Carbon\Carbon::now()
-            ]
-        ]);
 
 
         DB::table('oauth_clients')->insert([

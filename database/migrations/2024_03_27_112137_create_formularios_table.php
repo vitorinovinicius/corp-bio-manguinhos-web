@@ -14,10 +14,10 @@ return new class extends Migration
 	{
 		Schema::create('formularios', function(Blueprint $table) {
             $table->increments('id');			
-            $table->unsignedInteger('setor_id');
+            $table->unsignedInteger('setor_id')->nullable();
 			$table->uuid('uuid');
 			$table->string('titulo')->nullable();
-			$table->string('sub_titulo')->nullable();
+			$table->unsignedInteger('sub_titulo_id')->nullable();
 			$table->integer('limite_caracteres')->nullable();
 			$table->date('ANO')->nullable();
 
@@ -25,8 +25,16 @@ return new class extends Migration
             $table->softDeletes();
 
 			$table->index(["setor_id"], 'fk_formulario_setor_id_idx');
+
+			$table->index(["sub_titulo_id"], 'fk_formulario_subtitulo_id_idx');
+
             $table->foreign('setor_id','fk_formulario_setor_id_idx')
-                ->references('id')->on('teams')
+                ->references('id')->on('setores')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
+
+            $table->foreign('sub_titulo_id','fk_formulario_subtitulo_id_idx')
+                ->references('id')->on('formularios')
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
 		});

@@ -25,7 +25,7 @@ class CreateUsersTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->uuid('uuid');
-            $table->unsignedInteger('contractor_id')->nullable();
+            $table->unsignedInteger('empresa_id')->nullable();
             $table->string('name');
             $table->string('lastname')->nullable();
             $table->string('email');
@@ -62,6 +62,7 @@ class CreateUsersTable extends Migration
             $table->string("assinatura")->nullable();
             $table->string("foto")->nullable();
             $table->string("ecc")->nullable();
+            $table->string('token_access')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
@@ -70,7 +71,7 @@ class CreateUsersTable extends Migration
 
             $table->index(["email"], 'users_email_idx');
 
-            $table->index(["contractor_id"], 'fk_users_contractors1_idx');
+            $table->index(["empresa_id"], 'fk_users_contractors1_idx');
 
             $table->unique(["id"], 'id_UNIQUE');
 
@@ -79,8 +80,8 @@ class CreateUsersTable extends Migration
             $table->unique(["email"], 'users_email_unique');
 
 
-            $table->foreign('contractor_id', 'fk_users_contractors1_idx')
-                ->references('id')->on('contractors')
+            $table->foreign('empresa_id', 'fk_users_contractors1_idx')
+                ->references('id')->on('empresas')
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
         });

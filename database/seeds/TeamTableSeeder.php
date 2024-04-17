@@ -9,22 +9,14 @@ class TeamTableSeeder extends Seeder {
 
     public function run()
     {
-        DB::table('teams')->insert([
+        DB::table('setores')->insert([
             [
                 'uuid'           => \Webpatser\Uuid\Uuid::generate(),
                 'name'           => 'Equipe Padrão Bio-Manguinhos',
-                'contractor_id'  => null,
+                'empresa_id'  => null,
                 'created_at'     => \Carbon\Carbon::now()
             ]
         ]);
-
-//        DB::table('user_team')->insert([
-//            [
-//                'user_id'  => 2,
-//                'team_id'  => 1,
-//                'is_supervisor'  => 1,
-//            ]
-//        ]);
 
     }
 

@@ -24,7 +24,7 @@ class CreateConfigurationsTable extends Migration
         Schema::create($this->set_schema_table, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->unsignedInteger('contractor_id')->nullable();
+            $table->unsignedInteger('empresa_id')->nullable();
             $table->uuid('uuid');
             $table->string('config_key')->nullable();
             $table->string('config_value')->nullable();
@@ -36,13 +36,13 @@ class CreateConfigurationsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(["contractor_id"], 'fk_configurations_contractors1_idx');
+            $table->index(["empresa_id"], 'fk_configurations_contractors1_idx');
 
             $table->unique(["id"], 'id_UNIQUE');
 
 
-            $table->foreign('contractor_id', 'fk_configurations_contractors1_idx')
-                ->references('id')->on('contractors')
+            $table->foreign('empresa_id', 'fk_configurations_contractors1_idx')
+                ->references('id')->on('empresas')
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
         });

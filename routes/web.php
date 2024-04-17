@@ -16,11 +16,7 @@ Auth::routes();
 //     }
 // });
 Route::get('/home', function(){
-    if(Defender::hasRole('cliente')){
-        return redirect()->route('client.index');
-    }else{
-        return redirect()->route('word.index');
-    }
+    return redirect()->route('word.index');
 });
 
 Route::group(['prefix' => 'word','middleware'=>['auth','systemConfiguration', 'checkStatus', 'authUnique', 'tenant', 'bindings']], function () {
@@ -211,14 +207,14 @@ Route::group(['prefix' => 'admin','middleware'=>['auth','systemConfiguration', '
     //TEAM
     
     //    Route::resource("teams", "TeamController");
-    Route::get('/teams', ["as"=>"teams.index","uses" => "TeamController@index",'middleware'=>['needsPermission'], 'shield' => 'team.index']);
-    Route::get('/teams/gantt', ["as"=>"teams.gantt","uses" => "TeamController@gantt",'middleware'=>['needsPermission'], 'shield' => 'team.edit']);
-    Route::post('/teams', ["as"=>"teams.store","uses" => "TeamController@store",'middleware'=>['needsPermission'], 'shield' => 'team.create']);
-    Route::get('/teams/create', ["as"=>"teams.create","uses" => "TeamController@create",'middleware'=>['needsPermission'], 'shield' => 'team.create']);
-    Route::get('/teams/{team}', ["as"=>"teams.show","uses" => "TeamController@show",'middleware'=>['needsPermission'], 'shield' => 'team.show']);
-    Route::put('/teams/{team}', ["as"=>"teams.update","uses" => "TeamController@update",'middleware'=>['needsPermission'], 'shield' => 'team.edit']);
-    Route::get('/teams/{team}/edit', ["as"=>"teams.edit","uses" => "TeamController@edit",'middleware'=>['needsPermission'], 'shield' => 'team.edit']);
-    Route::delete('/teams/{team}', ["as"=>"teams.destroy","uses" => "TeamController@destroy",'middleware'=>['needsPermission'], 'shield' => 'team.destroy']);
+    // Route::get('/teams', ["as"=>"teams.index","uses" => "TeamController@index",'middleware'=>['needsPermission'], 'shield' => 'team.index']);
+    // Route::get('/teams/gantt', ["as"=>"teams.gantt","uses" => "TeamController@gantt",'middleware'=>['needsPermission'], 'shield' => 'team.edit']);
+    // Route::post('/teams', ["as"=>"teams.store","uses" => "TeamController@store",'middleware'=>['needsPermission'], 'shield' => 'team.create']);
+    // Route::get('/teams/create', ["as"=>"teams.create","uses" => "TeamController@create",'middleware'=>['needsPermission'], 'shield' => 'team.create']);
+    // Route::get('/teams/{team}', ["as"=>"teams.show","uses" => "TeamController@show",'middleware'=>['needsPermission'], 'shield' => 'team.show']);
+    // Route::put('/teams/{team}', ["as"=>"teams.update","uses" => "TeamController@update",'middleware'=>['needsPermission'], 'shield' => 'team.edit']);
+    // Route::get('/teams/{team}/edit', ["as"=>"teams.edit","uses" => "TeamController@edit",'middleware'=>['needsPermission'], 'shield' => 'team.edit']);
+    // Route::delete('/teams/{team}', ["as"=>"teams.destroy","uses" => "TeamController@destroy",'middleware'=>['needsPermission'], 'shield' => 'team.destroy']);
     
     //INTERFERENCE
     
@@ -320,21 +316,21 @@ Route::group(['prefix' => 'admin','middleware'=>['auth','systemConfiguration', '
     
     //Form
     //    Route::resource("forms","FormController");
-    Route::get('/forms', ["as"=>"forms.index","uses" => "FormController@index",'middleware'=>['needsPermission'], 'shield' => 'form.index']);
-    Route::get('/forms/preenchimento', ["as"=>"forms.preenchimento","uses" => "FormController@index",'middleware'=>['needsPermission'], 'shield' => 'form.index']);
-    Route::post('/forms', ["as"=>"forms.store","uses" => "FormController@store"]);
-    Route::get('/forms/create', ["as"=>"forms.create","uses" => "FormController@create",'middleware'=>['needsPermission'], 'shield' => 'form.create']);
-    Route::get('/forms/{form}', ["as"=>"forms.show","uses" => "FormController@show",'middleware'=>['needsPermission'], 'shield' => 'form.show']);
-    Route::put('/forms/{form}', ["as"=>"forms.update","uses" => "FormController@update"]);
-    Route::get('/forms/{form}/edit', ["as"=>"forms.edit","uses" => "FormController@edit",'middleware'=>['needsPermission'], 'shield' => 'form.edit']);
-    Route::delete('/forms/{form}', ["as"=>"forms.destroy","uses" => "FormController@destroy",'middleware'=>['needsPermission'], 'shield' => 'form.destroy']);
+    // Route::get('/forms', ["as"=>"forms.index","uses" => "FormController@index",'middleware'=>['needsPermission'], 'shield' => 'form.index']);
+    // Route::get('/forms/preenchimento', ["as"=>"forms.preenchimento","uses" => "FormController@index",'middleware'=>['needsPermission'], 'shield' => 'form.index']);
+    // Route::post('/forms', ["as"=>"forms.store","uses" => "FormController@store"]);
+    // Route::get('/forms/create', ["as"=>"forms.create","uses" => "FormController@create",'middleware'=>['needsPermission'], 'shield' => 'form.create']);
+    // Route::get('/forms/{form}', ["as"=>"forms.show","uses" => "FormController@show",'middleware'=>['needsPermission'], 'shield' => 'form.show']);
+    // Route::put('/forms/{form}', ["as"=>"forms.update","uses" => "FormController@update"]);
+    // Route::get('/forms/{form}/edit', ["as"=>"forms.edit","uses" => "FormController@edit",'middleware'=>['needsPermission'], 'shield' => 'form.edit']);
+    // Route::delete('/forms/{form}', ["as"=>"forms.destroy","uses" => "FormController@destroy",'middleware'=>['needsPermission'], 'shield' => 'form.destroy']);
 
-    Route::post('/form_sections', ["as"=>"form_sections.store","uses" => "FormSectionController@store"]);
-    Route::get('/form_sections/create/{form}', ["as"=>"form_sections.create","uses" => "FormSectionController@create",'middleware'=>['needsPermission'], 'shield' => 'form_section.create']);
-    Route::put('/form_sections/{form_section}', ["as"=>"form_sections.update","uses" => "FormSectionController@update"]);
-    Route::get('/form_sections/{form_section}/edit', ["as"=>"form_sections.edit","uses" => "FormSectionController@edit",'middleware'=>['needsPermission'], 'shield' => 'form_section.edit']);
-    Route::delete('/form_sections/{form_section}', ["as"=>"form_sections.destroy","uses" => "FormSectionController@destroy",'middleware'=>['needsPermission'], 'shield' => 'form_section.destroy']);
-    Route::put('/form_sections_order/order', ["as"=>"form_sections_order.order","uses" => "FormSectionController@order"]);
+    // Route::post('/form_sections', ["as"=>"form_sections.store","uses" => "FormSectionController@store"]);
+    // Route::get('/form_sections/create/{form}', ["as"=>"form_sections.create","uses" => "FormSectionController@create",'middleware'=>['needsPermission'], 'shield' => 'form_section.create']);
+    // Route::put('/form_sections/{form_section}', ["as"=>"form_sections.update","uses" => "FormSectionController@update"]);
+    // Route::get('/form_sections/{form_section}/edit', ["as"=>"form_sections.edit","uses" => "FormSectionController@edit",'middleware'=>['needsPermission'], 'shield' => 'form_section.edit']);
+    // Route::delete('/form_sections/{form_section}', ["as"=>"form_sections.destroy","uses" => "FormSectionController@destroy",'middleware'=>['needsPermission'], 'shield' => 'form_section.destroy']);
+    // Route::put('/form_sections_order/order', ["as"=>"form_sections_order.order","uses" => "FormSectionController@order"]);
 
 //     //OccurrenceTypeForm
 //     //    Route::resource("occurrence_type_forms","OccurrenceTypeFormController");

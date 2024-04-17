@@ -11,7 +11,7 @@ class BioManguinhosSeeder extends Seeder
      */
     public function run()
     {
-        $contractor = DB::table('contractors')->insertGetId(
+        $contractor = DB::table('empresas')->insertGetId(
             [
                 'name'           => 'Bio-Manguinhos',
                 'uuid'           => \Webpatser\Uuid\Uuid::generate(),
@@ -22,7 +22,7 @@ class BioManguinhosSeeder extends Seeder
                 'phone1'         => '(00) 0000-0000',
                 'phone2'         => '',
                 'email'          => '',
-                'site'           => 'www.centralsystem.com.br',
+                'site'           => '',
                 'created_at' => \Carbon\Carbon::now(),
                 'updated_at' => \Carbon\Carbon::now()
 
@@ -36,7 +36,7 @@ class BioManguinhosSeeder extends Seeder
                 'name' => 'Administrador Bio-Manguinhos',
                 'email' => 'admin@centralsystem.com.br',
                 'password' => bcrypt('admin123'),
-                'contractor_id' => $contractor,
+                'empresa_id' => $contractor,
                 'remember_token' => str_random(10),
                 'created_at' => \Carbon\Carbon::now(),
                 'updated_at' => \Carbon\Carbon::now()
