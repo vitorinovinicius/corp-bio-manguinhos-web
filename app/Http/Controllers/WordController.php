@@ -50,12 +50,12 @@ class WordController extends Controller
     {
         // Diretório onde os documentos serão salvos
         $savePath = public_path('documents');
-
+    
         // Verificar se o diretório existe, se não, criá-lo
         if (!File::isDirectory($savePath)) {
             File::makeDirectory($savePath, 0777, true, true);
         }
-
+    
         // Inicializar o objeto PhpWord
         $phpWord = new PhpWord();
         $phpWord->addNumberingStyle(
@@ -67,94 +67,92 @@ class WordController extends Controller
                 )
             )
         );
-
+    
         $phpWord->addTitleStyle(1, array('size' => 16), array('numStyle' => 'hNum', 'numLevel' => 0));
         $phpWord->addTitleStyle(2, array('size' => 14), array('numStyle' => 'hNum', 'numLevel' => 1));
         $phpWord->addTitleStyle(3, array('size' => 12), array('numStyle' => 'hNum', 'numLevel' => 2));
+    
+        // Variáveis para controlar as páginas dos sumários e conteúdos
+        $paginaSumarioTitulos = 1;
+        $paginaSumarioImagens = 2;
+    
+        // Adiciona a segunda página com o sumário de títulos
+        $sectionSumarioTitulos = $phpWord->addSection();
+        $sectionSumarioTitulos->addText('Sumário com Títulos');
+        $sectionSumarioTitulos->addTextBreak(1);
+        $sectionSumarioTitulos->addTOC(['fontStyle' => ['spaceAfter' => 60, 'size' => 12]]);
+        $sectionSumarioTitulos->addPageBreak();
+    
+        // Adiciona a primeira página com o sumário de imagens
+        $sectionSumarioImagens = $phpWord->addSection();
+        $sectionSumarioImagens->addText('Sumário de Imagens');
+        $sectionSumarioImagens->addTextBreak(1);
+        $sectionSumarioImagens->addTOC(['fontStyle' => ['spaceAfter' => 60, 'size' => 12]]);
+        $sectionSumarioImagens->addPageBreak();
+    
+        // Adiciona os títulos e imagens nas páginas subsequentes
+        $formularios = Formulario::whereYear('ANO', Date('Y'))->get();
 
-        $section = $phpWord->addSection();
+        // Variáveis para controlar as páginas dos sumários e conteúdos
+        $paginaSumarioTitulos = 1;
+        $paginaSumarioImagens = 2;
 
-        // Define o estilo da fonte para o sumário
-        $fontStyle = ['spaceAfter' => 60, 'size' => 12];
+        $sectionsTitulos = [];
+        $sectionsImagens = [];
 
-        // Define os estilos de título
-        // $phpWord->addTitleStyle(1, ['size' => 12, 'color' => '333333', 'bold' => true]);
-        // $phpWord->addTitleStyle(2, ['size' => 12, 'color' => '666666']);
-        // $phpWord->addTitleStyle(3, ['size' => 12, 'italic' => true]);
-        // $phpWord->addTitleStyle(4, ['size' => 12]);
+        foreach ($formularios as $formulario) {
+            $section = $phpWord->addSection();
 
-        // Adiciona os elementos de texto
-        $section->addText('Sumário');
-        $section->addTextBreak(1);
+            if (!isset($formulario->sub_titulo_id)) {
+                $section->addTitle($formulario->descricao, 1);
+                $sectionsTitulos[] = $section;
 
-        // Adiciona o sumário #1
-        $section->addTOC($fontStyle);
-        $section->addTextBreak(1);
-
-        // Adiciona os títulos
-        $section->addPageBreak();        
-
-        $formularios = Formulario::all();
-        foreach ($formularios as $formulario){
-            if($formulario->titulo){
-                $section->addTitle($formulario->titulo, 1, '{PAGE}');
-            }
-            if($formulario->sub_titulo){
-                $section->addTitle($formulario->sub_titulo, 2, '{PAGE}');
+                // Verifica se é necessário iniciar uma nova página para o próximo sumário de títulos
+                if ($paginaSumarioTitulos != count($sectionsTitulos)) {
+                    $sectionSumarioTitulos->addPageBreak();
+                    $paginaSumarioTitulos = count($sectionsTitulos);
+                }
                 
+            } else {
+                $section->addTitle($formulario->descricao, 2);
+                $sectionsImagens[] = $section;
+
+                // Verifica se é necessário iniciar uma nova página para o próximo sumário de imagens
+                if ($paginaSumarioImagens != count($sectionsImagens)) {
+                    $sectionSumarioImagens->addPageBreak();
+                    $paginaSumarioImagens = count($sectionsImagens);
+                }
+
+                if (isset($formulario->imagem)) {
+                    $sectionSumarioImagens->addImage(
+                        public_path('imagens/' . $formulario->uuid . '.jpeg'),
+                        [
+                            'width'         => 450,
+                            'height'        => 250,
+                            'marginTop'     => -1,
+                            'marginLeft'    => -1,
+                            'wrappingStyle' => 'behind',
+                            'alignment'     => 'center'
+                        ]
+                    );
+                    $sectionSumarioImagens->addTitle('Legenda da imagem');
+                }
             }
-        }
-        // $section->addTitle('Eu sou o Título X', 1);
-        // $section->addText('Texto...');
-        // $section->addTextBreak(2);
-
-        // $section->addTitle('Eu sou um Subtítulo do Título 1', 2);
-        // $section->addTextBreak(2);
-        // $section->addText('Mais um pouco de texto...');
-        // $section->addTextBreak(2);
-
-        // $section->addTitle('Outro Título (Título 2)', 1);
-        // $section->addText('Algum texto...');
-        // $section->addPageBreak();
-
-        // $section->addTitle('Eu sou o Título 3', 1);
-        // $section->addText('E mais texto...');
-        // $section->addTextBreak(1);
-        // $section->addTitle('Eu sou um Subtítulo do Título 3', 2);
-        // $section->addText('Novamente e novamente, mais texto...');
-        // $section->addTitle('Subtítulo 3.1.1', 3);
-        // $section->addText('Texto');
-        // $section->addTitle('Subtítulo 3.1.1.1', 4);
-        // $section->addText('Texto');
-        // $section->addTitle('Subtítulo 3.1.1.2', 4);
-        // $section->addText('Texto');
-        // $section->addTitle('Subtítulo 3.1.2', 3);
-        // $section->addText('Texto');
-        $section->addImage(
-            public_path('images/pages/content-img-1.jpg'),
-            [
-                'width'         => 450,
-                'height'        => 250,
-                'marginTop'     => -1,
-                'marginLeft'    => -1,
-                'wrappingStyle' => 'behind',
-                'alignment' => 'center'
-            ]
-        );
-        $section->addTitle('Legenda da imagem');
-        // Adiciona um rodapé
-        $footer = $section->addFooter();
-
-        // Define a numeração das páginas no rodapé
-        $footer->addPreserveText('{PAGE}', null, ['alignment' => 'right']);
+            // Adiciona um rodapé
+            $footer = $section->addFooter();
+            // Define a numeração das páginas no rodapé
+            $footer->addPreserveText('{PAGE}', null, ['alignment' => 'right']);
         
-
+        }
+    
         // Salva o documento
-        $filename = 'documento_com_sumario_'.date('His').'.docx';
+        $filename = 'documento_com_sumario_' . date('His') . '.docx';
         $phpWord->save($savePath . DIRECTORY_SEPARATOR . $filename);
-
+    
         return redirect()->route('word.index')->with('message', 'Arquivo criado com sucesso!.');
     }
+    
+
 
     /**
      * Display the specified resource.

@@ -13,46 +13,43 @@ use App\Criteria\TeamSelectCriteria;
 use App\Models\Occurrence;
 use App\Models\User;
 use App\Models\Setor;
-use App\Repositories\TeamRepository;
+use App\Repositories\SetorRepository;
 use Carbon\Carbon;
 use App\Repositories\OccurrenceRepository;
 use App\Criteria\OccurrenceSelectCriteria;
+use Request;
 
-class TeamService
+class SetorService
 {
-    /**
-     * @var TeamRepository
-     */
-    private $teamRepository;
-
     /**
      * occurrenceRepository
      *
      * @var mixed
      */
     private $occurrenceRepository;
+    private $setorRepository;
 
-    public function __construct(TeamRepository $teamRepository, OccurrenceRepository $occurrenceRepository)
+    public function __construct(OccurrenceRepository $occurrenceRepository, SetorRepository $setorRepository)
     {
-        $this->teamRepository = $teamRepository;
         $this->occurrenceRepository = $occurrenceRepository;
+        $this->setorRepository = $setorRepository;
     }
 
-    public function addNewTeam($teamRequest)
+    public function addNewTeam($request)
     {
         // if (!\Auth::user()->contractor_id) {
         //     return redirect()->route('teams.index')->with('error', "Apenas empresas têm acesso a criar o item.");
         // }
 
-        $data = $teamRequest->all();
+        $data = $request->all();
         $supervisor = User::find($data['supervisor_id']);
 
-        if(!$supervisor->hasRole("supervisor")){
-            return redirect()->route('teams.index')->withInput()->with('error', 'Erro ao verificar se o supervisor tem autorização.');
-        }
+        // if(!$supervisor->hasRole("supervisor")){
+        //     return redirect()->route('teams.index')->withInput()->with('error', 'Erro ao verificar se o supervisor tem autorização.');
+        // }
 
 
-        $team = $this->teamRepository->create($data);
+        $team = $this->setorRepository->create($data);
 
         $dataFinal[$data['supervisor_id']] = ['is_supervisor' => true];
 
@@ -73,7 +70,7 @@ class TeamService
             return false;
         }
 
-        $this->teamRepository->update($data, $team->id);
+        $this->setorRepository->update($data, $team->id);
 
         $supervisorAtual = $team->users()->wherePivot('is_supervisor', 1)->first();
 
@@ -88,9 +85,8 @@ class TeamService
 
     public function listTeams()
     {
-        $teams = Setor::all();
-
-        return $teams->paginate();
+        $teams = Setor::paginate();
+        return $teams;
     }
 
     public function deleteTeam($team)

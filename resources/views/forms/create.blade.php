@@ -33,40 +33,48 @@
                 </div>
                 <div class="card-content">
                     <div class="card-body">
-                        <form class="form form-vertical" action="{{ route('forms.store') }}" method="POST">
+                        <form class="form form-vertical" action="{{ route('forms.store') }}" method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <input type="hidden" name="type" value="1">
                             <div class="form-body">
                                 <div class="row">
-                                    <div class="col-12">
+                                    <div class="col-8">
                                         <div class="form-group">
                                             <label>Titulo</label>
                                             <input type="text" class="form-control" name="titulo" value="{{ old('titulo') }}" placeholder="Titulo" autocomplete="off" required>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label>Sub-titulo</label>
-                                            <input type="text" class="form-control" name="sub_titulo" value="{{ old('sub_titulo') }}" placeholder="Sub-titulo" autocomplete="off">
-                                            {{-- <textarea class="form-control" name="description" placeholder="Descrição" autocomplete="off" rows="6" required>{{ old('description') }}</textarea> --}}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
+                                    <div class="col-4">
                                         <div class="form-group">
                                             <label>Limite de caracteres</label>
-                                            <input type="text" class="form-control" name="limite_caractere" value="{{ old('limite_caractere') }}" placeholder="Digite o limite de caracteres" autocomplete="off" required>
+                                            <input type="number" class="form-control" name="limite_caracteres_titulo" value="{{ old('limite_caractere') }}" placeholder="Digite o limite de caracteres" autocomplete="off" required>
                                         </div>
-                                    </div>
+                                    </div>                                    
+                                </div>
+                                <div class="divImagemTitulo">
+                                </div>
+                                <div class="row">
+                                    <div class="col-2">
+                                        <div class="form-group">
+                                            <a href="javascript:void(0);" class="btn btn-primary" id="addImagemTitulo"><i class="bx bx-plus"></i> Imagem</a>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                                <div class="divSubTitulo">
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <a href="javascript:void(0);" class="btn btn-info" id="addSubtitulo"><i class="bx bx-plus"></i> Sub-titulo</a>
+                                        </div>
+                                    </div>  
                                 </div>
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label>Setor responsável</label>
-                                            <select class="form-control select2" name="setor_id" required data-placeholder="Setor responsável pelo preenchimento">
+                                            <select class="form-control select2" name="setor_id"  data-placeholder="Setor responsável pelo preenchimento">
                                                 @foreach($teams as $setor)
                                                 <option value="{{$setor->id}}">{{$setor->name}}</option>
                                                 @endforeach
@@ -101,7 +109,79 @@
             $(".select2").select2({
                 allowClear: true,
             });
+            $(document).on("click", "#addSubtitulo", function (e) {
+                e.preventDefault();
+                $('<div class="row">' +
+                    '<div class="col-6">' +
+                        '<div class="form-group">' +
+                            '<label for="sub-titulo">Sub-titulo</label>' +
+                            '<input type="text" class="form-control" name="sub_titulos[]" value="{{ old('sub_titulos[]') }}" placeholder="Sub-titulo" autocomplete="off">' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="col-3">' +
+                        '<div class="form-group">' +
+                            '<label for="limite_caracteres">Limite de caracteres</label>' +
+                            '<input type="number" class="form-control" name="limite_caracteres_subtitulo[]" value="{{ old('limite_caracteres_subtitulo[]') }}" placeholder="Digite o limite de caracteres" autocomplete="off" required>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="col-2">' +
+                        '<div class="form-group">' +
+                            '<a href="javascript:void(0);" class="btn btn-primary" id="addImagemSubTitulo"><i class="bx bx-plus"></i> Imagem</a>'+
+                            '<i class="bx bx-trash remove-row" style="position: absolute;right: -20px;bottom: 25px;"></i>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>'+
+                '<div class="divImagemSubTitulo"></div>').appendTo(".divSubTitulo");
+                return false;
+            });
+            $(document).on("click", ".remove-row", function () {
+                $(this).parent().parent().parent().remove();
+            });
         });
+        $(function () {
+            //Initialize Select2 Elements
+            $(".select2").select2({
+                allowClear: true,
+            });
+            $(document).on("click", "#addImagemTitulo", function (e) {
+                e.preventDefault();
+                $('<div class="row">' +
+                    '<div class="col-11">' +
+                        '<div class="form-group">' +
+                            '<label for="imagem">Selecione uma imagem (JPG, JPEG, PNG):</label>'+
+                            '<input type="file" class="form-control" id="imagemTitulo" name="imagemTitulo" accept="image/png, image/jpeg" >'+
+                            '<i class="bx bx-trash remove-row-titulo" style="position: absolute;right: -20px;bottom: 25px;"></i>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>').appendTo(".divImagemTitulo");
+        return false;
+            });
+            $(document).on("click", ".remove-row-titulo", function () {
+                $(this).parent().parent().parent().remove();
+            });
+        });
+        $(function () {
+            //Initialize Select2 Elements
+            $(".select2").select2({
+                allowClear: true,
+            });
+            $(document).on("click", "#addImagemSubTitulo", function (e) {
+                e.preventDefault();
+                $('<div class="row">' +
+                    '<div class="col-11">' +
+                        '<div class="form-group">' +
+                            '<label for="imagem">Selecione uma imagem (JPG, JPEG, PNG):</label>'+
+                            '<input type="file" class="form-control" id="imagemSubTitulo" name="imagemSubTitulo" accept="image/png, image/jpeg" >'+
+                            '<i class="bx bx-trash remove-row-titulo" style="position: absolute;right: -20px;bottom: 25px;"></i>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>').appendTo(".divImagemSubTitulo");
+        return false;
+            });
+            $(document).on("click", ".remove-row-sub-titulo", function () {
+                $(this).parent().parent().parent().remove();
+            });
+        });       
     </script>
 
 @endsection

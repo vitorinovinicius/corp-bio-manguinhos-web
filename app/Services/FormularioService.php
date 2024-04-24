@@ -8,15 +8,16 @@
 
 namespace App\Services;
 
-use App\Models\Team;
+use App\Models\Setor;
 use App\Criteria\Api\FormContractorCriteria;
 use App\Repositories\FormRepository;
 use App\Repositories\FormularioRepository;
 use App\Repositories\OccurrenceTypeRepository;
+use Illuminate\Support\Facades\File;
 use Carbon\Carbon;
 use Exception;
 
-class FormService
+class FormularioService
 {
     /**
      * @var FormRepository
@@ -71,7 +72,7 @@ class FormService
         //         ->with('error', 'Você não pode cadastrar um formulário.');
         // } 
         
-        $teams = Team::all();
+        $teams = Setor::all();
 
         return view('forms.create', compact('teams'));
     }
@@ -84,26 +85,57 @@ class FormService
      */
     public function store($request)
     {
+                
         $data = $request->all();
-        // dd($data);
 
-        try {
-            // if (\Auth::user()->contractor_id) {
-            //     $data['contractor_id'] = \Auth::user()->contractor_id;
-            // } else {
-            //     return redirect()->route('forms.index')
-            //         ->with('error', 'Você não pode cadastrar um formulário.');
-            // }
+        $titulo = array(
+            'setor_id' => $data['setor_id']??null,
+            'descricao' => $data['titulo'],
+            'limite_caracteres' => $data['limite_caracteres_titulo'],
+            'ANO' => Carbon::now()            
+        );         
 
-            $data['ANO'] = Carbon::now();
-            $form = $this->formularioRepository->create($data);
+        $form = $this->formularioRepository->create($titulo);
 
-            // saveVersionForm($form);
-        } catch (Exception $e) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error_form', 'Erro ao tentar salvar o item. <br>Erro: '.$e->getMessage());
+        // dd($form->id);
+        // Verifica se o arquivo foi enviado
+        if($request->hasFile('imagem')) {
+            $imagem = $request->file('imagem');    
+            // Verifica se o arquivo é uma imagem válida
+            if ($imagem->isValid()) {
+                $path = public_path('imagens');
+    
+                // Verifica se o diretório de destino existe, se não, cria
+                if (!File::isDirectory($path)) {
+                    File::makeDirectory($path, 0777, true, true);
+                }
+    
+                // Gera um nome único para a imagem
+                $nomeImagem = $form->uuid.'.' . $imagem->getClientOriginalExtension();
+    
+                // Move o arquivo para o diretório desejado
+                $imagem->move($path, $nomeImagem);
+    
+                // Salva a URL no banco de dados
+                $url = asset('imagens/' . $nomeImagem);
+                $this->formularioRepository->update(['imagem' => $url], $form->id);
+            }
         }
+        if(isset($data["sub_titulos"])){
+            $subTituloArray = $data["sub_titulos"];
+            foreach ($subTituloArray as $key => $value) {
+                if (!empty($value)) {
+                    $data2["sub_titulo_id"] = $form->id;
+                    $data2["descricao"] = $value;
+                    $data2["limite_caracteres"] = $data["limite_caracteres_subtitulo"][$key];
+                    $data2["ANO"] = Carbon::now();
+                    $this->formularioRepository->create($data2);
+                }
+            }
+        }
+        
+
+
 
         return redirect()->route('forms.index')
             ->with('message_form', 'Formulário criado com sucesso.');

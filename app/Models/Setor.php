@@ -15,13 +15,14 @@ use Spatie\Activitylog\Traits\LogsActivity;
  *
  * @package namespace App\Models;
  */
-class Team extends Model implements Transformable
+class Setor extends Model implements Transformable
 {
     use TransformableTrait;
     use Uuids;
     use SoftDeletes;
-    use LogsActivity;
     use Multitenantable;
+
+    protected $table = 'setores';
 
     protected $fillable = [
         'uuid',
@@ -31,7 +32,7 @@ class Team extends Model implements Transformable
     ];
 
     public function users(){
-        return $this->belongsToMany(User::class,'user_team','team_id','user_id');
+        return $this->belongsToMany(User::class,'user_setor','setor_id','user_id');
     }
 
     public function formulario(){

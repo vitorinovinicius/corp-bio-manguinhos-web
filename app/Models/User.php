@@ -11,7 +11,6 @@
     use App\Traits\Uuids;
     use Prettus\Repository\Contracts\Transformable;
     use Prettus\Repository\Traits\TransformableTrait;
-    use Spatie\Activitylog\Traits\LogsActivity;
 
     class User extends Authenticatable implements Transformable
     {
@@ -21,7 +20,6 @@
         use HasApiTokens;
         use HasDefender;
         use SoftDeletes;
-        use LogsActivity;
         use Multitenantable;
 
 
@@ -103,13 +101,13 @@
 
         public function teams()
         {
-            return $this->belongsToMany(Team::class, 'user_team', 'user_id', 'team_id');
+            return $this->belongsToMany(Setor::class, 'user_setor', 'user_id', 'setor_id');
         }
 
-        public function user_teams()
-        {
-            return $this->hasMany(UserTeam::class, "user_id");
-        }
+        // public function user_teams()
+        // {
+        //     return $this->hasMany(Setor::class, "user_id");
+        // }
 
         public function role_users()
         {
@@ -121,64 +119,9 @@
             return $this->belongsToMany(Role::class, 'role_user');
         }
 
-        public function regions()
-        {
-            return $this->belongsToMany(Region::class, 'region_users', 'user_id', 'region_id');
-        }
-
         public function contractor()
         {
             return $this->hasOne(Contractor::class, 'id', 'contractor_id');
-        }
-
-        public function occurrences()
-        {
-            return $this->hasMany(Occurrence::class, 'operator_id');
-        }
-
-        public function realocations()
-        {
-            return $this->hasMany(Reallocation::class, "operator_id");
-        }
-
-        public function trakings()
-        {
-            return $this->hasMany(Traking::class, "user_id");
-        }
-
-        public function financial_communications()
-        {
-            return $this->hasMany(FinancialCommunication::class, 'user_id');
-        }
-
-        public function financials()
-        {
-            return $this->hasMany(Financial::class, 'user_id');
-        }
-
-        public function occurrence_archives()
-        {
-            return $this->hasMany(OccurrenceArchive::class, 'user_id');
-        }
-
-        public function vehicle()
-        {
-            return $this->hasOne(Vehicle::class, 'id', 'vehicle_id');
-        }
-
-        public function move()
-        {
-            return $this->hasMany(Move::class, 'operator_id');
-        }
-
-        public function routings()
-        {
-            return $this->hasMany(Routing::class, 'operator_id');
-        }
-
-        public function occurrence_clients()
-        {
-            return $this->belongsToMany(OccurrenceClient::class);
         }
 
         public function occurrencesDays()
@@ -311,43 +254,7 @@
             });
         }
 
-        public function finish_work_days()
-        {
-            return $this->hasMany(FinishWorkDay::class, 'operator_id');
-        }
-
-        public function checklist_vehicles()
-        {
-            return $this->hasMany(ChecklistVehicleBasic::class, 'condutor_id');
-        }
-
-        public function occurrence_orders()
-        {
-            return $this->belongsTo(OccurrenceOrder::class, "operator_id");
-        }
-
-        public function skills()
-        {
-            return $this->belongsToMany(Skill::class, 'user_skills', 'user_id', 'skill_id');
-        }
-
-        public function equipments()
-        {
-            return $this->hasMany(Equipment::class);
-        }
-
-        public function workday()
-        {
-            return $this->belongsTo(Workday::class,'workday_id');
-        }
-
-        public function groups()
-        {
-            return $this->belongsToMany(Group::class);
-        }
-
-
-
+        
         // INÍCIO HELPERS DO MODEL
 
         public function last_connection()
@@ -402,27 +309,6 @@
         {
             return $this->cnh_expires ? date('d/m/Y', strtotime($this->cnh_expires)) : '';
         }
-
-        public function planOccurrences()
-        {
-            return $this->hasMany(PlanOccurrence::class, 'operator_id');
-        }
-
-        public function alerts()
-        {
-            return $this->hasMany(Alert::class, 'user_id');
-        }
-
-        public function zones()
-        {
-            return $this->belongsToMany(Zone::class);
-        }
-
-        public function tikets()
-        {
-            return $this->hasMany(Ticket::class);
-        }
-
 
         public function getDescriptionForEvent($eventName)
         {

@@ -157,15 +157,15 @@ class UserController extends Controller {
 
     }
 
-    public function associate_client(User $user)
-    {
-        return $this->userService->associate_client($user);
-    }
+    // public function associate_client(User $user)
+    // {
+    //     return $this->userService->associate_client($user);
+    // }
 
-    public function associate_client_store(User $user, Request $request)
-    {
-        return $this->userService->associate_client_store($user, $request);
-    }
+    // public function associate_client_store(User $user, Request $request)
+    // {
+    //     return $this->userService->associate_client_store($user, $request);
+    // }
 
     public function disassociate_client_store(User $user, Request $request)
     {

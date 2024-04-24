@@ -23,7 +23,7 @@ class FormContractorCriteria implements CriteriaInterface
     public function apply($model, RepositoryInterface $repository)
     {
         if (\Auth::user()->contractor_id) {
-            $model = $model->where("contractor_id","=", \Auth::user()->contractor_id);
+            $model = $model->where("empresa_id","=", \Auth::user()->empresa_id);
         }
         return $model;
     }

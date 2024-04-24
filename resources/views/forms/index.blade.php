@@ -46,36 +46,27 @@
                                         <th>Setor responsável</th>
                                         <th>Ano</th>
 
-                                        <th class="text-right">OPÇÕES</th>
+                                        {{-- <th class="text-right">OPÇÕES</th> --}}
                                     </tr>
                                     </thead>
 
                                     <tbody>
                                     @foreach($forms as $form)
-                                        <tr>
-                                            <td>{{$form->id}}</td>
-                                            <td>{{$form->titulo}}</td>
-                                            <td>{{ $form->sub_titulo }}</td>
-                                            <td>{{$form->team}}</td>
-                                            <td>{{Date('Y', strtotime($form->ANO))}}</td>
-                                            <td class="text-right">
-                                                @shield('form.show')
-                                                <a href="{{ route('forms.show', $form->uuid) }}" class="btn btn-icon btn-sm btn-primary" data-toggle="tooltip" data-placement="left" title="Exibir"><i class="bx bx-book-open"></i></a>
-                                                @endshield
-                                                @shield('form.edit')
-                                                <a href="{{ route('forms.edit', $form->uuid) }}" class="btn btn-icon btn-sm btn-warning" data-toggle="tooltip" data-placement="left" title="Editar"><i class="bx bx-pencil"></i></a>
-                                                @endshield
-                                                @shield('form.destroy')
-                                                <form action="{{ route('forms.destroy', $form->uuid) }}"
-                                                      method="POST" style="display: inline;"
-                                                      onsubmit="if(confirm('Deseja deletar esse item?')) { return true } else {return false };">
-                                                    <input type="hidden" name="_method" value="DELETE">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                    <button type="submit" class="btn btn-icon btn-sm btn-danger" data-toggle="tooltip" data-placement="left" title="Deletar"><i class="bx bx-trash"></i></button>
-                                                </form>
-                                                @endshield
-                                            </td>
-                                        </tr>
+                                        @if(!$form->sub_titulo_id)
+                                            <tr>
+                                                <td>{{$form->id}}</td>
+                                                <td>{{ !isset($form->sub_titulo_id)?$form->descricao:''}}</td>
+                                                <td>
+                                                    <ul>
+                                                        @foreach($form->titulo as $subtitulo)
+                                                            <li>{{$subtitulo->descricao}}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                </td>
+                                                <td>{{optional($form->setor)->name}}</td>
+                                                <td>{{Date('Y', strtotime($form->ANO))}}</td>
+                                            </tr>
+                                        @endif
                                     @endforeach
                                     </tbody>
                                 </table>

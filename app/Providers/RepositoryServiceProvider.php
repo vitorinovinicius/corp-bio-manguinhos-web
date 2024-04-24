@@ -107,6 +107,7 @@ class RepositoryServiceProvider extends ServiceProvider
         // $this->app->bind(\App\Repositories\TicketImageRepository::class, \App\Repositories\TicketImageRepositoryEloquent::class);   
         $this->app->bind(\App\Repositories\FormularioRepository::class, \App\Repositories\FormularioRepositoryEloquent::class);   
         $this->app->bind(\App\Repositories\CorpoRepository::class, \App\Repositories\CorpoRepositoryEloquent::class);   
+        $this->app->bind(\App\Repositories\SetorRepository::class, \App\Repositories\SetorRepositoryEloquent::class);   
     }
 
 }

@@ -5,17 +5,17 @@ use App\Repositories\UserRepository;
 use Artesaos\Defender\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TeamRequest;
-use App\Models\Team;
-use App\Services\TeamService;
+use App\Models\Setor;
+use App\Services\SetorService;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 
 class TeamController extends Controller {
 
 	/**
-	 * @var TeamService
+	 * @var SetorService
 	 */
-	private $teamService;
+	private $SetorService;
     /**
      * @var UserRepository
      */
@@ -23,12 +23,12 @@ class TeamController extends Controller {
 
     /**
      * TeamController constructor.
-     * @param TeamService $teamService
+     * @param SetorService $SetorService
      * @param UserRepository $userRepository
      */
-    public function __construct(TeamService $teamService, UserRepository $userRepository)
+    public function __construct(SetorService $SetorService, UserRepository $userRepository)
 	{
-		$this->teamService = $teamService;
+		$this->SetorService = $SetorService;
         $this->userRepository = $userRepository;
     }
 
@@ -39,7 +39,7 @@ class TeamController extends Controller {
 	 */
 	public function index()
 	{
-        $teams = $this->teamService->listTeams();
+        $teams = $this->SetorService->listTeams();
 
 		return view('teams.index', compact('teams'));
 	}
@@ -55,7 +55,7 @@ class TeamController extends Controller {
         //     return redirect()->route('teams.index')->with('error', "Apenas empresas têm acesso a criar o item.");
         // }
 
-        $this->userRepository->pushCriteria(new TeamCreateCriteria());
+        // $this->userRepository->pushCriteria(new TeamCreateCriteria());
         $supervisors = $this->userRepository->all();
 
 		return view('teams.create',compact("supervisors"));
@@ -67,9 +67,9 @@ class TeamController extends Controller {
 	 * @param Request $request
 	 * @return Response
 	 */
-	public function store(TeamRequest $request)
+	public function store(Request $request)
 	{
-		return $this->teamService->addNewTeam($request);
+		return $this->SetorService->addNewTeam($request);
 	}
 
 	/**
@@ -78,9 +78,9 @@ class TeamController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show(Team $team)
+	public function show(Setor $team)
 	{
-	    return $this->teamService->showTeam($team);
+	    return $this->SetorService->showTeam($team);
 	}
 
 	/**
@@ -89,7 +89,7 @@ class TeamController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit(Team $team)
+	public function edit(Setor $team)
 	{
 		$role = new Role();
 
@@ -116,16 +116,16 @@ class TeamController extends Controller {
 	 * @param Request $request
 	 * @return Response
 	 */
-	public function update(TeamRequest $request,Team $team)
+	public function update(TeamRequest $request,Setor $team)
 	{
-        $this->teamService->editTeam($request, $team);
+        $this->SetorService->editTeam($request, $team);
 
 		return redirect()->route('teams.index')->with('message', 'Item atualizado com sucesso.');
 	}
 
-	public function gantt(Request $request){
-		return $this->teamService->ganttAjax($request);
-	}
+	// public function gantt(Request $request){
+	// 	return $this->SetorService->ganttAjax($request);
+	// }
 
 	/**
 	 * Remove the specified resource from storage.
@@ -133,9 +133,9 @@ class TeamController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy(Team $team)
+	public function destroy(Setor $team)
 	{
-	    return $this->teamService->deleteTeam($team);
+	    return $this->SetorService->deleteTeam($team);
 	}
 
 }

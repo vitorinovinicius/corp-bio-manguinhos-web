@@ -1,24 +1,24 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 
-use App\Models\Form;
-use App\Services\FormService;
-use App\Http\Requests\FormGRequest;
+use App\Services\FormularioService;
 use App\Models\Formulario;
 use Illuminate\Http\Request;
 
-class FormController extends Controller {
-
+class FormularioController extends Controller
+{
     /**
-     * @var FormService
+     * @var FormularioService
      */
     private $formService;
 
     /**
      * FormController constructor.
      */
-    public function __construct(FormService $formService)
+    public function __construct(FormularioService $formService)
     {
         $this->formService = $formService;
     }

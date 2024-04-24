@@ -9,7 +9,6 @@ use App\Criteria\UsersSelectCriteria;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Repositories\OccurrenceClientRepository;
 
 class UserService
 {
@@ -17,15 +16,10 @@ class UserService
      * @var UserRepository
      */
     private $userRepository;
-    /**
-     * @var OccurrenceClientRepository
-     */
-    private $occurrenceClientRepository;
 
-    public function __construct(UserRepository $userRepository, OccurrenceClientRepository $occurrenceClientRepository)
+    public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
-        $this->occurrenceClientRepository = $occurrenceClientRepository;
     }
 
     public function listUsers()
@@ -155,25 +149,25 @@ class UserService
         }
     }
 
-    public function associate_client($user)
-    {
-        $occurrence_clients = $this->occurrenceClientRepository->where('contractor_id', $user->contractor_id)->get();
-        return view('users.clients.associate_cliets', compact('user', 'occurrence_clients'));
-    }
+    // public function associate_client($user)
+    // {
+    //     $occurrence_clients = $this->occurrenceClientRepository->where('contractor_id', $user->contractor_id)->get();
+    //     return view('users.clients.associate_cliets', compact('user', 'occurrence_clients'));
+    // }
 
-    public function associate_client_store($user, $request)
-    {
-        try{
-            $data = $request->all();
+    // public function associate_client_store($user, $request)
+    // {
+    //     try{
+    //         $data = $request->all();
 
-            $occurrenceClient = OccurrenceClient::find($data['occurrence_client_id']);
-            $user->occurrence_clients()->save($occurrenceClient);
-        }catch (Exception $e){
-            return redirect()->back()->withInput()->with('error', 'Erro ao tentar associar um cliente. <br>Erro: '.$e->getMessage());
-        }
+    //         $occurrenceClient = OccurrenceClient::find($data['occurrence_client_id']);
+    //         $user->occurrence_clients()->save($occurrenceClient);
+    //     }catch (Exception $e){
+    //         return redirect()->back()->withInput()->with('error', 'Erro ao tentar associar um cliente. <br>Erro: '.$e->getMessage());
+    //     }
 
-        return redirect()->route('users.clients')->with('message', 'Cliente associado com sucesso.');
-    }
+    //     return redirect()->route('users.clients')->with('message', 'Cliente associado com sucesso.');
+    // }
 
     public function disassociate_client_store($user, $request)
     {
@@ -181,7 +175,7 @@ class UserService
             $data = $request->all();
 
             $user->occurrence_clients()->detach($data['occurrence_client_id']);
-        }catch (Exception $e){
+        }catch (\Exception $e){
             return redirect()->back()->withInput()->with('error', 'Erro ao tentar remover cliemte. <br>Erro: '.$e->getMessage());
         }
 
