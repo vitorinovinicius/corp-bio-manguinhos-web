@@ -18,8 +18,9 @@
                         <div class="card disable-rounded-right mb-0 p-2 h-100 d-flex justify-content-center">
                             <div class="card-header pb-1">
                                 <div class="card-title">
-                                    <h3 class="text-center mb-2">BIO-MANGUINHOS</h3>
-                                    <h5 class="text-center mb-2">RELATÓRIO FIOTEC</h5>
+                                    <p class="text-center">
+                                        <img class="img-fluid w-50" src="{{asset('images/logo-fiocruz.png')}}" alt="branding logo">
+                                    </p>
                                 </div>
                             </div>
                             <div class="card-content">

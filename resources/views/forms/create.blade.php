@@ -34,70 +34,38 @@
                 <div class="card-content">
                     <div class="card-body">
                         <form class="form form-vertical" action="{{ route('forms.store') }}" method="POST" enctype="multipart/form-data">
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <input type="hidden" name="type" value="1">
+                            @csrf()
                             <div class="form-body">
-                                <div class="row">
-                                    <div class="col-8">
-                                        <div class="form-group">
-                                            <label>Titulo</label>
-                                            <input type="text" class="form-control" name="titulo" value="{{ old('titulo') }}" placeholder="Titulo" autocomplete="off" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="form-group">
-                                            <label>Limite de caracteres</label>
-                                            <input type="number" class="form-control" name="limite_caracteres_titulo" value="{{ old('limite_caractere') }}" placeholder="Digite o limite de caracteres" autocomplete="off" required>
-                                        </div>
-                                    </div>                                    
-                                </div>
-                                <div class="divImagemTitulo">
-                                </div>
-                                <div class="row">
-                                    <div class="col-2">
-                                        <div class="form-group">
-                                            <a href="javascript:void(0);" class="btn btn-primary" id="addImagemTitulo"><i class="bx bx-plus"></i> Imagem</a>
-                                        </div>
-                                    </div>                                    
-                                </div>
-                                <div class="divSubTitulo">
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-3">
-                                        <div class="form-group">
-                                            <a href="javascript:void(0);" class="btn btn-info" id="addSubtitulo"><i class="bx bx-plus"></i> Sub-titulo</a>
-                                        </div>
-                                    </div>  
-                                </div>
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
-                                            <label>Setor responsável</label>
-                                            <select class="form-control select2" name="setor_id"  data-placeholder="Setor responsável pelo preenchimento">
-                                                @foreach($teams as $setor)
-                                                <option value="{{$setor->id}}">{{$setor->name}}</option>
-                                                @endforeach
-                                                {{-- <option value="1" {{(old('setor') == 1 ? "selected":"")}}>Recursos Humanos</option>
-                                                <option value="0" {{(old('setor') == "0" ? "selected":"")}}>Departamento Pessoal</option> --}}
-                                            </select>
+                                            <label >Nome do relatório</label>
+                                            <input type="text" class="form-control" name="descricao_relatorio" value="{{ old('descricao_relatorio') }}" placeholder="Insira o nome do relatorio anual">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label >Nome do formulário</label>
+                                            <input type="text" class="form-control" name="descricao_formulario" value="{{ old('descricao_formulario') }}" placeholder="Insira o nome do formulário">
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="row">
                                     <div class="col-12 d-flex justify-content-end">
                                         <button type="submit" class="btn btn-primary">Criar</button>
-                                        <a class="btn btn-link pull-right"
-                                           href="{{ route('forms.index') }}"><i
-                                                class="bx bx-arrow-back"></i> Voltar</a>
+                                        <a  class="btn btn-link pull-right"
+                                            href="{{ route('forms.index') }}">
+                                            <i class="bx bx-arrow-back"></i>
+                                            Voltar
+                                        </a>
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
-            </div>
+            </div>            
         </div>
     </div>
 @endsection
@@ -126,6 +94,7 @@
                     '</div>' +
                     '<div class="col-2">' +
                         '<div class="form-group">' +
+                            '<label for="add_subtitulo"> </label>' +
                             '<a href="javascript:void(0);" class="btn btn-primary" id="addImagemSubTitulo"><i class="bx bx-plus"></i> Imagem</a>'+
                             '<i class="bx bx-trash remove-row" style="position: absolute;right: -20px;bottom: 25px;"></i>' +
                         '</div>' +
@@ -146,16 +115,36 @@
             $(document).on("click", "#addImagemTitulo", function (e) {
                 e.preventDefault();
                 $('<div class="row">' +
-                    '<div class="col-11">' +
+                    '<div class="col-2">'+
+                        '<label for="principal">Tipo de imagem</label>'+
+                        '<div class="form-group" >'+
+                            '<div class="form-group form-check form-check-inline">'+
+                                '<input type="checkbox" name="checkImagemTitulo" value="1" class="form-check-input imagem-checkbox" id="sim_principal" checked>'+
+                                '<label class="form-check-label" for="sim_principal">Figura</label>'+                                                        
+                            '</div>'+
+                            '<div class="form-group form-check form-check-inline">'+
+                                '<input type="checkbox" name="checkImagemTitulo" value="2" class="form-check-input imagem-checkbox" id="nao_principal">'+
+                                '<label class="form-check-label" for="nao_principal">Gráfico</label>'+                                                        
+                            '</div>'+
+                            '<div class="form-group form-check form-check-inline">'+
+                                '<input type="checkbox" name="checkImagemTitulo" value="3" class="form-check-input imagem-checkbox" id="nao_principal">'+
+                                '<label class="form-check-label" for="nao_principal">Tabela</label>'+                                                        
+                            '</div>'+
+                        '</div>'+
+                    '</div>'+
+                    '<div class="col-9">' +
                         '<div class="form-group">' +
                             '<label for="imagem">Selecione uma imagem (JPG, JPEG, PNG):</label>'+
                             '<input type="file" class="form-control" id="imagemTitulo" name="imagemTitulo" accept="image/png, image/jpeg" >'+
+                            '<label for="legendaImagemTitulo">Legenda</label>'+
+                            '<input type="text" class="form-control" id="legendaImagemTitulo" name="legendaImagemTitulo">'+
                             '<i class="bx bx-trash remove-row-titulo" style="position: absolute;right: -20px;bottom: 25px;"></i>' +
                         '</div>' +
                     '</div>' +
                 '</div>').appendTo(".divImagemTitulo");
-        return false;
+                return false;
             });
+
             $(document).on("click", ".remove-row-titulo", function () {
                 $(this).parent().parent().parent().remove();
             });
@@ -168,20 +157,60 @@
             $(document).on("click", "#addImagemSubTitulo", function (e) {
                 e.preventDefault();
                 $('<div class="row">' +
-                    '<div class="col-11">' +
+                    '<div class="col-2">'+
+                        '<label for="principal">Tipo de imagem</label>'+
+                        '<div class="form-group" >'+
+                            '<div class="form-group form-check form-check-inline">'+
+                                '<input type="checkbox" name="checkImagemSubTitulo[]" value="1" class="form-check-input imagem-checkbox" id="sim_principal" checked>'+
+                                '<label class="form-check-label" for="sim_principal">Figura</label>'+                                                        
+                            '</div>'+
+                            '<div class="form-group form-check form-check-inline">'+
+                                '<input type="checkbox" name="checkImagemSubTitulo[]" value="2" class="form-check-input imagem-checkbox" id="nao_principal">'+
+                                '<label class="form-check-label" for="nao_principal">Gráfico</label>'+                                                        
+                            '</div>'+
+                            '<div class="form-group form-check form-check-inline">'+
+                                '<input type="checkbox" name="checkImagemSubTitulo[]" value="3" class="form-check-input imagem-checkbox" id="nao_principal">'+
+                                '<label class="form-check-label" for="nao_principal">Tabela</label>'+                                                        
+                            '</div>'+
+                        '</div>'+
+                    '</div>'+
+                    '<div class="col-9">' +
                         '<div class="form-group">' +
                             '<label for="imagem">Selecione uma imagem (JPG, JPEG, PNG):</label>'+
                             '<input type="file" class="form-control" id="imagemSubTitulo" name="imagemSubTitulo" accept="image/png, image/jpeg" >'+
+                            '<label for="legendaImagemSubTitulo">Legenda</label>'+
+                            '<input type="text" class="form-control" id="legendaImagemSubTitulo" name="legendaImagemSubTitulo[]">'+
                             '<i class="bx bx-trash remove-row-titulo" style="position: absolute;right: -20px;bottom: 25px;"></i>' +
                         '</div>' +
                     '</div>' +
                 '</div>').appendTo(".divImagemSubTitulo");
-        return false;
+                return false;
             });
+
             $(document).on("click", ".remove-row-sub-titulo", function () {
                 $(this).parent().parent().parent().remove();
             });
-        });       
+            $(document).on("click", ".remove-row", function () {
+                $(this).closest('.row').remove();
+                
+                // Garantir que, após a remoção da linha, apenas um checkbox seja marcado em cada bloco
+                $('.divImagemSubTitulo .row').each(function() {
+                    var $checkboxes = $(this).find('.imagem-checkbox');
+                    if ($checkboxes.filter(':checked').length === 0) {
+                        $checkboxes.eq(0).prop('checked', true);
+                    }
+                });
+            });
+
+            // Evitar que mais de um checkbox seja marcado em cada bloco
+            $(document).on('change', '.imagem-checkbox', function() {
+                var $checkboxes = $(this).closest('.row').find('.imagem-checkbox');
+                if ($(this).is(':checked')) {
+                    $checkboxes.not(this).prop('checked', false);
+                }
+            });
+        });         
+        
     </script>
 
 @endsection

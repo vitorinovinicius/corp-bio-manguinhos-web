@@ -40,23 +40,7 @@
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label for="name">Nome*</label>
-                                            <input type="text" class="form-control" name="fileName" value="{{ old('fileName') }}" placeholder="Nome do arquivo" autocomplete="off" required>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label for="name">Titulo*</label>
-                                            <input type="email" class="form-control" name="title" value="{{ old('title') }}" placeholder="Titulo do arquivo" autocomplete="off" required>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label for="name">Corpo do documento</label>
-                                            <input type="textarea" class="form-control" name="bodyFile" value="{{ old('bodyFile') }}" placeholder="Escreva o texto que deseja." autocomplete="off">
+                                            <input type="text" class="form-control" name="name" value="{{ old('name') }}" placeholder="Nome do arquivo" autocomplete="off" required>
                                         </div>
                                     </div>
                                 </div>
@@ -81,7 +65,7 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
-                                            <label for="name">Empreiteira</label>
+                                            <label for="name">Setor</label>
                                             <select class="form-control select2 contractorSelect" name="contractor_id" data-placeholder="">
                                                 <option value="0">Nenhuma empreiteira</option>
 
@@ -92,33 +76,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label for="name">Região</label>
-                                            <div>
-                                                @foreach($regions as $region)
-                                                    <div>
-                                                        <div class="checkbox">
-                                                            <input type="checkbox" class="checkbox-input" id="checkbox{{ $region->id }}" name="region_id[]" value="{{ $region->id }}">
-                                                            <label for="checkbox{{ $region->id }}">{{ $region->name }}</label>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 @endis
-
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label for="signature">Assinatura</label>
-                                            <input class="form-control" type="file" name="signature" id="signature">
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
@@ -133,17 +91,17 @@
                                                 </div>
                                             @endforeach
                                             @else
-                                                @foreach($roles as $key => $role)
-                                                    @if(!in_array($role,["superuser","operator"]))
-                                                        <div>
-                                                            <div class="checkbox">
-                                                                <input type="checkbox" class="checkbox-input onchangeTipoUser" id="cs_checkbox_{{$key}}" name="role_id[]" value="{{ $key }}">
-                                                                <label for="cs_checkbox_{{$key}}">{{ ucfirst($role) }}</label>
-                                                            </div>
+                                            @foreach($roles as $key => $role)
+                                                @if(!in_array($role,["superuser","operator"]))
+                                                    <div>
+                                                        <div class="checkbox">
+                                                            <input type="checkbox" class="checkbox-input onchangeTipoUser" id="cs_checkbox_{{$key}}" name="role_id[]" value="{{ $key }}">
+                                                            <label for="cs_checkbox_{{$key}}">{{ ucfirst($role) }}</label>
                                                         </div>
-                                                    @endif
-                                                @endforeach
-                                                @endis
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                            @endis
                                         </div>
                                     </div>
                                 </div>

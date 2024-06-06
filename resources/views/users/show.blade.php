@@ -89,22 +89,12 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <label for="name">Tipo de Usuário</label>
-                                    <p class="form-control-static">
+                                    <p>
                                         <span class="badge bg-blue">{{ $user->roles->implode("name", " | ") }}</span>
                                     </p>
                                 </div>
                             </div>
-                        </div>                       
-                        @if(count($user->regions()->get()))
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label for="name">Região</label>
-                                        <p class="form-control-static">{{$user->regions()->get()->implode('name', ', ')}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
+                        </div>      
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group">
@@ -147,7 +137,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="box-title">Equipes</h3>
+                    <h3 class="box-title">Setor</h3>
                 </div>
                 <div class="card-content">
                     <div class="card-body">
@@ -156,7 +146,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Nome</th>
-                                <th>Supervisor</th>
+                                {{-- <th>Supervisor</th> --}}
 
                                 <th>Criado</th>
                                 <th>Modificado</th>
@@ -170,7 +160,7 @@
                                 <tr>
                                     <td>{{$team->id}}</td>
                                     <td>{{$team->name}}</td>
-                                    <td>{{ optional($team->users()->wherePivot('is_supervisor',1)->first())->name }}</td>
+                                    {{-- <td>{{ optional($team->users()->wherePivot('is_supervisor',1)->first())->name }}</td> --}}
                                     <td>{{ date('d/m/Y H:i:s', strtotime($team->created_at)) }}</td>
                                     <td>{{ date('d/m/Y H:i:s', strtotime($team->updated_at)) }}</td>
 
@@ -207,43 +197,6 @@
                     $('.ids_check_groups').prop('checked', true);
                 } else {
                     $('.ids_check_groups').prop('checked', false);
-                }
-            });
-
-            $(document).on('click', '#btn-attr-group', function (e) {
-                e.preventDefault();
-                
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
-                var ids = [];
-                $.each($('.tb-groups tbody :checked'), function (i, v) {
-                    ids.push($(v).val())
-                });
-                if (ids.length == 0) {
-                    alert('Selecione pelo menos um item');
-                } else {
-                    jQuery.ajax({
-                        type: 'POST',
-                        url: '{!!  route('groups.desassociate.store', [$user->uuid]) !!} ',
-                        data: "ids=" + ids,
-
-                        success: function (data) {
-                            console.log(data);
-                            if (data.retorno = 1) {
-                                alert(data.mensagem);
-                                location.reload(true);
-                            } else {
-                                alert("Ocorreu algum erro, tente novamente a operação \n " + data.mensagem);
-                                // location.reload();
-                            }
-                        },
-                        error: function () {
-                            alert("Ocorreu um erro inesperado durante o processamento!\n Recarrege a página e tente novamente.");
-                        }
-                    });
                 }
             });
         })

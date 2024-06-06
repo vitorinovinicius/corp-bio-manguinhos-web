@@ -8,7 +8,7 @@
     <div class="content-header-left col-12 mb-2 mt-1">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h5 class="content-header-title float-left pr-1 mb-0">Formulários / Editar #{{$form->id}}</h5>
+                <h5 class="content-header-title float-left pr-1 mb-0">Formulários / Editar</h5>
                 <div class="breadcrumb-wrapper col-12">
                     <ol class="breadcrumb p-0 mb-0">
                         <li class="breadcrumb-item"><i class="bx bx-home-alt"></i> Home</li>
@@ -27,71 +27,202 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="box-title">Editar Formulário</h3>
-                </div>
-                <div class="card-content">
-                    <div class="card-body">
-                        <form class="form form-vertical" action="{{ route('forms.update', $form->uuid) }}" method="POST">
-                            <input type="hidden" name="_method" value="PUT">
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <input type="hidden" name="type" value="1">
-
-                            <div class="form-body">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label>Nome</label>
-                                            <input type="text" class="form-control" name="name" value="{{ (old('name'))? old('name') : $form->name}}" placeholder="Nome" autocomplete="off" required>
+            
+            <form class="form form-vertical" action="{{ route('forms.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf()
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="box-title">Formulário</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body">
+                                <div class="form-body">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <label >Nome do formulário</label>
+                                                <input type="text" class="form-control" name="titulo" value="{{ $formulario->descricao }}" placeholder="Insira o nome do relatorio anual">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label>Descrição</label>
-                                            <textarea class="form-control" name="description" placeholder="Descrição" autocomplete="off" rows="7" required>{!! (old('description'))? old('description') : $form->description !!}</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label>Status</label>
-                                            <select class="form-control select2" name="status" required data-placeholder="Status">
-                                                <option value="1" {{(((old('status'))? old('status') : $form->status) ==1 ? "selected":"")}}>Ativo</option>
-                                                <option value="0" {{(((old('status'))? old('status') : $form->status) ==0 ? "selected":"")}}>Inativo</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-12 d-flex justify-content-end">
-                                        <button type="submit" class="btn btn-primary">Salvar</button>
-                                        <a class="btn btn-link pull-right"
-                                           href="{{ route('forms.index') }}"><i
-                                                class="bx bx-arrow-back"></i> Voltar</a>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-center">
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#storeModal">
+                                    <i class="bx bx-down-arrow-alt"></i> Adicionar seção</button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </form>
+            @include('forms.include.add_secao_modal')
+        </div>
+        <div class="col-md-12">
+            <div id="secoes_formulario"></div>
         </div>
     </div>
 @endsection
 @section('scripts')
     <script src="/bower_components/AdminLTE/plugins/select2/select2.full.min.js"></script>
     <script nonce="{{ csp_nonce() }}">
-        $(function () {
-            //Initialize Select2 Elements
+        $(document).ready(function () {
             $(".select2").select2({
                 allowClear: true,
             });
         });
+
+        $(document).ready(function() {
+            $('#submitStore').click(function(e) {
+                e.preventDefault();
+
+                var csrfToken = $('meta[name="csrf-token"]').attr('content');
+                var formularioId = {!! $formulario->id !!};
+                $('input[name="formulario_id"]').val(formularioId);
+
+                $.ajax({
+                    url: "{{ route('sec_forms.ajax') }}",
+                    type: "POST",
+                    dataType: "json",
+                    data: $('#storeSecao').serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    success: function(response) {
+                        // Se o status HTTP é 200, considera sucesso
+                        $('#storeSecao')[0].reset();
+                        $('#storeModal').modal('hide');
+                        alert(response.message); // Exibe a mensagem de sucesso
+                    },
+                    error: function(xhr) {
+                        console.log(xhr); // Exibe o objeto de erro no console
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            alert('Erro: ' + xhr.responseJSON.message);
+                        } else {
+                            alert('Erro desconhecido');
+                        }
+                    }
+                });
+            });
+
+            
+
+            // Função para carregar as seções do formulário via AJAX
+            function carregarSecoes() {
+                $.ajax({
+                    url: "{{ route('sec_forms.consultar', $formulario->uuid) }}",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(response) {
+                        var secoesFormularioDiv = $('#secoes_formulario');
+                        secoesFormularioDiv.empty(); // Limpa o conteúdo existente
+
+                        $.each(response.secoes, function(index, secao) {
+                            console.log(secao);
+                            var secaoHtml = '<div class="card">' +
+                                                '<div class="card-header">' +
+                                                    '<div class="card-content">' +
+                                                        '<div class="card-body">' +
+                                                            '<div class="col-12">'+
+                                                                '<div class="form-group">'+
+                                                                    '<label>Titulo</label>'+
+                                                                    '<input type="text" class="form-control" name="descricao" value="'+ secao.descricao +'" placeholder="Digite o limite de caracteres" autocomplete="off">'+
+                                                                '</div>'+
+                                                            '</div>'+
+                                                            '<div class="col-12">'+
+                                                                '<div class="form-group">'+
+                                                                    '<label>Setor</label>'+
+                                                                    '<input type="text" class="form-control" name="setor_id" value="'+ secao.setor_nome +'" placeholder="Digite o limite de caracteres" autocomplete="off">'+
+                                                                '</div>'+
+                                                            '</div>'+
+                                                            '<div class="col-12">'+
+                                                                '<div class="form-group">'+
+                                                                    '<label>Usuário</label>'+
+                                                                    '<input type="text" class="form-control" name="usuario_id" value="'+ secao.usuario_nome +'" placeholder="Digite o limite de caracteres" autocomplete="off">'+
+                                                                '</div>'+
+                                                            '</div>'+
+                                                            '<div class="col-12">'+
+                                                                '<div class="form-group">'+
+                                                                    '<label>Texto</label>'+
+                                                                    '<input type="textarea" class="form-control" name="texto" value="'+ secao.texto +'" placeholder="Digite o limite de caracteres" autocomplete="off">'+
+                                                                '</div>'+
+                                                            '</div>'+
+                                                            '<div class="col-4">'+
+                                                                '<div class="form-group">'+
+                                                                    '<label>Limite de caracteres</label>'+
+                                                                    '<input type="number" class="form-control" name="limite_caracteres" value="'+ secao.limite_caracteres +'" placeholder="Digite o limite de caracteres" autocomplete="off">'+
+                                                                '</div>'+
+                                                            '</div>'+
+                                                        '</div>' +
+                                                    '</div>' +
+                                                '</div>' +
+                                            '</div>';
+                            secoesFormularioDiv.append(secaoHtml);
+                        });
+                    },
+                    error: function(xhr) {
+                        console.log(xhr); // Exibe o objeto de erro no console
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            alert('Erro: ' + xhr.responseJSON.message);
+                        } else {
+                            alert('Erro desconhecido');
+                        }
+                    }
+                });
+            }
+
+            // Chamar a função para carregar as seções quando o documento estiver pronto
+            carregarSecoes();
+
+            // Evento para recarregar as seções quando o botão for clicado (se necessário)
+            $('#submitStore').click(function(e) {
+                e.preventDefault();
+                // Aqui vai o código para inserção dos dados...
+                // Depois da inserção, chame a função para carregar as seções novamente:
+                carregarSecoes();
+            });
+        });
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            const radioTitulo = document.getElementById('titulo');
+            const radioSubTitulo = document.getElementById('sub-titulo');
+            const vinculoTituloSubtitulo = document.getElementById('titulo-selection'); // Corrigi o id para corresponder ao seu HTML
+            const existingTitulos = document.getElementById('existing-titulos');
+
+            // Função para verificar se há títulos ou subtítulos existentes
+            function checkTitulosSubtitulos() {
+                if (existingTitulos.options.length > 1) { // Mais de uma opção (incluindo o placeholder)
+                    vinculoTituloSubtitulo.style.display = 'block';
+                } else {
+                    alert('Não há títulos ou subtítulos disponíveis. Por favor, adicione um título primeiro.');
+                    radioTitulo.checked = true;
+                    radioSubTitulo.checked = false;
+                    vinculoTituloSubtitulo.style.display = 'none';
+                }
+            }
+
+            // Evento quando "Sub-titulo" é selecionado
+            radioSubTitulo.addEventListener('change', function () {
+                if (this.checked) {
+                    checkTitulosSubtitulos();
+                }
+            });
+
+            // Evento quando "Titulo" é selecionado
+            radioTitulo.addEventListener('change', function () {
+                if (this.checked) {
+                    vinculoTituloSubtitulo.style.display = 'none';
+                }
+            });
+
+            // Inicialização da verificação de títulos e subtítulos no carregamento da página
+            if (radioSubTitulo.checked) {
+                checkTitulosSubtitulos();
+            }
+        });
+        
     </script>
 
 @endsection

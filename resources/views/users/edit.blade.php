@@ -61,35 +61,6 @@
                                     </div>
                                 </div>
                                 @is('superuser')
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label for="contractor_id">Empreiteira {{$user->contractor_id}}</label>
-                                            <select class="form-control select2" name="contractor_id" data-placeholder="">
-                                                <option value="0">Nenhuma empreiteira</option>
-                                                @foreach($contractors as $contractor)
-                                                    <option value="{{$contractor->id}}" {{$contractor->id==$user->contractor_id ? "selected" : ""}}>{{$contractor->name}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label>Região</label>
-                                            @foreach($regions as $region)
-                                                <div>
-                                                    <div class="checkbox">
-                                                        {{ Form::checkbox('region_id[]', $region->id, in_array($region->id, $selectedRegions), ["id"=>"checkbox_".$region->id,"class"=>"checkbox-input"]) }}
-                                                        {{ Form::label('checkbox_'.$region->id, ucfirst($region->name)) }}
-                                                        <br>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
                                 @endis
                                 <div class="row">
                                     <div class="col-12">
