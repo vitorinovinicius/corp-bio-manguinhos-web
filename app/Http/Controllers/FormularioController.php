@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 
 use App\Services\FormularioService;
+use App\Models\Relatorio;
 use App\Models\Formulario;
 use Illuminate\Http\Request;
 
@@ -60,9 +61,9 @@ class FormularioController extends Controller
 	 * @param  int  $id
 	 * @return \App\Services\Response
 	 */
-	public function show(Formulario $model)
+	public function show(Formulario $formulario)
     {
-        return $this->formService->show($model);
+        return $this->formService->show($formulario);
     }
 
 	/**
@@ -71,9 +72,9 @@ class FormularioController extends Controller
 	 * @param  int  $id
 	 * @return \App\Services\Response
 	 */
-	public function edit(Formulario $model)
+	public function edit(Formulario $formulario)
     {
-        return $this->formService->edit($model);
+        return $this->formService->edit($formulario);
     }
 
 	/**
@@ -83,9 +84,9 @@ class FormularioController extends Controller
 	 * @param Request $request
 	 * @return \App\Services\Response
 	 */
-	public function update(Request $request,Formulario $model)
+	public function update(Request $request,Formulario $formulario)
     {
-        return $this->formService->update($model,$request);
+        return $this->formService->update($request, $formulario);
     }
 
 	/**
@@ -94,8 +95,8 @@ class FormularioController extends Controller
 	 * @param  int  $id
 	 * @return \App\Services\Response
 	 */
-	public function destroy(Formulario $model)
+	public function destroy(Formulario $formulario)
     {
-        return $this->formService->destroy($model);
+        return $this->formService->destroy($formulario);
     }
 }

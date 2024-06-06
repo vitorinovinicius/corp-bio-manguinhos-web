@@ -1,7 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Criteria\UserClientSelectCriteria;
-use App\Repositories\ContractorRepository;
+use App\Repositories\SetorRepository;
 use App\Services\ContractorService;
 use App\Services\RegionService;
 use Artesaos\Defender\Facades\Defender;
@@ -18,28 +18,29 @@ class UserController extends Controller {
 	 * @var UserService
 	 */
 	private $userService;
-	private $contractorService;
 	private $regionService;
     /**
-     * @var ContractorRepository
+     * @var SetorRepository
      */
-    private $contractorRepository;
+    private $setorRepository;
 
     private $userRepository;
 
     /**
      * UserController constructor.
      * @param UserService $userService
-     * @param ContractorService $contractorService
      * @param RegionService $regionService
-     * @param ContractorRepository $contractorRepository
+     * @param SetorRepository $setorRepository
      */
-    public function __construct(UserService $userService,
-                                UserRepository $userRepository
+    public function __construct(
+		UserService $userService,
+        UserRepository $userRepository,
+        SetorRepository $setorRepository
     )
 	{
 		$this->userService = $userService;
         $this->userRepository = $userRepository;
+        $this->setorRepository = $setorRepository;
     }
 
 	/**
@@ -70,9 +71,10 @@ class UserController extends Controller {
 	 */
 	public function create()
 	{
-		$roles          = Defender::rolesList();
+		$roles = Defender::rolesList();
+		$contractors    = $this->setorRepository->all();
 
-		return view('users.create', compact('roles','contractors','regions'));
+		return view('users.create', compact('roles','contractors'));
 	}
 
 	/**
@@ -109,8 +111,9 @@ class UserController extends Controller {
 	public function edit(User $user)
 	{
         $roles          = Defender::rolesList();
+		$selectedRoles = $user->roles->pluck('id')->toArray();
 
-        return view('users.edit', compact('user','roles'));
+        return view('users.edit', compact('user','roles', 'selectedRoles'));
 	}
 
 	/**
