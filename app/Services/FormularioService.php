@@ -1,18 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: user
- * Date: 16/11/2017
- * Time: 15:40
- */
 
 namespace App\Services;
 
 use App\Models\Setor;
+use App\Models\SecaoFormulario;
 use App\Criteria\Api\FormContractorCriteria;
 use App\Repositories\FormRepository;
 use App\Repositories\FormularioRepository;
-use App\Repositories\OccurrenceTypeRepository;
+use App\Repositories\RelatorioRepository;
 use Illuminate\Support\Facades\File;
 use Carbon\Carbon;
 use Exception;
@@ -28,24 +23,22 @@ class FormularioService
      */
     private $formularioRepository;
     /**
-     * @var OccurrenceTypeRepository
+     * @var RelatorioRepository
      */
-    private $occurrenceTypeRepository;
+    private $relatorioRepository;
 
     /**
      * FormService constructor.
      * @param FormRepository $formRepository
-     * @param OccurrenceTypeRepository $occurrenceTypeRepository
+     * @param RelatorioRepository $relatorioRepository
      */
     public function __construct(
         FormularioRepository $formularioRepository,
-        FormRepository $formRepository,
-        OccurrenceTypeRepository $occurrenceTypeRepository
+        RelatorioRepository $relatorioRepository
     )
     {
         $this->formularioRepository = $formularioRepository;
-        $this->formRepository = $formRepository;
-        $this->occurrenceTypeRepository = $occurrenceTypeRepository;
+        $this->relatorioRepository = $relatorioRepository;
     }
 
     public function index($request)
@@ -84,9 +77,21 @@ class FormularioService
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store($request)
-    {
-                
+    {                
         $data = $request->all();
+
+        $relatorio = $this->relatorioRepository->create(
+            [
+                'descricao' => $data['descricao_relatorio'],
+            ]
+        );
+
+        $formulario = $this->formularioRepository->create([
+            'relatorio_id' => $relatorio->id,
+            'descricao' => $data['descricao_formulario']
+        ]);
+
+        return redirect()->route('forms.edit', $formulario->uuid)->with('message', 'Formulário criado com sucesso.');
 
         $titulo = array(
             'setor_id' => $data['setor_id']??null,
@@ -99,8 +104,8 @@ class FormularioService
 
         // dd($form->id);
         // Verifica se o arquivo foi enviado
-        if($request->hasFile('imagem')) {
-            $imagem = $request->file('imagem');    
+        if($request->hasFile('imagemTitulo')) {
+            $imagem = $request->file('imagemTitulo');    
             // Verifica se o arquivo é uma imagem válida
             if ($imagem->isValid()) {
                 $path = public_path('imagens');
@@ -121,6 +126,7 @@ class FormularioService
                 $this->formularioRepository->update(['imagem' => $url], $form->id);
             }
         }
+
         if(isset($data["sub_titulos"])){
             $subTituloArray = $data["sub_titulos"];
             foreach ($subTituloArray as $key => $value) {
@@ -129,13 +135,35 @@ class FormularioService
                     $data2["descricao"] = $value;
                     $data2["limite_caracteres"] = $data["limite_caracteres_subtitulo"][$key];
                     $data2["ANO"] = Carbon::now();
-                    $this->formularioRepository->create($data2);
+                    $data2["legenda"] = $data["legendaImagemSubTitulo"][$key];
+                    $data2["tipo_imagem"] = $data["checkImagemSubTitulo"][$key];
+
+                    $sub_titulo = $this->formularioRepository->create($data2);
+                    if($request->hasFile('legendaImagemSubTitulo')) {
+                        $imagem = $request->file('legendaImagemSubTitulo');    
+                        // Verifica se o arquivo é uma imagem válida
+                        if ($imagem->isValid()) {
+                            $path = public_path('imagens');
+                
+                            // Verifica se o diretório de destino existe, se não, cria
+                            if (!File::isDirectory($path)) {
+                                File::makeDirectory($path, 0777, true, true);
+                            }
+                
+                            // Gera um nome único para a imagem
+                            $nomeImagem = $sub_titulo->uuid.'.' . $imagem->getClientOriginalExtension();
+                
+                            // Move o arquivo para o diretório desejado
+                            $imagem->move($path, $nomeImagem);
+                
+                            // Salva a URL no banco de dados
+                            $url = asset('imagens/' . $nomeImagem);
+                            $this->formularioRepository->update(['imagem' => $url], $sub_titulo->id);
+                        }
+                    }
                 }
             }
         }
-        
-
-
 
         return redirect()->route('forms.index')
             ->with('message_form', 'Formulário criado com sucesso.');
@@ -153,9 +181,12 @@ class FormularioService
      * @param $form
      * @return Response|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
-    public function edit($form)
+    public function edit($formulario)
     {
-        return view('forms.edit', compact('form'));
+        $teams = Setor::all();
+        $titulos = SecaoFormulario::all();
+        $subTitulos = SecaoFormulario::all();
+        return view('forms.edit', compact('formulario', 'teams', 'titulos', 'subTitulos'));
     }
 
     /**
