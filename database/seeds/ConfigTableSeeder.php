@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Webpatser\Uuid\Uuid;
+use Carbon\Carbon;
 
 class ConfigTableSeeder extends Seeder
 {

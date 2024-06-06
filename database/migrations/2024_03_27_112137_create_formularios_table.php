@@ -5,6 +5,13 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
+	
+    /**
+     * Schema table name to migrate
+     * @var string
+     */
+    public $set_schema_table = 'formularios';
+
 	/**
 	 * Run the migrations.
 	 *
@@ -12,29 +19,30 @@ return new class extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('formularios', function(Blueprint $table) {
+		if (Schema::hasTable($this->set_schema_table)) return;
+		Schema::create($this->set_schema_table, function(Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');			
-            $table->unsignedInteger('setor_id')->nullable();
-			$table->uuid('uuid');
-			$table->string('titulo')->nullable();
-			$table->unsignedInteger('sub_titulo_id')->nullable();
-			$table->integer('limite_caracteres')->nullable();
-			$table->date('ANO')->nullable();
+			$table->uuid('uuid')->unique();
+			$table->unsignedInteger('relatorio_id')->nullable();
+			$table->string('descricao')->nullable();
+            $table->integer('status')->default(0)->comment(
+				'
+					0 - Pendente,
+					1 - Em andamento,
+					2 - analisando,
+					3 - Em correção,
+					4 - Concluído
+				'
+			);
 
             $table->timestamps();
             $table->softDeletes();
 
-			$table->index(["setor_id"], 'fk_formulario_setor_id_idx');
+			$table->index(["relatorio_id"], 'fk_formulario_relatorio_idx');
 
-			$table->index(["sub_titulo_id"], 'fk_formulario_subtitulo_id_idx');
-
-            $table->foreign('setor_id','fk_formulario_setor_id_idx')
-                ->references('id')->on('setores')
-                ->onDelete('restrict')
-                ->onUpdate('cascade');
-
-            $table->foreign('sub_titulo_id','fk_formulario_subtitulo_id_idx')
-                ->references('id')->on('formularios')
+            $table->foreign('relatorio_id','fk_formulario_relatorio_idx')
+                ->references('id')->on('relatorios')
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
 		});
@@ -47,7 +55,7 @@ return new class extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('formularios');
+		Schema::dropIfExists($this->set_schema_table);
 	}
 };
 
