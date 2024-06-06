@@ -19,7 +19,7 @@ class CheckStatus
     {
         if ( auth()->check() ){
 
-            $contractor = auth()->user()->id;
+            $setor = auth()->user()->id;
             // $statusContractor = Contractor::select('status')->where('id', $contractor)->first();
 
             // if ($statusContractor != null && ($statusContractor->status != 1 || auth()->user()->status != 1)) {
