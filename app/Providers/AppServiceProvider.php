@@ -41,11 +41,5 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
 
         JsonResource::withoutWrapping();
-
-//        OccurrenceClient::observe(OccurrenceClientModelObserver::class);
-        Form::observe(FormModelObserver::class);
-        FormField::observe(FormFieldModelObserver::class);
-        FormSection::observe(FormSectionModelObserver::class);
-        Occurrence::observe(OccurrenceModelObserver::class);
     }
 }
