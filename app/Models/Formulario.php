@@ -27,13 +27,9 @@ class Formulario extends Model implements Transformable
      * @var array
      */
     protected $fillable = [
-        'setor_id',
+        'relatorio_id',
         'descricao',
-        'titulo',
-        'sub_titulo_id',
-        'limite_caracteres',
-        'ANO',
-        'imagem'
+        'status'
     ];
 
     public function titulo()
@@ -43,7 +39,12 @@ class Formulario extends Model implements Transformable
 
     public function setor()
     {
-        return $this->hasOne(Setor::class, 'id');
+        return $this->belongsTo(Setor::class);
+    }
+
+    public function secoes()
+    {
+        return $this->hasMany(SecaoFormulario::class);
     }
 
 }

@@ -101,13 +101,13 @@
 
         public function teams()
         {
-            return $this->belongsToMany(Setor::class, 'user_setor', 'user_id', 'setor_id');
+            return $this->hasMany(Setor::class, 'id');
         }
 
-        // public function user_teams()
-        // {
-        //     return $this->hasMany(Setor::class, "user_id");
-        // }
+        public function secaoFormulario()
+        {
+            return $this->hasMany(SecaoFormulario::class);
+        }
 
         public function role_users()
         {
@@ -119,9 +119,9 @@
             return $this->belongsToMany(Role::class, 'role_user');
         }
 
-        public function contractor()
+        public function setor()
         {
-            return $this->hasOne(Contractor::class, 'id', 'contractor_id');
+            return $this->hasOne(Setor::class, 'id', 'setor_id');
         }
 
         public function occurrencesDays()

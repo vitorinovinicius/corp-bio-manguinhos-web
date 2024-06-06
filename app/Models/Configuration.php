@@ -44,9 +44,9 @@ class Configuration extends Model implements Transformable
         return Configuration::pluck('config_value', 'config_key')->toArray();
     }
 
-    public function contractor()
+    public function setor()
     {
-        return $this->belongsTo(Contractor::class, 'contractor_id');
+        return $this->belongsTo(Setor::class, 'id');
     }
 
     public function tipo_user()

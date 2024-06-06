@@ -32,16 +32,21 @@ class Setor extends Model implements Transformable
     ];
 
     public function users(){
-        return $this->belongsToMany(User::class,'user_setor','setor_id','user_id');
+        return $this->belongsTo(User::class,'setor_id');
+    }
+
+    public function secaoFormulario()
+    {
+        return $this->hasMany(SecaoFormulario::class);
     }
 
     public function formulario(){
-        return $this->belongsTo(Formulario::class,'setor_id');
+        return $this->hasOne(Formulario::class,'setor_id');
     }
 
-    public function contractor()
+    public function configuration()
     {
-        return $this->belongsTo(Contractor::class,'contractor_id');
+        return $this->belongsTo(Configuration::class,'setor_id');
     }
 
 
