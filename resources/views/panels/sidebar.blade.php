@@ -28,34 +28,34 @@
     <div class="shadow-bottom"></div>
     <div class="main-menu-content">
         <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation" data-icon-style="lines">
-            <li class="nav-item @if(app('router')->is("word.index")){{"active"}}@endif">
+            <li class="nav-item @if(app('router')->is("admin.index")){{"active"}}@endif">
                 <a href="#">
                     <i class="menu-livicon" data-icon="box"></i>
                     <span class="menu-title">Relatórios</span>
                 </a>
                 <ul class="menu-content"> 
-                    <li class="{{(app('router')->is("word.index"))? "active": ""}}">
-                        <a href="{{route("word.index")}}">
+                    <li class="{{(app('router')->is("admin.index"))? "active": ""}}">
+                        <a href="{{route("admin.index")}}">
                             <i class="bx bx-right-arrow-alt"></i>
                             <span class="menu-item">Todos</span>
                         </a>
                     </li>
                 </ul>
             </li>
-            <li class="nav-item @if(app('router')->is("word.index")){{"active"}}@endif">
+            <li class="nav-item @if(app('router')->is("emails.*")){{"active"}}@endif">
                 <a href="#">
                     <i class="menu-livicon" data-icon="envelope-pull"></i>
                     <span class="menu-title">E-mail</span>
                 </a>
                 <ul class="menu-content"> 
-                    <li class="{{(app('router')->is("word.index"))? "active": ""}}">
-                        <a href="{{route("word.index")}}">
+                    <li class="{{(app('router')->is("emails.send"))? "active": ""}}">
+                        <a href="{{route("emails.send")}}">
                             <i class="bx bx-right-arrow-alt"></i>
                             <span class="menu-item">Enviados</span>
                         </a>
                     </li>
-                    <li class="{{(app('router')->is("word.index"))? "active": ""}}">
-                        <a href="{{route("word.index")}}">
+                    <li class="{{(app('router')->is("emails.confirmed"))? "active": ""}}">
+                        <a href="{{route("emails.confirmed")}}">
                             <i class="bx bx-right-arrow-alt"></i>
                             <span class="menu-item">Confirmados</span>
                         </a>
@@ -68,12 +68,14 @@
                     <span class="menu-title">Formulários</span>
                 </a>
                 <ul class="menu-content">
-                    <li class="{{(app('router')->is("forms.index"))? "active": ""}}">
+                    @is(['superuser', 'admin'])
+                    <li class="{{(app('router')->is("forms.*"))? "active": ""}}">
                         <a href="{{route("forms.index")}}">
                             <i class="bx bx-right-arrow-alt"></i>
                             <span class="menu-item">Todos</span>
                         </a>
                     </li>
+                    @endis
                     <li class="{{(app('router')->is("forms.preenchimento"))? "active": ""}}">                    
                         <a href="{{route("forms.preenchimento")}}">
                             <i class="bx bx-right-arrow-alt"></i>
