@@ -6,29 +6,36 @@ Route::get('/', function () {
 //    return view('auth.login');
     return redirect()->route('login');
 });
+
 Auth::routes();
 
-// Route::get('/home', function(){
-//     if(Defender::hasRole('cliente')){
-//         return redirect()->route('client.index');
-//     }else{
-//         return redirect()->route('admin.index');
-//     }
-// });
 Route::get('/home', function(){
-    return redirect()->route('word.index');
+    if(Defender::hasRole('colaborador')){
+        return redirect()->route('users.index');
+    }else{
+        return redirect()->route('admin.index');
+    }
 });
+// Route::get('/home', function(){
+//     return redirect()->route('word.index');
+// });
 
 Route::group(['prefix' => 'admin','middleware'=>['auth','systemConfiguration', 'checkStatus', 'tenant', 'bindings']], function () {
 
-    Route::group(['prefix' => 'documentos'], function () {
-        Route::get('/', ["as"=>"word.index","uses" => "WordController@index",'middleware'=>['needsPermission'], 'shield' => 'admin.index']);
+    Route::group(['prefix' => 'documentos'], function () {        
+        Route::get('/',         [App\Http\Controllers\WordController::class, 'index',   'middleware'=>['needsPermission'], 'shield' => 'admin.index' ])->name('admin.index');
+        // Route::get('/', ["as"=>"word.index","uses" => "WordController@index",'middleware'=>['needsPermission'], 'shield' => 'admin.index']);
         Route::get('/show/{document}', ["as"=>"word.show","uses" => "WordController@show",'middleware'=>['needsPermission'], 'shield' => 'admin.show']);
         Route::get('/create', ["as"=>"word.create","uses" => "WordController@create",'middleware'=>['needsPermission'], 'shield' => 'admin.create']);
-        Route::get('/store', ["as"=>"word.store","uses" => "WordController@store",'middleware'=>['needsPermission'], 'shield' => 'admin.store']);
+        Route::get('/store', ["as"=>"word.store","uses" => "WordController@createDocx",'middleware'=>['needsPermission'], 'shield' => 'admin.store']);
         Route::get('/edit/{document}', ["as"=>"word.edit","uses" => "WordController@edit",'middleware'=>['needsPermission'], 'shield' => 'admin.edit']);
         Route::put('/update', ["as"=>"word.update","uses" => "WordController@update",'middleware'=>['needsPermission'], 'shield' => 'admin.update']);
         Route::delete('/delete/{document}', ["as"=>"word.delete","uses" => "WordController@delete",'middleware'=>['needsPermission'], 'shield' => 'admin.destroy']);
+    });
+
+    Route::group(['prefix' => 'emails'], function(){
+        Route::get('/enviados', [App\Http\Controllers\FormularioController::class, 'enviado', 'middleware' => ['needsPermission'], 'shield' => 'email.send'])->name('emails.send');
+        Route::get('/confirmados', [App\Http\Controllers\FormularioController::class, 'confirmado', 'middleware' => ['needsPermission'], 'shield' => 'email.confirmed'])->name('emails.confirmed');
     });
 
     Route::group(['prefix' => 'setores'], function () {
@@ -47,10 +54,15 @@ Route::group(['prefix' => 'admin','middleware'=>['auth','systemConfiguration', '
     });
 
     Route::group(['prefix' => 'formularios'], function () {
-        Route::get('/',                 [App\Http\Controllers\FormularioController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'form.index'])->name('forms.index');
-        Route::get('/create',           [App\Http\Controllers\FormularioController::class, 'create', 'middleware'=>['needsPermission'], 'shield' => 'form.create'])->name('forms.create');
-        Route::post('/',                [App\Http\Controllers\FormularioController::class, 'store'])->name('forms.store');
-        Route::get('/preenchimento',    [App\Http\Controllers\FormularioController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'form.index'])->name('forms.preenchimento');
+        Route::get('/',                     [App\Http\Controllers\FormularioController::class, 'index',         'middleware'=>['needsPermission'], 'shield' => 'form.index'])->name('forms.index');
+        Route::get('/create',               [App\Http\Controllers\FormularioController::class, 'create',        'middleware'=>['needsPermission'], 'shield' => 'form.create'])->name('forms.create');
+        Route::post('/',                    [App\Http\Controllers\FormularioController::class, 'store',         'middleware'=>['needsPermission'], 'shield' => 'form.store'])->name('forms.store');
+        Route::get('/preenchimento',        [App\Http\Controllers\FormularioController::class, 'index',         'middleware'=>['needsPermission'], 'shield' => 'form.index'])->name('forms.preenchimento');
+        Route::get('/{form}/edit',          [App\Http\Controllers\FormularioController::class, 'edit',          'middleware'=>['needsPermission'], 'shield' => 'form.edit'])->name('forms.edit');
+        Route::get('/{form}',               [App\Http\Controllers\FormularioController::class, 'show',          'middleware'=>['needsPermission'], 'shield' => 'form.show'])->name('forms.show');
+        Route::delete('/{form}',            [App\Http\Controllers\FormularioController::class, 'destroy',       'middleware'=>['needsPermission'], 'shield' => 'form.destroy'])->name('forms.destroy');
+        Route::post('/ajax',                [App\Http\Controllers\SecaoFormularioController::class, 'store',    'middleware'=>['needsPermission'], 'shield' => 'form.store'])->name('sec_forms.ajax');
+        Route::get('/consultar/{form}', [App\Http\Controllers\SecaoFormularioController::class, 'consulta_ajax',    'middleware'=>['needsPermission'], 'shield' => 'form.store'])->name('sec_forms.consultar');
         // Route::get('/', ["as"=>"forms.index","uses" => "FormController@index",'middleware'=>['needsPermission'], 'shield' => 'form.index']);
         // Route::get('/preenchimento', ["as"=>"forms.preenchimento","uses" => "FormController@index",'middleware'=>['needsPermission'], 'shield' => 'form.index']);
         // Route::post('/', ["as"=>"forms.store","uses" => "FormController@store"]);
@@ -77,15 +89,14 @@ Route::group(['prefix' => 'admin','middleware'=>['auth','systemConfiguration', '
         Route::get('/',         [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
         Route::get('/create',   [App\Http\Controllers\UserController::class, 'create', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.create');
         Route::post('/',        [App\Http\Controllers\UserController::class, 'store'])->name('users.store');
-
         Route::get('/{user}', [App\Http\Controllers\UserController::class, 'show', 'middleware'=>['needsPermission'], 'shield' => 'user.show'])->name('users.show');
-        Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
-        Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
-        Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
-        Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
-        Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
-        Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
-        Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
+        // Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
+        // Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
+        // Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
+        // Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
+        // Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
+        // Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
+        // Route::get('/', [App\Http\Controllers\UserController::class, 'index', 'middleware'=>['needsPermission'], 'shield' => 'user.index'])->name('users.index');
 
         Route::get('/client', ["as"=>"users.clients","uses" => "UserController@clients",'middleware'=>['needsPermission'], 'shield' => 'users.index']);
         Route::get('/create', ["as"=>"users.create","uses" => "UserController@create",'middleware'=>['needsPermission'], 'shield' => 'users.create']);
