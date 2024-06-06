@@ -24,8 +24,8 @@ class UsersSelectCriteria implements CriteriaInterface
     {
 
         $model = $model->selectRaw('users.*')
-            ->join('role_user', 'users.id', '=', 'role_user.user_id')
-            ->where('role_user.role_id', "!=", 4);
+            ->join('role_user', 'users.id', '=', 'role_user.user_id');
+            // ->where('role_user.role_id', "!=", 4);
 
 
 
