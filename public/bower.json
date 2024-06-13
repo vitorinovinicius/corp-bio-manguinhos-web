@@ -1,9 +1,9 @@
 {
-  "name": "central_system",
+  "name": "bio_manguinhos",
   "authors": [
-    "(Rafael Gil <celtaphp@gmail.com>)"
+    "(Vinicius Vitorino <vinicius.vitorino@vitorinosolucoes.tech>)"
   ],
-  "description": "Sistema de gerenciamento e controle de servicos",
+  "description": "Sistema de gerenciamento de relatorio",
   "main": "index.php",
   "keywords": [
     "laravel",
@@ -11,7 +11,7 @@
     "mysql"
   ],
   "license": "MIT",
-  "homepage": "www.centralsystem.com.br",
+  "homepage": "www.fiocruz.com.br",
   "private": true,
   "ignore": [
     "**/.*",
