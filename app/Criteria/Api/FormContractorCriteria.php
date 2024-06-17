@@ -15,14 +15,13 @@ class FormContractorCriteria implements CriteriaInterface
     /**
      * Apply criteria in query repository
      *
-     * @param string              $model
      * @param RepositoryInterface $repository
      *
      * @return mixed
      */
     public function apply($model, RepositoryInterface $repository)
     {
-        if (\Auth::user()->contractor_id) {
+        if (\Auth::user()) {
             $model = $model->where("empresa_id","=", \Auth::user()->empresa_id);
         }
         return $model;
