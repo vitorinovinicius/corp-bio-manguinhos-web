@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
-use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * Class Team.
@@ -26,13 +25,19 @@ class Setor extends Model implements Transformable
 
     protected $fillable = [
         'uuid',
-        'contractor_id',
         'name',
-        'district',
+        'pivot_user_id',
+        'pivot_setor_id'
     ];
 
-    public function users(){
-        return $this->belongsTo(User::class,'setor_id');
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_setores');
+    }
+
+    public function user_setores()
+    {
+        return $this->hasMany(UserSetores::class, "setor_id");
     }
 
     public function secaoFormulario()

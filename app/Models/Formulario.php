@@ -29,13 +29,9 @@ class Formulario extends Model implements Transformable
     protected $fillable = [
         'relatorio_id',
         'descricao',
-        'status'
+        'status',
+        'ano'
     ];
-
-    public function titulo()
-    {
-        return $this->hasMany(Formulario::class, 'sub_titulo_id');
-    }
 
     public function setor()
     {
@@ -45,6 +41,17 @@ class Formulario extends Model implements Transformable
     public function secoes()
     {
         return $this->hasMany(SecaoFormulario::class);
+    }
+
+    public function status()
+    {
+        if ($this->status == 0) {
+            return "Não iniciado";
+        } else if ($this->status == 1) {
+            return "Em andamento";
+        } else {
+            return "Concluído";
+        }
     }
 
 }
