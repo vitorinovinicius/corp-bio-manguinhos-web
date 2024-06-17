@@ -21,7 +21,6 @@
 @endsection
 
 @section('content')
-    @include('messages')
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -98,4 +97,15 @@
             });
         });
     </script>
+    @if(session('message'))
+        <script>
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: '{{ session('message') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
+    @endif
 @endsection

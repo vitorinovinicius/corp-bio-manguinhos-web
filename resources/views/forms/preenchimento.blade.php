@@ -90,7 +90,7 @@
                             </div>
 
                             @if($secao->status !== 2 && $secao->status !== 4)
-                                @if($secao->status == 3 && $secao->email_status !== 1 || $secao->status == 1)
+                                @if($secao->status == 1 && $secao->email_status !== 1||$secao->status == 3 && $secao->email_status !== 1)
                                     <form id="status-form-{{ $secao->id }}" action="{{ route('sec_forms.status', [$secao->uuid, 1]) }}" method="POST" style="display: inline;">
                                         @csrf
                                         @method('PUT')
@@ -109,7 +109,7 @@
                             @php
                                 $validacao_status = array(2, 4);
                             @endphp
-                                @if(!in_array($secao->statu, $validacao_status) && $secao->status == 3 && $secao->email_status == 2)
+                                @if(!in_array($secao->statu, $validacao_status) && $secao->status == 3 && $secao->email_status == 2 || $secao->status == 1 && $secao->email_status !== 1)
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-6">
@@ -193,6 +193,9 @@
                                 @else
                                     <div class="card-body">
                                         <div class="row">
+                                            <div class="col-12 d-flex justify-content-center">
+                                                <p><span class="badge badge-warning"> Aguardando confirmação de e-mail</span></p>
+                                            </div>
                                             <div class="col-6">
                                                 <div class="form-group">
                                                     <label for="name">Setor</label>
@@ -244,7 +247,7 @@
                                                         <div class="card">
                                                             <div class="card-content">
                                                                 <div class="card-body">
-                                                                    <small><strong>[img{{ $imagem->id }}]</strong></small>
+                                                                    <small class="badge badge-primary"><strong>[img{{ $imagem->id }}]</strong></small>
                                                                     <div style="display: inline-block; position: relative;">
                                                                         <img src="{{ asset($imagem->url_imagem) }}" alt="{{ $imagem->legenda }}" class="card-img-top" style="width: 100%;">
                                                                     </div>

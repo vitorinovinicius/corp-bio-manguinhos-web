@@ -30,14 +30,14 @@
         <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation" data-icon-style="lines">
             
             @is(['superuser', 'admin'])
-            <li class="nav-item @if(app('router')->is("admin.index")){{"active"}}@endif">
+            <li class="nav-item @if(app('router')->is("relatorio.index")){{"active"}}@endif">
                 <a href="#">
                     <i class="menu-livicon" data-icon="box"></i>
                     <span class="menu-title">Relatórios</span>
                 </a>
                 <ul class="menu-content"> 
-                    <li class="{{(app('router')->is("admin.index"))? "active": ""}}">
-                        <a href="{{route("admin.index")}}">
+                    <li class="{{(app('router')->is("relatorio.index"))? "active": ""}}">
+                        <a href="{{route("relatorio.index")}}">
                             <i class="bx bx-right-arrow-alt"></i>
                             <span class="menu-item">Todos</span>
                         </a>

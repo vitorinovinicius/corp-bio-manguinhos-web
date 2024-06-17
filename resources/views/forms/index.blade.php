@@ -100,12 +100,17 @@
                                                 @endis
 
                                                 @is(['superuser', 'admin'])
-                                                    <form action="{{ route('forms.destroy', $form->uuid) }}"
-                                                            method="POST" style="display: inline;"
-                                                            onsubmit="if(confirm('Deseja deletar esse item?')) { return true } else {return false };">
+                                                    <form id="deleteForm_{{ $form->uuid }}"
+                                                        action="{{ route('forms.destroy', $form->uuid) }}"
+                                                        method="POST" style="display: inline;">
                                                         <input type="hidden" name="_method" value="DELETE">
                                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                        <button type="submit" class="btn btn-icon btn-sm btn-danger" data-toggle="tooltip" data-placement="left" title="Deletar"><i class="bx bx-trash"></i></button>
+                                                        <button type="button"
+                                                                class="btn btn-icon btn-sm btn-danger"
+                                                                onclick="deleteForm('{{ $form->uuid }}')"
+                                                                data-toggle="tooltip" data-placement="left" title="Deletar">
+                                                            <i class="bx bx-trash"></i>
+                                                        </button>
                                                     </form>
                                                 @endis
                                             </td>
@@ -158,26 +163,44 @@
             });
         });
     </script>
-    
-@if(session('message'))
+    <script>
+        function deleteForm(uuid) {
+            Swal.fire({
+                title: 'Deseja deletar esse item?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, deletar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Form submission if user confirms
+                    document.getElementById('deleteForm_' + uuid).submit();
+                }
+            });
+        }
+    </script>
+    @if(session('message'))
+        <script>
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: '{{ session('message') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
+    @elseif(session('error'))
     <script>
         Swal.fire({
             position: "center",
-            icon: "success",
-            title: '{{ session('message') }}',
+            icon: "error",
+            title: '{{ session('error') }}',
             showConfirmButton: false,
-            timer: 1500
+            timer: 4000
         });
     </script>
-@elseif(session('error'))
-<script>
-    Swal.fire({
-        position: "center",
-        icon: "error",
-        title: '{{ session('error') }}',
-        showConfirmButton: false,
-        timer: 4000
-    });
-</script>
-@endif
+    @endif
+
 @endsection

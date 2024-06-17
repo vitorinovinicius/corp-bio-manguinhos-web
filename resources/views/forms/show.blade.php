@@ -21,15 +21,15 @@
     </div>
     <div class="col-4 d-flex justify-content-end align-items-center">
         @is(['superuser', 'admin'])
-        <form action="{{ route('word.store', $formulario->uuid) }}" method="POST" style="display: inline;" onsubmit="if(confirm('Deseja realmente gerar o relatório?')) { return true } else {return false };">
-            @csrf
-            @method('POST')
-            <div class="btn-group pull-right" role="group" aria-label="...">
-                @if($formulario->status == 2)
-                    <button type="submit" class="btn btn-icon btn-sm btn-success"><i class="bx bx-file"></i> Gerar relatório</button>
-                @endif
-            </div>
-        </form>
+            <form id="relatorio-form" action="{{ route('relatorio.store', $formulario->uuid) }}" method="POST" style="display: inline;">
+                @csrf
+                @method('POST')
+                <div class="btn-group pull-right" role="group" aria-label="...">
+                    @if($formulario->status == 2)
+                        <button type="button" class="btn btn-icon btn-sm btn-success" id="generate-report-btn"><i class="bx bx-file"></i> Gerar relatório</button>
+                    @endif
+                </div>
+            </form>
         @endis
     </div>
 @endsection
@@ -90,30 +90,60 @@
                 <hr>
                 @foreach($formulario->secoes as $secao)
                     <div class="card-header">
+                        <h4>Seção #{{$secao->id}}</h4>
+                        <div class="smartwizard-container">
+                                
+                            <div id="smartwizard-{{ $secao->id }}" class="smartwizard_{{$secao->status}}">
+                                <ul class="nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#step-1-{{ $secao->id }}">Pendente</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#step-2-{{ $secao->id }}">Em andamento</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#step-3-{{ $secao->id }}">Em análise</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#step-4-{{ $secao->id }}">Em correção</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#step-5-{{ $secao->id }}">Concluído</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div id="step-1-{{ $secao->id }}" class="tab-pane" role="tabpanel"></div>
+                                    <div id="step-2-{{ $secao->id }}" class="tab-pane" role="tabpanel"></div>
+                                    <div id="step-3-{{ $secao->id }}" class="tab-pane" role="tabpanel"></div>
+                                    <div id="step-4-{{ $secao->id }}" class="tab-pane" role="tabpanel"></div>
+                                    <div id="step-5-{{ $secao->id }}" class="tab-pane" role="tabpanel"></div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="btn-group" role="group" aria-label="...">
                             @if($secao->status == 4)
-                                <a href="{{ route('sec_forms.status', [$secao->uuid, 5, auth()->user()->uuid]) }}" class="btn btn-sm btn-danger desaprova_status"><i class="bx bxs-dislike"></i> DESAPROVAR</a>
+                                <a href="{{ route('sec_forms.status', [$secao->uuid, 6, auth()->user()->uuid]) }}" class="btn btn-sm btn-danger desaprova_status"><i class="bx bxs-dislike"></i> DESAPROVAR</a>
                             @endif
                         </div>
                     </div>
                     <div class="card-content">
                         <div class="card-body">
                             <div class="row">
+                                @if($secao->status == 2 && $secao->email_status == 1)
+                                    <div class="col-12 d-flex justify-content-center">
+                                        <p><span class="badge badge-warning"> Aguardando confirmação de e-mail</span></p>
+                                    </div>
+                                @endif
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label for="name">Setor</label>
                                         <p class="form-control-static">{{ $secao->setor()->where('id', $secao->setor_id)->pluck('name')->first() ?: '' }}</p>
                                     </div>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-6">
                                     <div class="form-group">
                                         <label for="name">Usuário</label>
                                         <p class="form-control-static">{{ $secao->usuario()->where('id', $secao->user_id)->pluck('name')->first() ?: 'Não designado' }}</p>
-                                    </div>
-                                </div>
-                                <div class="col-2">
-                                    <div class="form-group">
-                                        <span class="badge {{ $secao->badge_status() }}">{{ $secao->status() }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -179,10 +209,10 @@
                     <div class="card-footer">
                         <div class="col-12 d-flex justify-content-end align-items-center">
                             <div class="btn-group pull-right" role="group" aria-label="...">
-                                @if($secao->status == 2)
+                                @if($secao->status == 2 && $secao->email_status !== 1)
                                     @if($secao->user_id)
                                         <a href="{{ route('sec_forms.correcao', [$secao->uuid, $secao->usuario->uuid]) }}" class="btn btn-sm btn-warning"><i class="bx bx-error"></i> SOLICITAR CORREÇÃO</a>
-                                        <a href="{{ route('sec_forms.status', [$secao->uuid, 4, auth()->user()->uuid]) }}" class="btn btn-sm btn-success atualiza_status"><i class="bx bxs-like"></i> APROVAR</a>
+                                        <a href="{{ route('sec_forms.status', [$secao->uuid, 5, auth()->user()->uuid]) }}" class="btn btn-sm btn-success atualiza_status"><i class="bx bxs-like"></i> APROVAR</a>
                                     @endif
                                 @endif
                             </div>
@@ -217,6 +247,21 @@
     $(document).ready(function () {
         $(".select2").select2({
             allowClear: true,
+        });
+    });
+    document.getElementById('generate-report-btn').addEventListener('click', function() {
+        Swal.fire({
+            title: 'Deseja realmente gerar o relatório?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, gerar!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('relatorio-form').submit();
+            }
         });
     });
 
@@ -507,6 +552,42 @@
         });
     </script>
 @endif
+@if(session('error'))
+    <script>
+        Swal.fire({
+            position: "center",
+            icon: "error",
+            title: '{{ session('error') }}',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    </script>
+@endif
+
+<script>
+    @foreach($formulario->secoes as $secao)
+    $(document).ready(function(){
+        var status = {{ $secao->status }}; // Define o passo atual com base no status passado do Laravel
+        var smartwizardId = "#smartwizard-{{ $secao->id }}";
+        // Inicializa o SmartWizard
+        $('.smartwizard_'+status).smartWizard({
+            selected: status, // Define o passo atual
+            theme: 'dots', // Usa o tema "dots"
+            transition: {
+                animation: 'fade', // Animation effect on navigation, none|fade|slideHorizontal|slideVertical|slideSwing|css(Animation CSS class also need to specify)
+                speed: '400', // Animation speed. Not used if animation is 'css'
+            },
+            toolbar: {
+                showNextButton: false, // Esconder o botão Next
+                showPreviousButton: false // Esconder o botão Previous
+            },
+            anchor: {
+                enableNavigation: false //Desabilitar navegação anterior
+            },
+        });
+    });
+    @endforeach
+</script>
 
 
 @endsection

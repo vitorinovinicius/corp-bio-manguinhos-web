@@ -28,7 +28,7 @@
                         </div>
 
                         <div id="titulo-selection" style="display:none;">
-                            <div class="form-group">                                
+                            <div class="form-group">
                                 @if(isset($titulos) || isset($subTitulos))
                                 <label for="existing-titulos">Selecione um título existente</label>
                                 <select class="form-control" id="existing-titulos" name="secao_id">
@@ -60,7 +60,7 @@
                                 <div class="form-group">
                                     <label for="setor">Setor responsável</label>
                                     <select class="form-control select2" id="setor" name="setor_id" data-placeholder="Setor responsável pelo preenchimento">
-                                        @foreach($teams as $setor)
+                                        @foreach($setores as $setor)
                                         <option value="{{$setor->id}}">{{$setor->name}}</option>
                                         @endforeach
                                     </select>
