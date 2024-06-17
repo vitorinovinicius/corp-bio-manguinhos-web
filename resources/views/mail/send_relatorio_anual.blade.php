@@ -25,7 +25,7 @@
                         text-decoration: none;
                         font-weight: bold;
                         border-radius:5px"
-                    href="{{route('sec_forms.confirmacao',$destinatario->uuid)}}" role="button">Confirmar recebimento</a>
+                    href="{{route('forms.iniciar',[$data->uuid, $formulario->uuid])}}" role="button">Confirmar recebimento</a>
             </p>
             <br>
         </div>
