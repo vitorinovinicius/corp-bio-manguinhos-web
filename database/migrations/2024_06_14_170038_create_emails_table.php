@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedInteger('destinatario_id')->nullable();
             $table->unsignedInteger('secao_formulario_id')->nullable();
             $table->string('corpo')->nullable();
+            $table->integer('status')->default(0)->nullable();
 
 			$table->index(["remetente_id"], 'fk_emails_remetente_idx');
 			$table->index(["destinatario_id"], 'fk_emails_destinatario_idx');
