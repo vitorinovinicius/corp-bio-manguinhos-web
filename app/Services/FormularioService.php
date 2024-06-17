@@ -2,52 +2,101 @@
 
 namespace App\Services;
 
-use App\Models\Setor;
-use App\Models\SecaoFormulario;
-use App\Criteria\Api\FormContractorCriteria;
-use App\Repositories\FormRepository;
+use App\Repositories\SecaoFormularioRepository;
+use App\Repositories\UserSetoresRepository;
 use App\Repositories\FormularioRepository;
 use App\Repositories\RelatorioRepository;
-use Illuminate\Support\Facades\File;
-use Carbon\Carbon;
+use App\Repositories\SetorRepository;
+use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Mail;
+use App\Models\SecaoFormulario;
+use App\Mail\SendMailStart;
+use Swift_SmtpTransport;
+use App\Models\Setor;
+use Swift_Mailer;
 use Exception;
 
 class FormularioService
 {
     /**
-     * @var FormRepository
+     * @var SecaoFormularioRepository
      */
-    private $formRepository;
+    private $secaoFormularioRepository;
+
     /**
      * @var FormularioRepository
      */
     private $formularioRepository;
+
     /**
      * @var RelatorioRepository
      */
     private $relatorioRepository;
 
     /**
+     * @var UserSetoresRepository
+     */
+    private $userSetoresRepository;
+
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    /**
+     * @var SetorRepository
+     */
+    private $setorRepository;
+
+    /**
      * FormService constructor.
-     * @param FormRepository $formRepository
+     * @param SecaoFormularioRepository $secaoFormularioRepository
      * @param RelatorioRepository $relatorioRepository
+     * @param UserSetoresRepository $relatorioRepository
+     * @param UserRepository $relatorioRepository
+     * @param SetorRepository $setorRepository
      */
     public function __construct(
+        SecaoFormularioRepository $secaoFormularioRepository,
         FormularioRepository $formularioRepository,
-        RelatorioRepository $relatorioRepository
-    )
-    {
-        $this->formularioRepository = $formularioRepository;
-        $this->relatorioRepository = $relatorioRepository;
+        RelatorioRepository $relatorioRepository,
+        UserSetoresRepository $userSetoresRepository,
+        UserRepository $userRepository,
+        SetorRepository $setorRepository
+    ){
+        $this->secaoFormularioRepository    = $secaoFormularioRepository;
+        $this->formularioRepository         = $formularioRepository;
+        $this->relatorioRepository          = $relatorioRepository;
+        $this->userSetoresRepository        = $userSetoresRepository;
+        $this->userRepository               = $userRepository;
+        $this->setorRepository              = $setorRepository;
     }
 
     public function index($request)
     {
-        $user = \Auth::user();
-        $this->formularioRepository->pushCriteria(new FormContractorCriteria($user));
+        $roles = \Auth::user()->roles;
+        foreach ($roles as $role) {
+            if($role == 'colaborador'){
+                $verificaSecao =  $this->formularioRepository->where('user_id', \Auth::user()->id)->exists();
+                if(!$verificaSecao){
+                    return redirect()->back()->withInput()->with('error', 'Nenhuma seção vinculada ao usuário');
+                }
+            }
+        }
         $forms = $this->formularioRepository->orderBy('id','asc')->paginate();
-
         return view('forms.index', compact('forms'));
+
+    }
+
+    public function preenchimento($formulario)
+    {
+        return view('forms.preenchimento', compact('formulario'));
+    }
+
+    public function vincula($formulario)
+    {
+        $setores = $this->setorRepository->all();
+        return view('forms.vincula', compact('formulario', 'setores'));
     }
 
     /**
@@ -57,13 +106,6 @@ class FormularioService
      */
     public function create()
     {
-
-        // if (\Auth::user()->contractor_id) {
-        //     $data['contractor_id'] = \Auth::user()->contractor_id;
-        // } else {
-        //     return redirect()->route('forms.index')
-        //         ->with('error', 'Você não pode cadastrar um formulário.');
-        // } 
         
         $teams = Setor::all();
 
@@ -88,91 +130,39 @@ class FormularioService
 
         $formulario = $this->formularioRepository->create([
             'relatorio_id' => $relatorio->id,
-            'descricao' => $data['descricao_formulario']
+            'descricao' => $data['descricao_formulario'],
+            'ano' => $data['ano']
         ]);
 
-        return redirect()->route('forms.edit', $formulario->uuid)->with('message', 'Formulário criado com sucesso.');
-
-        $titulo = array(
-            'setor_id' => $data['setor_id']??null,
-            'descricao' => $data['titulo'],
-            'limite_caracteres' => $data['limite_caracteres_titulo'],
-            'ANO' => Carbon::now()            
-        );         
-
-        $form = $this->formularioRepository->create($titulo);
-
-        // dd($form->id);
-        // Verifica se o arquivo foi enviado
-        if($request->hasFile('imagemTitulo')) {
-            $imagem = $request->file('imagemTitulo');    
-            // Verifica se o arquivo é uma imagem válida
-            if ($imagem->isValid()) {
-                $path = public_path('imagens');
-    
-                // Verifica se o diretório de destino existe, se não, cria
-                if (!File::isDirectory($path)) {
-                    File::makeDirectory($path, 0777, true, true);
-                }
-    
-                // Gera um nome único para a imagem
-                $nomeImagem = $form->uuid.'.' . $imagem->getClientOriginalExtension();
-    
-                // Move o arquivo para o diretório desejado
-                $imagem->move($path, $nomeImagem);
-    
-                // Salva a URL no banco de dados
-                $url = asset('imagens/' . $nomeImagem);
-                $this->formularioRepository->update(['imagem' => $url], $form->id);
-            }
-        }
-
-        if(isset($data["sub_titulos"])){
-            $subTituloArray = $data["sub_titulos"];
-            foreach ($subTituloArray as $key => $value) {
-                if (!empty($value)) {
-                    $data2["sub_titulo_id"] = $form->id;
-                    $data2["descricao"] = $value;
-                    $data2["limite_caracteres"] = $data["limite_caracteres_subtitulo"][$key];
-                    $data2["ANO"] = Carbon::now();
-                    $data2["legenda"] = $data["legendaImagemSubTitulo"][$key];
-                    $data2["tipo_imagem"] = $data["checkImagemSubTitulo"][$key];
-
-                    $sub_titulo = $this->formularioRepository->create($data2);
-                    if($request->hasFile('legendaImagemSubTitulo')) {
-                        $imagem = $request->file('legendaImagemSubTitulo');    
-                        // Verifica se o arquivo é uma imagem válida
-                        if ($imagem->isValid()) {
-                            $path = public_path('imagens');
-                
-                            // Verifica se o diretório de destino existe, se não, cria
-                            if (!File::isDirectory($path)) {
-                                File::makeDirectory($path, 0777, true, true);
-                            }
-                
-                            // Gera um nome único para a imagem
-                            $nomeImagem = $sub_titulo->uuid.'.' . $imagem->getClientOriginalExtension();
-                
-                            // Move o arquivo para o diretório desejado
-                            $imagem->move($path, $nomeImagem);
-                
-                            // Salva a URL no banco de dados
-                            $url = asset('imagens/' . $nomeImagem);
-                            $this->formularioRepository->update(['imagem' => $url], $sub_titulo->id);
-                        }
-                    }
-                }
-            }
-        }
-
-        return redirect()->route('forms.index')
-            ->with('message_form', 'Formulário criado com sucesso.');
+        return redirect()->route('forms.show', $formulario->uuid)->with('message', 'Formulário criado com sucesso.');
     }
 
 
-    public function show($form)
+    public function show($formulario)
     {
-        return view('forms.show', compact('form'));
+        $formularioConcluido = true;
+        if($formulario->secoes){
+            foreach ($formulario->secoes as $secao) {
+                if ($secao->status != 4) {
+                    $formularioConcluido = false;
+                    break; // Se encontrar uma seção com status diferente de 4, podemos parar de verificar
+                }
+            }
+        }
+
+        // dd($formularioConcluido);
+
+        if($formularioConcluido){
+            $formulario->update([
+                'status' => 2
+            ]);
+        }
+
+        $teams = Setor::all();
+        $titulos = $formulario->secoes;
+        $subTitulos = $formulario->secoes;
+
+        return view('forms.show', compact('formulario', 'teams', 'titulos', 'subTitulos'));
     }
 
     /**
@@ -201,7 +191,7 @@ class FormularioService
         $data = $request->all();
 
         try {
-            $this->formRepository->update($data, $form->id);
+            $this->formularioRepository->update($data, $form->id);
         } catch (Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Erro ao tentar editar o item. <br>Erro: '.$e->getMessage());
         }
@@ -218,33 +208,6 @@ class FormularioService
     public function destroy($form)
     {
         try {
-            //Fazendo o recursivo
-
-            // foreach ($form->form_groups as $form_group){
-            //     foreach ($form_group->form_sections as $form_section){
-            //         foreach ($form_section->form_fields as $form_field){
-            //             $form_field->forceDelete();
-            //         }
-            //         $form_section->forceDelete();
-            //     }
-            //     $form_group->forceDelete();
-            // }
-
-            // //Associações de formulários a OSs e OTs
-            // if($form->occurrence_type_forms){
-            //     $occurrence_type_forms = $form->occurrence_type_forms;
-            //     foreach ($occurrence_type_forms as $data){
-            //         $data->forceDelete();
-            //     }
-            // }
-
-            // //Fotos
-            // if($form->occurrence_images){
-            //     $occurrence_images = $form->occurrence_images;
-            //     foreach ($occurrence_images as $data){
-            //         $data->forceDelete();
-            //     }
-            // }
 
             $form->delete();
             return redirect()->route('forms.index')->with('message', 'Item deletado com sucesso.');
@@ -253,4 +216,106 @@ class FormularioService
             return redirect()->route('forms.index')->with('error', 'Erro ao tentar excluir o item. <br>Erro: '.$e->getMessage());
         }
     }
+
+    public function inicia_ajax($formulario)
+    {
+        // Obtém todas as seções do formulário
+        $secoes = $this->secaoFormularioRepository->where('formulario_id', $formulario->id)->get();
+
+        $emailEnviado = false;
+
+        foreach ($secoes as $secao) {
+            $setores = $secao->setor;
+            if ($setores->users) {
+
+                foreach ($setores->users as $usuario) {
+                    if ($usuario && $usuario->roles->contains('name', 'gestor')) {
+                        $envio = $this->send_email($formulario, $usuario, $secao);
+
+                        if (json_decode($envio->getStatusCode(), true) == 200) {
+                            $emailEnviado = true;
+                        } else {
+                            return redirect()->route('forms.index')->with('error', 'E-mail não enviado para ' . $usuario->email . '!');
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($emailEnviado) {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Todos os e-mails foram enviados com sucesso!'
+            ]);
+        } else {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Nenhum e-mail foi enviado!'
+            ]);
+        }
+    }
+
+    public function confirmacao($user, $secao)
+    {
+        if($user->uuid !== auth()->user()->uuid){
+            return redirect()->route('forms.index')->with('error', 'Somente o responsável pode confirmar o e-mail recebido.');
+        }
+        
+        try{
+            $secao->update([
+                'email_status' => 2
+            ]);            
+            return redirect()->route('forms.index')->with('message', 'E-mail confirmado!.');
+        }catch(\Exception $e){
+            return $e->getMessage();
+        }
+    }
+
+    private function send_email($formulario, $user, $secao)
+    {
+        try {
+            $host = env('MAIL_HOST');
+            $port = env('MAIL_PORT');
+            $encryption = env('MAIL_ENCRYPTION');
+            $username = env('MAIL_USERNAME');
+            $password = env('MAIL_PASSWORD');
+
+            $transport = new Swift_SmtpTransport($host, $port, $encryption);
+            $transport->setUsername($username);
+            $transport->setPassword($password);
+
+            $new_mail = new Swift_Mailer($transport);
+
+            Mail::setSwiftMailer($new_mail);
+
+            if ($user->email) {
+                $to = $user->email;
+            } else {
+                $to = "";
+            }
+            $viewName = 'mail.send_relatorio_anual';
+            $subject = "Relatorio anual - Bio-Manguinhos";
+
+            Mail::to($to)->send(new SendMailStart($viewName, $user, $subject));
+
+            $this->formularioRepository->update([
+                'status' => 1
+            ], $formulario->id);
+
+            $this->secaoFormularioRepository->update([
+                'email_status' => 1
+            ], $secao->id);
+
+            return response()->json([
+                'message' => 'E-mail enviado com sucesso!'
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => 'E-mail não enviado!'
+            ], 422);
+        }
+    }
+    
 }
