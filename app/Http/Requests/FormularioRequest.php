@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserRequest extends FormRequest
+class FormularioRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -32,16 +32,13 @@ class UserRequest extends FormRequest
             }
             case 'POST': {
                 return [
-                    'name' => 'required:max:255|min:3|string',
-                    //                    'password' => 'max:15|min:6|string',
-                    //                    'repassword' => 'max:15|min:6|string',
+                    'ano' => 'required|int|unique:formularios'
                 ];
             }
             case 'PUT': {
+                $id = $this->route()->parameter("user")->id;
                 return [
-                    'name' => 'max:255|min:3|string',
-                    //                    'password' => 'max:15|min:6|string',
-//                    'repassword' => 'max:15|min:6|string',
+                    'ano' => 'required|int|unique:formularios'
                 ];
             }
             default:
@@ -49,22 +46,10 @@ class UserRequest extends FormRequest
         }
     }
 
-    //Personalizar mensagem
     public function messages()
     {
         return [
-            //'name.required' => 'O Nome é obrigatório',
-        ];
-    }
-
-    //Tradução dos campos
-    public function attributes()
-    {
-        return[
-            'name' => 'Nome',
-            'email' => 'E-mail',
-            'password' => 'Senha',
-            'repassword' => 'Repetir senha',
+            'ano.required' => 'O ano é obrigatório',
         ];
     }
 }
