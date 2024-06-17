@@ -61,9 +61,12 @@ class WordController extends Controller
             )
         );
 
-        $phpWord->addTitleStyle(1, array('size' => 16), array('numStyle' => 'hNum', 'numLevel' => 0));
-        $phpWord->addTitleStyle(2, array('size' => 14), array('numStyle' => 'hNum', 'numLevel' => 1));
-        $phpWord->addTitleStyle(3, array('size' => 12), array('numStyle' => 'hNum', 'numLevel' => 2));
+        $phpWord->addTitleStyle(1, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => 0));
+        $phpWord->addTitleStyle(2, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => 1));
+        $phpWord->addTitleStyle(3, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => 2));
+        $phpWord->addTitleStyle(4, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => 3));
+        $phpWord->addTitleStyle(5, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => 4));
+        $phpWord->addTitleStyle(6, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => 5));
         $fonte = [
             "name" => "Arial"
         ];
@@ -106,7 +109,7 @@ class WordController extends Controller
         // Adiciona as seções hierarquicamente
         $rootSections = $formulario->secoes->where('secao_id', null);
         foreach ($rootSections as $rootSection) {
-            $this->secaoRecursiva($section1, $rootSection, $tagsToImages, 0);
+            $this->addSectionRecursively($section1, $rootSection, $tagsToImages, 0);
         }
 
         // Adiciona um rodapé
@@ -119,7 +122,6 @@ class WordController extends Controller
         if (file_exists($savePath . DIRECTORY_SEPARATOR . $filename)) {
             unlink($savePath . DIRECTORY_SEPARATOR . $filename);
         }
-
         $phpWord->save($savePath . DIRECTORY_SEPARATOR . $filename);
 
         return redirect()->route('admin.index')->with('message', 'Arquivo criado com sucesso!');
@@ -133,9 +135,9 @@ class WordController extends Controller
      * @param array $tagsToImages
      * @param int $level
      */
-    private function secaoRecursiva($section, $formularioSecao, $tagsToImages, $level)
+    private function addSectionRecursively($section, $formularioSecao, $tagsToImages, $level)
     {
-        // Adiciona o título da seção
+        // Adiciona o título da seção com o nível correto
         $section->addTitle($formularioSecao->descricao, $level + 1);
 
         // Processa o texto para encontrar e substituir as tags de imagem
@@ -171,8 +173,8 @@ class WordController extends Controller
         }
 
         // Adiciona as seções filhas recursivamente
-        foreach ($formularioSecao->filho as $childSection) {
-            $this->secaoRecursiva($section, $childSection, $tagsToImages, $level + 1);
+        foreach ($formularioSecao->filhos as $childSection) {
+            $this->addSectionRecursively($section, $childSection, $tagsToImages, $level + 1);
         }
     }
 
@@ -182,6 +184,12 @@ class WordController extends Controller
         'Tabela' => 1
     ];
 
+    /**
+     * Cria o campo SEQ para legendas.
+     *
+     * @param string $identifier O identificador do campo SEQ (e.g., 'Figura', 'Gráfico', 'Tabela')
+     * @return string O XML do campo SEQ
+     */
     private function createSEQField($identifier)
     {
         if (!isset($this->seqCounters[$identifier])) {
@@ -191,5 +199,5 @@ class WordController extends Controller
         $seqNumber = $this->seqCounters[$identifier]++;
         return '<w:fldSimple w:instr=" SEQ ' . $identifier . ' \* ARABIC "><w:r><w:t>' . $seqNumber . '</w:t></w:r></w:fldSimple>';
     }
-    
 }
+
