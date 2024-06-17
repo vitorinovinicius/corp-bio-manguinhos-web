@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Guilherme
- * Date: 08/11/2016
- * Time: 14:48
- */
 
 namespace App\Services;
 
@@ -12,6 +6,7 @@ namespace App\Services;
 use App\Criteria\TeamSelectCriteria;
 use App\Models\Occurrence;
 use App\Models\User;
+use App\Models\Setor;
 use App\Repositories\TeamRepository;
 use Carbon\Carbon;
 use App\Repositories\OccurrenceRepository;
@@ -87,9 +82,9 @@ class TeamService
 
     public function listTeams()
     {
-        $this->teamRepository->pushCriteria(new TeamSelectCriteria());
+        $teams = Setor::all();
 
-        return $this->teamRepository->paginate();
+        return $teams->paginate();
     }
 
     public function deleteTeam($team)

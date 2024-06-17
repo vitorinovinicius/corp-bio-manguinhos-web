@@ -8,30 +8,24 @@
     <div class="content-header-left col-10 mb-2 mt-1">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h5 class="content-header-title float-left pr-1 mb-0">Arquivos</h5>
+                <h5 class="content-header-title float-left pr-1 mb-0">Relatórios</h5>
                 <div class="breadcrumb-wrapper col-12">
                     <ol class="breadcrumb p-0 mb-0">
                         <li class="breadcrumb-item"><i class="bx bx-home-alt"></i> Home</li>
-                        <li class="breadcrumb-item active">Arquivos</li>
+                        <li class="breadcrumb-item active">Relatórios</li>
                     </ol>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-2 d-flex justify-content-end align-items-center">
-        @shield('files.create')
-        <a class="btn btn-success pull-right" href="{{ route('word.create') }}"><i class="bx bx-plus"></i> Novo</a>
-        @endshield
-    </div>
 @endsection
 
 @section('content')
-    @include('messages')
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="box-title">Arquivos</h3>
+                    <h3 class="box-title">Relatórios</h3>
                 </div>
                 <div class="card-content">
                     <div class="card-body">
@@ -50,10 +44,10 @@
                                         @foreach ($files as $index => $file)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
-                                            <td>{{ $file->getFilename() }}</td>
+                                            <td>{{ str_replace('_', ' ', $file->getFilename()) }}</td>
                                             <td>Disponível</td> <!-- Você pode adicionar lógica para verificar o status do arquivo se necessário -->
                                             <td class="text-right">
-                                                <a href="{{ asset('documents/' . $file->getFilename()) }}" class="btn btn-icon btn-sm btn-primary" data-toggle="tooltip" data-placement="left" title="Baixar arquivo"><i class="bx bx-download"></i></a>
+                                                <a href="{{ asset('relatórios/' . $file->getFilename()) }}" class="btn btn-icon btn-sm btn-primary" data-toggle="tooltip" data-placement="left" title="Baixar arquivo"><i class="bx bx-download"></i></a>
                                                 <!-- Adicione outras opções, como baixar ou excluir o arquivo -->
                                             </td>
                                         </tr>
@@ -103,4 +97,15 @@
             });
         });
     </script>
+    @if(session('message'))
+        <script>
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: '{{ session('message') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
+    @endif
 @endsection

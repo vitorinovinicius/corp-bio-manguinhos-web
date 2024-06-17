@@ -33,16 +33,13 @@ class UserRequest extends FormRequest
             case 'POST': {
                 return [
                     'name' => 'required:max:255|min:3|string',
-                    'email' => 'required|string|unique:users',
                     //                    'password' => 'max:15|min:6|string',
                     //                    'repassword' => 'max:15|min:6|string',
                 ];
             }
             case 'PUT': {
-                $id = $this->route()->parameter("user")->id;
                 return [
                     'name' => 'max:255|min:3|string',
-                    'email' => 'required|string|unique:users,email,'.$id,
                     //                    'password' => 'max:15|min:6|string',
 //                    'repassword' => 'max:15|min:6|string',
                 ];

@@ -11,7 +11,6 @@
     use App\Traits\Uuids;
     use Prettus\Repository\Contracts\Transformable;
     use Prettus\Repository\Traits\TransformableTrait;
-    use Spatie\Activitylog\Traits\LogsActivity;
 
     class User extends Authenticatable implements Transformable
     {
@@ -21,79 +20,19 @@
         use HasApiTokens;
         use HasDefender;
         use SoftDeletes;
-        use LogsActivity;
         use Multitenantable;
 
 
         protected $fillable = [
             'id',
             'uuid',
-            'contractor_id',
             'name',
-            'lastname',
             'email',
             'password',
-            'registry',
             'cpf',
-            'device',
-            'device_version',
-            'longitude',
-            'latitude',
-            'last_connection',
             'status',
-            'address',
-            'number',
-            'cep',
-            'district',
-            'city',
-            'uf',
-            'complement',
-            'expiration',
-            'last_login',
-            'ip',
-            'platform_mobile',
-            'model',
-            'valid',
-            'certificate',
-            'analisador',
-            'manometro',
-            'cronometro',
-            'trena',
-            'detector_de_gas',
-            'paquimetro',
-            'assinatura',
-            'foto',
-            'ecc',
-            'type_operator',
-            'manometro_certificado',
-            'manometro_validade',
-            'analisador_certificado',
-            'analisador_validade',
-            'vehicle_id',
-            'cnh',
-            'cnh_type',
-            'cnh_expires',
-            'manometro_calibracao',
-            'analisador_calibracao',
-            'battery',
-            'theme',
-            'operator_start_point',
-            'operator_arrival_point',
-            'signature',
-            "operator_start_lat",
-            "operator_start_lng",
-            "operator_arrival_lat",
-            "operator_arrival_lng",
-            "workday_id",
-            "mobile_number",
         ];
-
-        /**
-         * The attributes that are mass assignable.
-         *
-         * @var array
-         */
-        protected static $logAttributes = ['name', 'email', 'cpf', 'contractor_id', 'device', 'device_version', 'longitude', 'latitude', 'last_connection', 'password', 'status', 'mobile_number', 'platform_mobile', 'model', 'vehicle_id', 'cnh', 'last_login', 'ip', 'cnh_type', 'battery', 'theme'];
+        
         /**
          * The attributes that should be hidden for arrays.
          *
@@ -101,14 +40,9 @@
          */
         protected $hidden = ['password', 'remember_token',];
 
-        public function teams()
+        public function secaoFormulario()
         {
-            return $this->belongsToMany(Team::class, 'user_team', 'user_id', 'team_id');
-        }
-
-        public function user_teams()
-        {
-            return $this->hasMany(UserTeam::class, "user_id");
+            return $this->hasMany(SecaoFormulario::class);
         }
 
         public function role_users()
@@ -121,64 +55,29 @@
             return $this->belongsToMany(Role::class, 'role_user');
         }
 
-        public function regions()
+        public function hasRole($roleName)
         {
-            return $this->belongsToMany(Region::class, 'region_users', 'user_id', 'region_id');
+            return $this->roles->contains('name', $roleName);
         }
 
-        public function contractor()
+        public function setores()
         {
-            return $this->hasOne(Contractor::class, 'id', 'contractor_id');
+            return $this->belongsToMany(Setor::class, 'user_setores');
         }
 
-        public function occurrences()
+        public function user_setores()
         {
-            return $this->hasMany(Occurrence::class, 'operator_id');
+            return $this->hasMany(UserSetores::class, "user_id");
         }
 
-        public function realocations()
+        public function emailsEnviados()
         {
-            return $this->hasMany(Reallocation::class, "operator_id");
+            return $this->hasMany(Email::class, 'remetente_id');
         }
-
-        public function trakings()
+    
+        public function emailsRecebidos()
         {
-            return $this->hasMany(Traking::class, "user_id");
-        }
-
-        public function financial_communications()
-        {
-            return $this->hasMany(FinancialCommunication::class, 'user_id');
-        }
-
-        public function financials()
-        {
-            return $this->hasMany(Financial::class, 'user_id');
-        }
-
-        public function occurrence_archives()
-        {
-            return $this->hasMany(OccurrenceArchive::class, 'user_id');
-        }
-
-        public function vehicle()
-        {
-            return $this->hasOne(Vehicle::class, 'id', 'vehicle_id');
-        }
-
-        public function move()
-        {
-            return $this->hasMany(Move::class, 'operator_id');
-        }
-
-        public function routings()
-        {
-            return $this->hasMany(Routing::class, 'operator_id');
-        }
-
-        public function occurrence_clients()
-        {
-            return $this->belongsToMany(OccurrenceClient::class);
+            return $this->hasMany(Email::class, 'destinatario_id');
         }
 
         public function occurrencesDays()
@@ -311,43 +210,7 @@
             });
         }
 
-        public function finish_work_days()
-        {
-            return $this->hasMany(FinishWorkDay::class, 'operator_id');
-        }
-
-        public function checklist_vehicles()
-        {
-            return $this->hasMany(ChecklistVehicleBasic::class, 'condutor_id');
-        }
-
-        public function occurrence_orders()
-        {
-            return $this->belongsTo(OccurrenceOrder::class, "operator_id");
-        }
-
-        public function skills()
-        {
-            return $this->belongsToMany(Skill::class, 'user_skills', 'user_id', 'skill_id');
-        }
-
-        public function equipments()
-        {
-            return $this->hasMany(Equipment::class);
-        }
-
-        public function workday()
-        {
-            return $this->belongsTo(Workday::class,'workday_id');
-        }
-
-        public function groups()
-        {
-            return $this->belongsToMany(Group::class);
-        }
-
-
-
+        
         // INÍCIO HELPERS DO MODEL
 
         public function last_connection()
@@ -402,27 +265,6 @@
         {
             return $this->cnh_expires ? date('d/m/Y', strtotime($this->cnh_expires)) : '';
         }
-
-        public function planOccurrences()
-        {
-            return $this->hasMany(PlanOccurrence::class, 'operator_id');
-        }
-
-        public function alerts()
-        {
-            return $this->hasMany(Alert::class, 'user_id');
-        }
-
-        public function zones()
-        {
-            return $this->belongsToMany(Zone::class);
-        }
-
-        public function tikets()
-        {
-            return $this->hasMany(Ticket::class);
-        }
-
 
         public function getDescriptionForEvent($eventName)
         {

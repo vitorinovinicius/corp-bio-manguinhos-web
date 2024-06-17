@@ -25,7 +25,7 @@
                     <a class="btn btn-warning btn-group" role="group" href="{{ route('users.edit', $user->uuid) }}"><i class="bx bx-edit"></i> Editar</a>
                     @endshield
                     @shield('users.destroy')
-                    <button type="submit" class="btn btn-danger">Excluir <i class="bx bx-trash"></i></button>
+                    <button type="submit" class="btn btn-danger btn-group" role="group">Excluir <i class="bx bx-trash"></i></button>
                     @endshield
                 </div>
             @endif
@@ -75,36 +75,28 @@
                                 </div>
                             </div>
                         </div>
-                        @if($user->contractor)
+                        @if($setores->count())
+                            @foreach($setores as $setor)
                             <div class="row">
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <label for="name">Empreiteira</label>
-                                        <p class="form-control-static">{{$user->contractor->name}}</p>
+                                        <label for="name">Setor</label>
+                                        <p class="form-control-static">{{$setor->name}}</p>
                                     </div>
                                 </div>
                             </div>
+                            @endforeach
                         @endif
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group">
                                     <label for="name">Tipo de Usuário</label>
-                                    <p class="form-control-static">
+                                    <p>
                                         <span class="badge bg-blue">{{ $user->roles->implode("name", " | ") }}</span>
                                     </p>
                                 </div>
                             </div>
-                        </div>                       
-                        @if(count($user->regions()->get()))
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label for="name">Região</label>
-                                        <p class="form-control-static">{{$user->regions()->get()->implode('name', ', ')}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
+                        </div>      
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group">
@@ -118,23 +110,18 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label for="name">Senha</label>
-                                        <p class="form-control-static">
+                                        <p>
                                             <a href="{{route('users.change_password',$user->uuid)}}" class="btn btn-warning">Alterar senha</a>
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         @endif
+                    </div>
+                    <div class="card-footer">
                         <div class="row">
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="name">Assinatura</label>
-                                    @if($user->signature)
-                                        <img src="{{$user->signature}}" class="h-100 w-100 rounded-left img-assinatura">
-                                    @else
-                                        <p class="form-control-static"> Não há assinatura cadastrada </p>
-                                    @endif
-                                </div>
+                            <div class="col-12 d-flex justify-content-end">
+                                <a class="btn btn-link  pull-left" href="{{URL::previous()}}"><i class="bx bx-arrow-back"></i> Voltar</a>
                             </div>
                         </div>
                     </div>
@@ -142,59 +129,6 @@
             </div>
         </div>
     </div>
-    @if(!$user->hasRole('cliente'))
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="box-title">Equipes</h3>
-                </div>
-                <div class="card-content">
-                    <div class="card-body">
-                        <table class="table table-condensed table-striped table-sm table-hover">
-                            <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nome</th>
-                                <th>Supervisor</th>
-
-                                <th>Criado</th>
-                                <th>Modificado</th>
-
-                                <th class="text-right">OPÇÕES</th>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-                            @foreach($teams as $team)
-                                <tr>
-                                    <td>{{$team->id}}</td>
-                                    <td>{{$team->name}}</td>
-                                    <td>{{ optional($team->users()->wherePivot('is_supervisor',1)->first())->name }}</td>
-                                    <td>{{ date('d/m/Y H:i:s', strtotime($team->created_at)) }}</td>
-                                    <td>{{ date('d/m/Y H:i:s', strtotime($team->updated_at)) }}</td>
-
-                                    <td class="text-right">
-                                        @is(['admin','superuser'])
-                                        <a href="{{ route('teams.show', $team->uuid) }}" class="btn btn-icon btn-sm btn-primary" data-toggle="tooltip" data-placement="left" title="Exibir"><i class="bx bx-book-open"></i></a>
-                                        @endis
-                                    </td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            {!! $teams->render() !!}
-        </div>
-    </div>
-    @endif
-    @if($user->hasRole('cliente'))
-        @include("users.groups.groups")
-    @endif
-
-    <a class="btn btn-primary" href="{{ route('users.index') }}"><i class="bx bx-arrow-back"></i> Voltar</a>
 
 @endsection
 @section('scripts')
@@ -207,43 +141,6 @@
                     $('.ids_check_groups').prop('checked', true);
                 } else {
                     $('.ids_check_groups').prop('checked', false);
-                }
-            });
-
-            $(document).on('click', '#btn-attr-group', function (e) {
-                e.preventDefault();
-                
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
-                var ids = [];
-                $.each($('.tb-groups tbody :checked'), function (i, v) {
-                    ids.push($(v).val())
-                });
-                if (ids.length == 0) {
-                    alert('Selecione pelo menos um item');
-                } else {
-                    jQuery.ajax({
-                        type: 'POST',
-                        url: '{!!  route('groups.desassociate.store', [$user->uuid]) !!} ',
-                        data: "ids=" + ids,
-
-                        success: function (data) {
-                            console.log(data);
-                            if (data.retorno = 1) {
-                                alert(data.mensagem);
-                                location.reload(true);
-                            } else {
-                                alert("Ocorreu algum erro, tente novamente a operação \n " + data.mensagem);
-                                // location.reload();
-                            }
-                        },
-                        error: function () {
-                            alert("Ocorreu um erro inesperado durante o processamento!\n Recarrege a página e tente novamente.");
-                        }
-                    });
                 }
             });
         })

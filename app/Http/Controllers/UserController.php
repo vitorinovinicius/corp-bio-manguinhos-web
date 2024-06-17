@@ -1,7 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Criteria\UserClientSelectCriteria;
-use App\Repositories\ContractorRepository;
+use App\Repositories\SetorRepository;
 use App\Services\ContractorService;
 use App\Services\RegionService;
 use Artesaos\Defender\Facades\Defender;
@@ -18,33 +18,29 @@ class UserController extends Controller {
 	 * @var UserService
 	 */
 	private $userService;
-	private $contractorService;
 	private $regionService;
     /**
-     * @var ContractorRepository
+     * @var SetorRepository
      */
-    private $contractorRepository;
+    private $setorRepository;
 
     private $userRepository;
 
     /**
      * UserController constructor.
      * @param UserService $userService
-     * @param ContractorService $contractorService
      * @param RegionService $regionService
-     * @param ContractorRepository $contractorRepository
+     * @param SetorRepository $setorRepository
      */
-    public function __construct(UserService $userService,
-                                ContractorService $contractorService,
-                                RegionService $regionService, ContractorRepository $contractorRepository,
-                                UserRepository $userRepository
+    public function __construct(
+		UserService $userService,
+        UserRepository $userRepository,
+        SetorRepository $setorRepository
     )
 	{
 		$this->userService = $userService;
-		$this->regionService = $regionService;
-		$this->contractorService = $contractorService;
-        $this->contractorRepository = $contractorRepository;
         $this->userRepository = $userRepository;
+        $this->setorRepository = $setorRepository;
     }
 
 	/**
@@ -75,14 +71,10 @@ class UserController extends Controller {
 	 */
 	public function create()
 	{
-		$roles          = Defender::rolesList();
-		$contractors    = $this->contractorRepository->findWhere([
-            'status' => 1,
-            'visibility' => 1
-        ])->all();
-		$regions        = $this->regionService->listRegions();
+		$roles = Defender::rolesList();
+		$setores    = $this->setorRepository->all();
 
-		return view('users.create', compact('roles','contractors','regions'));
+		return view('users.create', compact('roles','setores'));
 	}
 
 	/**
@@ -119,23 +111,9 @@ class UserController extends Controller {
 	public function edit(User $user)
 	{
         $roles          = Defender::rolesList();
-        $contractors    = $this->contractorRepository->findWhere([
-            'status' => 1,
-            'visibility' => 1
-        ])->all();
-        $regions        = $this->regionService->listRegions();
-        $selectedRegions = [];
+		$selectedRoles = $user->roles->pluck('id')->toArray();
 
-        foreach($user->regions as $region) {
-            $selectedRegions[] = $region->id;
-        }
-
-        $selectedRoles = [];
-        foreach($user->roles as $role) {
-            $selectedRoles[] = $role->id;
-        }
-
-        return view('users.edit', compact('user','roles','contractors','regions','selectedRoles','selectedRegions'));
+        return view('users.edit', compact('user','roles', 'selectedRoles'));
 	}
 
 	/**
@@ -182,15 +160,15 @@ class UserController extends Controller {
 
     }
 
-    public function associate_client(User $user)
-    {
-        return $this->userService->associate_client($user);
-    }
+    // public function associate_client(User $user)
+    // {
+    //     return $this->userService->associate_client($user);
+    // }
 
-    public function associate_client_store(User $user, Request $request)
-    {
-        return $this->userService->associate_client_store($user, $request);
-    }
+    // public function associate_client_store(User $user, Request $request)
+    // {
+    //     return $this->userService->associate_client_store($user, $request);
+    // }
 
     public function disassociate_client_store(User $user, Request $request)
     {

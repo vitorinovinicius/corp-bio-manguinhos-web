@@ -17,14 +17,6 @@ class TenantMiddleware
     {
         $user    = \Auth::user();
         $driver  = \Auth::getDefaultDriver();
-        $contractor = null;
-
-         // Ignora a empresa do superuser ou usuario da empresa CS
-         if (! $user->isSuperUser()) {
-            $contractor = $user->contractor;
-        }
-     
-        \Tenant::setTenant($contractor);
 
         // libera a requisicao para usuarios da API
         if ($driver == "api") {

@@ -25,64 +25,22 @@ class CreateUsersTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->uuid('uuid');
-            $table->unsignedInteger('contractor_id')->nullable();
             $table->string('name');
-            $table->string('lastname')->nullable();
             $table->string('email');
-            $table->string('registry')->nullable();
             $table->string('password');
             $table->string('cpf')->nullable();
-            $table->string('device')->nullable();
-            $table->string('device_version')->nullable();
-            $table->string('longitude')->nullable();
-            $table->string('latitude')->nullable();
-            $table->dateTime('last_connection')->nullable();
             $table->integer('status')->default('1');
-            $table->string('address')->nullable();
-            $table->integer('number')->nullable();
-            $table->string('cep')->nullable();
-            $table->string('district')->nullable();
-            $table->string('city')->nullable();
-            $table->string('uf')->nullable();
-            $table->string('complement')->nullable();
-            $table->dateTime('expiration')->nullable();
-            $table->dateTime('last_login')->nullable();
-            $table->string('ip')->nullable();
-            $table->integer('mobile_number')->nullable();
-            $table->string('platform_mobile')->nullable();
-            $table->string('model')->nullable();
-            $table->date('valid')->nullable();
-            $table->string('certificate')->nullable();
-            $table->string("analisador")->nullable();
-            $table->string("manometro")->nullable();
-            $table->string("cronometro")->nullable();
-            $table->string("trena")->nullable();
-            $table->string("detector_de_gas")->nullable();
-            $table->string("paquimetro")->nullable();
-            $table->string("assinatura")->nullable();
-            $table->string("foto")->nullable();
-            $table->string("ecc")->nullable();
+            $table->string('token_access')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
 
             $table->index(["name"], 'users_name_idx');
 
-            $table->index(["email"], 'users_email_idx');
-
-            $table->index(["contractor_id"], 'fk_users_contractors1_idx');
-
             $table->unique(["id"], 'id_UNIQUE');
 
             $table->unique(["uuid"], 'users_uuid_unique');
 
-            $table->unique(["email"], 'users_email_unique');
-
-
-            $table->foreign('contractor_id', 'fk_users_contractors1_idx')
-                ->references('id')->on('contractors')
-                ->onDelete('restrict')
-                ->onUpdate('cascade');
         });
     }
 

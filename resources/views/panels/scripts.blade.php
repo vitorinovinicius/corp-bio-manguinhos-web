@@ -25,6 +25,9 @@
     <script src="{{asset('js/scripts/footer.js')}}"></script>
     <script src="{{asset('js/scripts/customizer.js')}}"></script>
     <script src="{{asset('assets/js/scripts.js')}}"></script>
+    <script src="{{ asset('assets/plugins/sweetalert2-11/src/sweetalert2.all.min.js') }}"></script>
+    <script src="/bower_components/AdminLTE/plugins/select2/select2.full.min.js"></script>
+    <script src="{{asset('assets/plugins/smartwizard/dist/js/jquery.smartWizard.min.js')}}"></script>
     <!-- END: Theme JS-->
 
     <!-- BEGIN: Page JS-->

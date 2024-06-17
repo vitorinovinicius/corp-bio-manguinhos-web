@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
-use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * Class Formulario.
@@ -20,7 +19,6 @@ class Formulario extends Model implements Transformable
     use TransformableTrait;
     use Uuids;
     use SoftDeletes;
-    use LogsActivity;
     use Multitenantable;
 
     /**
@@ -29,16 +27,36 @@ class Formulario extends Model implements Transformable
      * @var array
      */
     protected $fillable = [
-        'setor_id',
-        'titulo',
-        'sub_titulo',
-        'limite_caracteres',
-        'ANO'
+        'relatorio_id',
+        'descricao',
+        'status',
+        'ano'
     ];
 
-    public function team()
+    public function setor()
     {
-        return $this->hasOne(Team::class, 'id');
+        return $this->belongsTo(Setor::class);
+    }
+
+    public function secoes()
+    {
+        return $this->hasMany(SecaoFormulario::class);
+    }
+    
+    public function relatorio()
+    {
+        return $this->belongsTo(Relatorio::class, 'id');
+    }
+
+    public function status()
+    {
+        if ($this->status == 0) {
+            return "Não iniciado";
+        } else if ($this->status == 1) {
+            return "Em andamento";
+        } else {
+            return "Concluído";
+        }
     }
 
 }

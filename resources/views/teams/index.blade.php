@@ -43,8 +43,7 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Nome</th>
-                                            <th>Supervisor</th>
-
+                                            <th>Gerente</th>
                                             <th>Criado</th>
                                             <th>Modificado</th>
 
@@ -59,7 +58,15 @@
                                             <td>
                                                 <a class="btn-link" href="{{ route('teams.show', $team->uuid) }}">{{$team->name}}</a>
                                             </td>
-                                            <td>{{ $team->users()->wherePivot('is_supervisor',1)->get()->implode('name', ' | ') }}</td>
+                                            <td>
+                                                <ul>
+                                                    @foreach($team->user_setores as $userSetor)
+                                                        @if(!$userSetor->user->hasRole('colaborador'))
+                                                        <li>{{ $userSetor->user->name}}</li>
+                                                        @endif
+                                                    @endforeach
+                                                </ul>
+                                            </td>
                                             <td>{{ date('d/m/Y H:i:s', strtotime($team->created_at)) }}</td>
                                             <td>{{ date('d/m/Y H:i:s', strtotime($team->updated_at)) }}</td>
 
@@ -67,7 +74,7 @@
                                                 @shield('team.show')
                                                 <a href="{{ route('teams.show', $team->uuid) }}" class="btn btn-icon btn-sm btn-primary" data-toggle="tooltip" data-placement="left" title="Exibir"><i class="bx bx-book-open"></i></a>
                                                 @endshield
-                                                @shield('team.edit')
+                                                {{-- @shield('team.edit')
                                                 <a href="{{ route('teams.edit', $team->uuid) }}" class="btn btn-icon btn-sm btn-warning" data-toggle="tooltip" data-placement="left" title="Editar"><i class="bx bx-pencil"></i></a>
                                                 @endshield
                                                 @shield('team.destroy')
@@ -78,7 +85,7 @@
                                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                     <button type="submit" class="btn btn-icon btn-sm btn-danger" data-toggle="tooltip" data-placement="left" title="Deletar"><i class="bx bx-trash"></i></button>
                                                 </form>
-                                                @endshield
+                                                @endshield --}}
                                             </td>
                                         </tr>
                                     @endforeach

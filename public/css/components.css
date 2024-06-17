@@ -198,7 +198,8 @@ html p {
 }
 
 html .bg-full-screen-image {
-  background: url(/images/auth-bg.jpg?7907699dbdeaa85a3157b5cdb8ec00dd) no-repeat center center;
+  background: url(/images/fiocruz-bg.png?7907699dbdeaa85a3157b5cdb8ec00dd) no-repeat center center;
+  background-color: #2e64f7;
   background-size: cover;
 }
 

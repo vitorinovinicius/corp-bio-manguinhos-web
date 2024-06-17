@@ -60,9 +60,7 @@
                                 <div class="row">
                                     <div class="col-12 d-flex justify-content-end">
                                         <button type="submit" class="btn btn-primary">Salvar</button>
-                                        <a class="btn btn-link pull-right"
-                                           href="{{ route('users.show',$user->uuid) }}"><i
-                                                class="bx bx-arrow-back"></i> Voltar</a>
+                                        <a class="btn btn-link  pull-left" href="{{URL::previous()}}"><i class="bx bx-arrow-back"></i> Voltar</a>
                                     </div>
                                 </div>
                             </div>

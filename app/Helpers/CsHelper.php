@@ -1,8 +1,38 @@
 <?php
 
-    use App\Models\ActivityLog;
-    use App\Models\Alert;
+use App\Mail\SendMailTest;
+use App\Models\ActivityLog;
+use App\Models\Alert;
 use Carbon\Carbon;
+
+if (!function_exists('send_email')) {
+
+    function send_email($viewName, $data, $subject = null)
+    {
+        $host = env('MAIL_HOST');
+        $port = env('MAIL_PORT');
+        $encryption = env('MAIL_ENCRYPTION');
+        $username = env('MAIL_USERNAME');
+        $password = env('MAIL_PASSWORD');
+
+        $transport = new Swift_SmtpTransport($host, $port, $encryption);
+        $transport->setUsername($username);
+        $transport->setPassword($password);
+
+        $new_mail = new Swift_Mailer($transport);
+
+        Mail::setSwiftMailer($new_mail);
+
+        if($data){
+            $to = $data->email;
+        }else{
+            $to = "";
+        }
+
+        Mail::to($to)->send(new SendMailTest($viewName, $data, $subject));
+
+    }
+}
 
 if (!function_exists('tipoAssinatura')) {
     function tipoAssinatura($type_id)

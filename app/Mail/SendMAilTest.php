@@ -2,30 +2,29 @@
 
 namespace App\Mail;
 
-use App\Repositories\FormGroupRepository;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 
-class SendMAilTest extends Mailable
+class SendMailTest extends Mailable
 {
     use Queueable, SerializesModels;
 
-    private $contractor;
-    
+    private $viewName;
+    private $data;
+    private $subjectSend;
 
     /**
      * Create a new message instance.
      *
-     * @param $occurrence
-     * @param $form_groups
+     * @return void
      */
-    public function __construct($contractor)
+    public function __construct($view, $data, $subjectSend)
     {
-        //
-        $this->contractor = $contractor;
+        $this->viewName = $view;
+        $this->data = $data;
+        $this->subjectSend = $subjectSend;
     }
 
     /**
@@ -35,23 +34,16 @@ class SendMAilTest extends Mailable
      */
     public function build()
     {
-        if ($this->contractor->mail_from_address) {
-            $from_email = $this->contractor->mail_from_address;
-            $from_name = $this->contractor->name;
-        }else{
-            $from_email = env('MAIL_FROM_ADDRESS');
-            $from_name = env('MAIL_FROM_NAME');
+        $from_email = env('MAIL_FROM_ADDRESS');
+        $from_name = env('MAIL_FROM_NAME');
+
+        try{
+            $this->view($this->viewName, ['data'=>$this->data])
+                ->from($from_email, $from_name)
+                ->subject($this->subjectSend);
+        }catch(\Exception $e){
+            return $e->getMessage();
         }
         
-        return $this
-            ->from($from_email,$from_name)
-            ->replyTo($from_email,$from_name)
-            ->subject("Teste de envio de e-mail")
-            ->view('mail.mail_teste')
-            ->with([
-                "contractor" => $this->contractor,
-            ])
-            
-        ;
     }
 }

@@ -31,8 +31,10 @@ License: You must have a valid license purchased only from themeforest(the above
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Bio-Manguinhos {{env('APP_ENV')}} @yield('title')</title>
-    <link rel="apple-touch-icon" href="{{asset('images/ico/apple-icon-120.png')}}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{asset('images/ico/favicon.ico')}}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{asset('img/contractor/1/logo.png')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('assets/plugins/sweetalert2-11/src/sweetalert2.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('assets/plugins/smartwizard/dist/css/smart_wizard.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('assets/plugins/smartwizard/dist/css/smart_wizard_dots.min.css')}}">
 
     {{-- Include core + vendor Styles --}}
     @include('panels.styles')

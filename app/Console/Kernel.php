@@ -29,6 +29,7 @@ class Kernel extends ConsoleKernel
         //          ->hourly();
 
         $schedule->command('activitylog:clean')->daily();
+        $schedule->call('App\Http\Controllers\SecaoFormularioController@envioEmail')->everyMinute();
 
     }
 

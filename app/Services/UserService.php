@@ -7,9 +7,9 @@ use App\Models\OccurrenceClient;
 use Artesaos\Defender\Facades\Defender;
 use App\Criteria\UsersSelectCriteria;
 use App\Repositories\UserRepository;
+use App\Repositories\UserSetoresRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Repositories\OccurrenceClientRepository;
 
 class UserService
 {
@@ -17,15 +17,16 @@ class UserService
      * @var UserRepository
      */
     private $userRepository;
-    /**
-     * @var OccurrenceClientRepository
-     */
-    private $occurrenceClientRepository;
 
-    public function __construct(UserRepository $userRepository, OccurrenceClientRepository $occurrenceClientRepository)
+    /**
+     * @var UserSetoresRepository
+     */
+    private $userSetoresRepository;
+
+    public function __construct(UserRepository $userRepository, UserSetoresRepository $userSetoresRepository)
     {
-        $this->userRepository = $userRepository;
-        $this->occurrenceClientRepository = $occurrenceClientRepository;
+        $this->userRepository           = $userRepository;
+        $this->userSetoresRepository    = $userSetoresRepository;
     }
 
     public function listUsers()
@@ -41,68 +42,45 @@ class UserService
         $data = $request->all();
         $data["password"] = bcrypt($data["password"]);
 
-        if(Defender::is("admin")){
-            $data["contractor_id"]  = Auth::user()->contractor_id;
-        }else{
-            if(isset($data["contractor_id"]) && $data["contractor_id"] == "0"){
-                $data["contractor_id"] = null;
-            }
-        }
-
-
         $newUser = $this->userRepository->create($data);
 
-        if (isset($data["signature"]) && !empty($data["signature"])) {
-            $upload = $this->uploadS3($request->file("signature"), $newUser->id);
-            $this->userRepository->update(['signature' => $upload], $newUser->id);
-        }
-
-
-        if(!in_array(Defender::findRole("gestor")->id, $data["role_id"])) {
-
-            if (isset($data['region_id'])) {
-                $newUser->regions()->attach($data['region_id']);
-            }
-
-        }
+        $this->userSetoresRepository->create([
+            'user_id' => $newUser->id,
+            'setor_id' => $data['setor_id']
+        ]);
 
         if (isset($data['role_id'])) {
             $newUser->syncRoles($data["role_id"]);
         }
+
+        return redirect()->route('users.index')->with('message', 'Usuário criado com sucesso.');
     }
 
     public function editUser($request, $user)
     {
 
-        //todo: Verifica se o usuário pertence a alguma equipe
-//        if(count($user->teams)){
-//            return redirect()->route('users.index')->with('error', 'Usuário '.$user->name.' não pode ser alterado pois ainda pertence a alguma equipe.');
-//        }
-
         $data = $request->all();
 
-        if(Defender::is("admin")){
-            $data["contractor_id"]  = Auth::user()->contractor_id;
-        }else{
-            if(isset($data["contractor_id"]) && $data["contractor_id"] == "0"){
-                $data["contractor_id"] = null;
-            }
-        }
+        $user->update($data);
 
-        $this->userRepository->update($data, $user->id);
-
-        if (isset($data["signature"]) && !empty($data["signature"])) {
-            $upload = $this->uploadS3($request->file("signature"), $user->id);
-            $this->userRepository->update(['signature' => $upload], $user->id);
-        }
+        $this->userSetoresRepository->where(
+            [
+                [
+                    'user_id', $user->id
+                ],
+                [
+                    'setor_id', $user['setor_id']
+                ]
+            ]
+        )->update([
+            'user_id' => $user->id,
+            'setor_id' => $data['setor_id']
+        ]);
 
         if (isset($data['role_id'])) {
             $user->syncRoles($data["role_id"]);
         }
 
-        if (isset($data['region_id'])) {
-            $user->regions()->sync($data['region_id']);
-        }
         return redirect()->route('users.index')->with('message', 'Usuário atualizado com sucesso.');
 
     }
@@ -128,10 +106,10 @@ class UserService
         return redirect()->route('users.show',$user->uuid)->with('message', 'Senha alterada com sucesso.');
     }
 
-    public function showUser($user){
-        //Pega as equipes que o usuário participa
-        $teams = $user->teams()->paginate();
-        return view('users.show', compact('user','teams'));
+    public function showUser($user)
+    {
+        $setores = $user->setores;
+        return view('users.show', compact('user','setores'));
     }
 
     public function all(){
@@ -152,58 +130,6 @@ class UserService
             return response()->json(["success" => "Theme recebido com sucesso"]);
         } catch (\Exception $exception) {
             return response()->json(["error" => "Erro ao processar theme"], 500);
-        }
-    }
-
-    public function associate_client($user)
-    {
-        $occurrence_clients = $this->occurrenceClientRepository->where('contractor_id', $user->contractor_id)->get();
-        return view('users.clients.associate_cliets', compact('user', 'occurrence_clients'));
-    }
-
-    public function associate_client_store($user, $request)
-    {
-        try{
-            $data = $request->all();
-
-            $occurrenceClient = OccurrenceClient::find($data['occurrence_client_id']);
-            $user->occurrence_clients()->save($occurrenceClient);
-        }catch (Exception $e){
-            return redirect()->back()->withInput()->with('error', 'Erro ao tentar associar um cliente. <br>Erro: '.$e->getMessage());
-        }
-
-        return redirect()->route('users.clients')->with('message', 'Cliente associado com sucesso.');
-    }
-
-    public function disassociate_client_store($user, $request)
-    {
-        try{
-            $data = $request->all();
-
-            $user->occurrence_clients()->detach($data['occurrence_client_id']);
-        }catch (Exception $e){
-            return redirect()->back()->withInput()->with('error', 'Erro ao tentar remover cliemte. <br>Erro: '.$e->getMessage());
-        }
-
-        return redirect()->route('users.clients')->with('message', 'Cliente removido com sucesso.');
-
-    }
-
-    private function uploadS3($arquivo, $occurrence_id)
-    {
-        $archivePath = "temp/";
-        $fileName = md5(date("Y_m_d_h_i_s")) . "." . $arquivo->getClientOriginalExtension();
-        $path = $archivePath . $fileName;
-        $arquivo->move($archivePath, $fileName);
-        $s3Client = Storage::disk('s3');
-        $image_name = env("S3_PATH") . get_contractor_to_s3() . "images/occurrences/" . $occurrence_id . "/" . $fileName;
-
-
-        if (\File::exists($path)) {
-            $contents = \File::get($path);
-            $s3Client->put($image_name, $contents);
-            \File::delete($path);
-            return $s3Client->url($image_name);
         }
     }
 }
