@@ -61,7 +61,7 @@
                             <h4>Seção #{{$secao->id}}</h4>
                             <div class="smartwizard-container">
                                 
-                                <div id="smartwizard-{{ $secao->id }}" class="smartwizard">
+                                <div id="smartwizard-{{ $secao->id }}" class="smartwizard_{{ $secao->status }}">
                                     <ul class="nav">
                                         <li class="nav-item">
                                             <a class="nav-link" href="#step-1-{{ $secao->id }}">Pendente</a>
@@ -106,9 +106,9 @@
                             @csrf
                             @method("PUT")
                             @if(auth()->user()->id == $secao->user_id)
-                            @php
-                                $validacao_status = array(2, 4);
-                            @endphp
+                                @php
+                                    $validacao_status = array(2, 4);
+                                @endphp
                                 @if(!in_array($secao->statu, $validacao_status) && $secao->status == 3 && $secao->email_status == 2 || $secao->status == 1 && $secao->email_status !== 1)
                                     <div class="card-body">
                                         <div class="row">
@@ -163,7 +163,7 @@
                                                         <div class="card">
                                                             <div class="card-content">
                                                                 <div class="card-body">
-                                                                    <small><strong>[img{{ $imagem->id }}]</strong></small>
+                                                                    <small class="badge badge-primary"><strong>[img{{ $imagem->id }}]</strong></small>
                                                                     <div style="display: inline-block; position: relative;">
                                                                         <img src="{{ asset($imagem->url_imagem) }}" alt="{{ $imagem->legenda }}" class="card-img-top" style="width: 100%; cursor: pointer;" onclick="inserirImagemTag('{{ $imagem->id }}','{{ $secao->id }}')">
                                                                         <a href="{{ route('imagens.edit', $imagem->uuid) }}" class="btn btn-warning btn-icon btn-sm" data-toggle="tooltip" data-placement="bottom" title="Editar imagem" data-uuid="{{ $imagem->uuid }}" style="position: absolute; top: 40px; right: 5px;"><i class="bx bx-pencil"></i></a>
@@ -193,9 +193,19 @@
                                 @else
                                     <div class="card-body">
                                         <div class="row">
+                                            @if($secao->status == 2 && $secao->email_status == 1) 
+                                            <div class="col-12 d-flex justify-content-center">
+                                                <p><span class="badge badge-warning"> Acesse a sua caixa de e-mail e confirme o recebimento.</span></p>
+                                            </div>
+                                            @elseif($secao->status == 4 && $secao->email_status == 2)
+                                            <div class="col-12 d-flex justify-content-center">
+                                                <p><span class="badge badge-success"> Seção finalizada!</span></p>
+                                            </div>
+                                            @else
                                             <div class="col-12 d-flex justify-content-center">
                                                 <p><span class="badge badge-warning"> Aguardando confirmação de e-mail</span></p>
                                             </div>
+                                            @endif
                                             <div class="col-6">
                                                 <div class="form-group">
                                                     <label for="name">Setor</label>
@@ -442,7 +452,7 @@
             var status = {{ $secao->status }}; // Define o passo atual com base no status passado do Laravel
             var smartwizardId = "#smartwizard-{{ $secao->id }}";
             // Inicializa o SmartWizard
-            $('.smartwizard').smartWizard({
+            $('.smartwizard_'+status).smartWizard({
                 selected: status, // Define o passo atual
                 theme: 'dots', // Usa o tema "dots"
                 transition: {

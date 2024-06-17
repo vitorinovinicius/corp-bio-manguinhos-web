@@ -14,7 +14,7 @@
                         <p>
                             Você não tem permissão para acessar esse diretório ou pagina usando as credenciais atuais.
                         </p>
-                        <a href="{{route("admin.index")}}" class="btn btn-primary round glow mt-2">VOLTAR PARA HOME</a>
+                        <a href="{{route("relatorios.index")}}" class="btn btn-primary round glow mt-2">VOLTAR PARA HOME</a>
                     </div>
                 </div>
             </div>

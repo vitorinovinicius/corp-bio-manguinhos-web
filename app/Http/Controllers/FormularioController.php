@@ -35,7 +35,7 @@ class FormularioController extends Controller
         return $this->formService->create();
     }
 
-	public function store(FormularioRequest $request)
+	public function store(Request $request)
     {
         return $this->formService->store($request);
     }
@@ -55,7 +55,7 @@ class FormularioController extends Controller
         return $this->formService->vincula($formulario);
     }
 
-	public function edit(Formulario $formulario)
+	public function edit($formulario)
     {
         return $this->formService->edit($formulario);
     }

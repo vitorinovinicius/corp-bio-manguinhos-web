@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\File;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\Style\TOC;
 use PhpOffice\PhpWord\PhpWord;
+use App\Models\Imagem;
 
 class RelatorioService
 {
@@ -101,7 +102,7 @@ class RelatorioService
         foreach ($formulario->secoes as $formularioSecao) {
             if ($formularioSecao->secao_imagem->count()) {
                 foreach ($formularioSecao->secao_imagem as $imagem) {
-                    $imagemObj = $this->imagemRepository->find($imagem->imagem_id);
+                    $imagemObj = Imagem::find($imagem->imagem_id);
                     if ($imagemObj) {
                         $tagsToImages['[img' . $imagem->id . ']'] = $imagemObj;
                     }
@@ -120,19 +121,18 @@ class RelatorioService
         $footer->addPreserveText('{PAGE}', null, ['alignment' => 'right']);
 
         // Salva o documento
-        $filename = $formulario->relatorio->where('id', $formulario->relatorio_id)->first()->descricao. '.docx';
+        $filename = 'Relatório_Corporativo_' . date('Y') . '.docx';
         if (file_exists($savePath . DIRECTORY_SEPARATOR . $filename)) {
             unlink($savePath . DIRECTORY_SEPARATOR . $filename);
         }
-
         $phpWord->save($savePath . DIRECTORY_SEPARATOR . $filename);
-        
+
         $formulario->relatorio->where('id', $formulario->relatorio_id)->update([
             'url_documento' => 'relatorios' . DIRECTORY_SEPARATOR . $filename,
             'status' => 1
         ]);
 
-        return redirect()->route('relatorio.index')->with('message', 'Arquivo criado com sucesso!');
+        return redirect()->route('relatorios.index')->with('message', 'Arquivo criado com sucesso!');
     }
 
     /**
@@ -216,6 +216,9 @@ class RelatorioService
                 foreach($formulario->secoes as $secao){
                     $secao->delete();
                 }
+                $formulario->update([
+                    'ano' => null
+                ]);
                 $formulario->delete();
             }
     

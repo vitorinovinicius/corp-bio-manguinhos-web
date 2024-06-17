@@ -60,7 +60,7 @@
                                                 @endif
                                                 @is(['superuser', 'admin'])
                                                     <form id="deleteForm_{{ $relatorio->uuid }}"
-                                                        action="{{ route('relatorio.destroy', $relatorio->uuid) }}"
+                                                        action="{{ route('relatorios.destroy', $relatorio->uuid) }}"
                                                         method="POST" style="display: inline;">
                                                         <input type="hidden" name="_method" value="DELETE">
                                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">

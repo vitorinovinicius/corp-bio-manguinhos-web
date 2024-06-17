@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FormularioRequest;
 use Illuminate\Http\Request;
-use App\Models\SecaoFormulario;
 use App\Models\Formulario;
 use App\Services\SecaoFormularioService;
 

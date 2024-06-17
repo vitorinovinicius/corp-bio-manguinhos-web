@@ -33,7 +33,15 @@ class ImagemService
 
     public function store($request)
     {
-        $data = $request->all();        
+        $data = $request->all();
+
+        if(!isset($data['legenda'])){
+            return response()->json([
+                'status' => 400,
+                'message' => 'Favor inserir legenda à imagem.'
+            ]);
+
+        }
         
         if ($request->hasFile('imagens')) {
             $imagem = $this->imagemRepository->create($data);
@@ -55,7 +63,7 @@ class ImagemService
             $filePath = 'imagens/' . $filename;
             
 
-            $this->secaoImagemRepository->create([
+            $secaoImagem = $this->secaoImagemRepository->create([
                 'secao_formulario_id' => $data['secao_formulario_id'],
                 'imagem_id' => $imagem->id
             ]);

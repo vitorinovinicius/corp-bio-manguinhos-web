@@ -32,13 +32,18 @@ class FormularioRequest extends FormRequest
             }
             case 'POST': {
                 return [
-                    'ano' => 'required|int|unique:formularios'
+                    'formulario_id' => 'required',
+                    'descricao' => 'required',
+                    'setor_id' => 'required',
+                    'limite_caracteres' => 'required',
                 ];
             }
             case 'PUT': {
-                $id = $this->route()->parameter("user")->id;
                 return [
-                    'ano' => 'required|int|unique:formularios'
+                    'formulario_id' => 'required',
+                    'descricao' => 'required',
+                    'setor_id' => 'required',
+                    'limite_caracteres' => 'required',
                 ];
             }
             default:
@@ -49,7 +54,10 @@ class FormularioRequest extends FormRequest
     public function messages()
     {
         return [
-            'ano.required' => 'O ano é obrigatório',
+            'formulario_id.required' => 'O formulrio é obrigatório',
+            'descricao.required' => 'A descrição é obrigatório',
+            'setor_id.required' => 'O setor é obrigatório',
+            'limite_caracteres.required' => 'O limite de caracteres é obrigatório',
         ];
     }
 }

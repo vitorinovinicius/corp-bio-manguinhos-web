@@ -21,12 +21,12 @@
     </div>
     <div class="col-4 d-flex justify-content-end align-items-center">
         @is(['superuser', 'admin'])
-            <form id="relatorio-form" action="{{ route('relatorio.store', $formulario->uuid) }}" method="POST" style="display: inline;">
+            <form action="{{ route('relatorios.store', $formulario->uuid) }}" method="POST" style="display: inline;" onsubmit="if(confirm('Deseja realmente gerar o relatório?')) { return true } else {return false };">
                 @csrf
                 @method('POST')
                 <div class="btn-group pull-right" role="group" aria-label="...">
                     @if($formulario->status == 2)
-                        <button type="button" class="btn btn-icon btn-sm btn-success" id="generate-report-btn"><i class="bx bx-file"></i> Gerar relatório</button>
+                        <button type="submit" class="btn btn-icon btn-sm btn-success"><i class="bx bx-file"></i> GERAR RELATÓRIO</button>
                     @endif
                 </div>
             </form>
@@ -129,7 +129,11 @@
                     <div class="card-content">
                         <div class="card-body">
                             <div class="row">
-                                @if($secao->status == 2 && $secao->email_status == 1)
+                                @if($secao->status == 1 && $secao->email_status == 1)
+                                <div class="col-12 d-flex justify-content-center">
+                                    <p><span class="badge badge-warning"> Verifique a sua caixa de e-mail e confirme para análise.</span></p>
+                                </div>
+                                @elseif($secao->status == 2 && $secao->email_status == 1)
                                     <div class="col-12 d-flex justify-content-center">
                                         <p><span class="badge badge-warning"> Aguardando confirmação de e-mail</span></p>
                                     </div>
@@ -247,21 +251,6 @@
     $(document).ready(function () {
         $(".select2").select2({
             allowClear: true,
-        });
-    });
-    document.getElementById('generate-report-btn').addEventListener('click', function() {
-        Swal.fire({
-            title: 'Deseja realmente gerar o relatório?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sim, gerar!',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('relatorio-form').submit();
-            }
         });
     });
 
@@ -588,6 +577,5 @@
     });
     @endforeach
 </script>
-
 
 @endsection

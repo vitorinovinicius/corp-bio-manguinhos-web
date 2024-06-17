@@ -94,23 +94,41 @@
                                 <input type="hidden" name="gerente_id" value="{{auth()->user()->id}}">
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                <label for="name">Setor</label>
-                                                <p class="form-control-static">{{ $secao->setor->name ?? '' }}</p>
+                                        @if($secao->status == 0 && $secao->email_status == 1)
+                                            <div class="col-12 d-flex justify-content-center">
+                                                <p><span class="badge badge-warning"> Aguardando confirmação de e-mail</span></p>
                                             </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                <label for="user_id">Responsável*</label>
-                                                <select class="form-control select2" id="user_id_{{ $secao->uuid }}" name="user_id" data-placeholder="Selecione o responsável em editar essa seção" required>
-                                                    <option value="" selected disabled hidden></option>
-                                                    @foreach($secao->setor->users as $usuario)
-                                                        <option value="{{$usuario->id}}" {{$secao->user_id == $usuario->id? "selected" : ""}}>{{$usuario->name}}</option>
-                                                    @endforeach
-                                                </select>
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label for="name">Setor</label>
+                                                    <p class="form-control-static">{{ $secao->setor->name ?? '' }}</p>
+                                                </div>
                                             </div>
-                                        </div>
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label for="user_id">Responsável*</label>
+                                                    <p class="form-control-static">{{ $secao->usuario->name ?? '' }}</p>
+                                                </div>
+                                            </div>
+                                            @else                                        
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label for="name">Setor</label>
+                                                    <p class="form-control-static">{{ $secao->setor->name ?? '' }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label for="user_id">Responsável*</label>
+                                                    <select class="form-control select2" id="user_id_{{ $secao->uuid }}" name="user_id" data-placeholder="Selecione o responsável em editar essa seção" required>
+                                                        <option value="" selected disabled hidden></option>
+                                                        @foreach($secao->setor->users as $usuario)
+                                                            <option value="{{$usuario->id}}" {{$secao->user_id == $usuario->id? "selected" : ""}}>{{$usuario->name}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="row">
                                         <div class="col-12">

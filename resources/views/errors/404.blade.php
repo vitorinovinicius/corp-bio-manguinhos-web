@@ -13,7 +13,7 @@
                         <p class="pb-3">
                             Não conseguimos encontrar a pagina que você está procurando</p>
                         <img class="img-fluid" src="{{asset('images/pages/404.png')}}" alt="404 error">
-                        <a href="{{route("admin.index")}}" class="btn btn-primary round glow mt-3">VOLTAR PARA HOME</a>
+                        <a href="{{route("relatorios.index")}}" class="btn btn-primary round glow mt-3">VOLTAR PARA HOME</a>
                     </div>
                 </div>
             </div>

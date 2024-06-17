@@ -10,6 +10,7 @@
             </div>
             <form id="storeSecao">
                 @csrf
+                @method('POST')
                 <input type="hidden" name="formulario_id">
                 <div class="modal-body">
                     <div class="form-body">
@@ -60,6 +61,7 @@
                                 <div class="form-group">
                                     <label for="setor">Setor responsável</label>
                                     <select class="form-control select2" id="setor" name="setor_id" data-placeholder="Setor responsável pelo preenchimento">
+                                        <option value=""></option>
                                         @foreach($setores as $setor)
                                         <option value="{{$setor->id}}">{{$setor->name}}</option>
                                         @endforeach

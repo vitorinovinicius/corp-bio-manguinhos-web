@@ -8,11 +8,28 @@
 
             <p>Olá, {{$destinatario->name}}!</p>
             <p>
-                Estamos iniciando o processo de preenchimento do nosso relatório anual.
+                Campo preenchido, aguardo analise.
             </p>
-            <p>Atenciosamente, <br>
-                Com carinho, Setor de Conhecimento.
-            </p>            
+            <p>Abaixo, seguem o campo finalizado:</p>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Formulário</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Título</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Limite de caracteres</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 8px;">{{$secao->formulario->descricao}}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">{{$secao->descricao}}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">{{$secao->limite_caracteres}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Atenciosamente,</p>
+            <p>{{$remetente->name}}<br>
+            Setor {{$remetente->setores()->pluck('name')->first()}}</p>            
             <p>Favor confirmar o recebimento clicando no botão abaixo<br>
                 <a 
                     style="background-color: #fc914a; 

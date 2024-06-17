@@ -15,7 +15,7 @@
                         <p class="p-2">
                             Reinicie seu navegador após limpar o cache e deletar os cookies. <br> Problemas desencadeados por arquivo corrompido e permissões de diretório.
                         </p>
-                        <a href="{{route("admin.index")}}" class="btn btn-primary round glow">VOLTAR PARA HOME</a>
+                        <a href="{{route("relatorios.index")}}" class="btn btn-primary round glow">VOLTAR PARA HOME</a>
                     </div>
                 </div>
             </div>

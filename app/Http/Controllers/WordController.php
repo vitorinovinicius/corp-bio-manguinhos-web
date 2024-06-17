@@ -33,7 +33,7 @@ class WordController extends Controller
     public function store($formulario)
     {
         // Diretório onde os documentos serão salvos
-        $savePath = public_path('relatórios');
+        $savePath = public_path('relatorios');
 
         // Verificar se o diretório existe, se não, criá-lo
         if (!File::isDirectory($savePath)) {
@@ -108,13 +108,18 @@ class WordController extends Controller
         $footer->addPreserveText('{PAGE}', null, ['alignment' => 'right']);
 
         // Salva o documento
-        $filename = 'Relatório_Corporativo_' . date('Y') . '.docx';
+        $filename = $formulario->relatorio->where('id', $formulario->relatorio_id)->descricao. '.docx';
         if (file_exists($savePath . DIRECTORY_SEPARATOR . $filename)) {
             unlink($savePath . DIRECTORY_SEPARATOR . $filename);
         }
         $phpWord->save($savePath . DIRECTORY_SEPARATOR . $filename);
 
-        return redirect()->route('admin.index')->with('message', 'Arquivo criado com sucesso!');
+        $formulario->relatorio->where('id', $formulario->relatorio_id)->update([
+            'url_documento' => 'relatorios' . DIRECTORY_SEPARATOR . $filename,
+            'status' => 1
+        ]);
+
+        return redirect()->route('relatorios.index')->with('message', 'Arquivo criado com sucesso!');
     }
 
     /**

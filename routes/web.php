@@ -12,16 +12,13 @@ Auth::routes();
 Route::get('/home', function(){
     return redirect()->route('forms.index');
 });
-// Route::get('/home', function(){
-//     return redirect()->route('word.index');
-// });
 
 Route::group(['prefix' => 'admin','middleware'=>['auth','systemConfiguration', 'checkStatus', 'tenant', 'bindings']], function () {
 
     Route::group(['prefix' => 'documentos'], function () {        
-        Route::get('/',                                 [App\Http\Controllers\RelatorioController::class,       'index',            'middleware'=>['needsPermission'], 'shield' => 'admin.index' ])->name('relatorio.index');
-        Route::post('/{form}',                          [App\Http\Controllers\RelatorioController::class,       'store',            'middleware'=>['needsPermission'], 'shield' => 'admin.store' ])->name('relatorio.store');
-        Route::delete('/delete/{document}',             [App\Http\Controllers\RelatorioController::class,       'destroy',           'middleware'=>['needsPermission'], 'shield' => 'admin.destroy' ])->name('relatorio.destroy');
+        Route::get('/',                                 [App\Http\Controllers\RelatorioController::class,       'index',            'middleware'=>['needsPermission'], 'shield' => 'admin.index' ])->name('relatorios.index');
+        Route::post('/relatorio/{form}',                [App\Http\Controllers\RelatorioController::class,       'store',            'middleware'=>['needsPermission'], 'shield' => 'admin.index'])->name('relatorios.store');
+        Route::delete('/delete/{document}',             [App\Http\Controllers\RelatorioController::class,       'destroy',          'middleware'=>['needsPermission'], 'shield' => 'admin.destroy'])->name('relatorios.destroy');
     });
 
     Route::group(['prefix' => 'emails'], function(){

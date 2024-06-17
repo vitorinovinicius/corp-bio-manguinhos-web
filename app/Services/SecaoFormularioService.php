@@ -60,6 +60,8 @@ Class SecaoFormularioService
     public function store($request)
     {
         $data = $request->all();
+        $data['formulario_id'] = $data['formulario_id'];
+        $data['setor_id'] = $data['setor_id'];
         $data['descricao'] = $data['descricao'];
 
         if(!isset($data['descricao'])){
@@ -69,9 +71,28 @@ Class SecaoFormularioService
             ]);
         }
 
+        if(!isset($data['setor_id'])){
+            return response()->json([
+                'status' => 400,
+                'message' => 'Seção sem setor, insira um setor à seção'
+            ]);
+        }
+
         try {
+            \DB::beginTransaction();
+            $secao = $this->secaoFormularioRepository->create($data);
+
+            $formulario = $this->formularioRepository->where('id', $secao->formulario_id)->first();
             
-            $this->secaoFormularioRepository->updateOrCreate($data);
+            if($formulario->status == 2){
+                $formulario->update(
+                    [
+                        'status' => 1
+                    ]
+                );
+            }
+
+            \DB::commit();
     
             return response()->json([
                 'status'    => 200,
@@ -79,6 +100,7 @@ Class SecaoFormularioService
             ]);
 
         } catch (\Exception $e) {
+            \DB::rollBack();
             return response()->json([
                 'status' => 500,
                 'message' => 'Falha ao salvar seção!',
@@ -90,6 +112,7 @@ Class SecaoFormularioService
     public function update($request, $secao)
     {
         $data = $request->all();
+
         if(!isset($data['user_id'])){
             return redirect()->back()->with('error', 'Selecione um responsável para esta seção.');
         }elseif($data['user_id'] == $secao->user_id){
@@ -98,7 +121,7 @@ Class SecaoFormularioService
 
         $secao->update($data);
 
-        if($secao){
+        if($secao->user_id){
             $remetente = $this->userRepository->where('id', $data['gerente_id'])->first();
             $destinatario = $this->userRepository->where('id', $secao->user_id)->first();
             $email = $this->send_email($destinatario, $remetente, $secao, 2); //email de vinculo
@@ -121,7 +144,9 @@ Class SecaoFormularioService
     {
         $data = $request->all();
         
-        $secao->update($data);
+        $secao->update([
+            'texto' => $data['texto']
+        ]);
 
         return redirect()->back()->with('message', 'Seção atualizada com sucesso.');
     }
@@ -129,7 +154,7 @@ Class SecaoFormularioService
     public function status($secao, $status)
     {
 
-        if($status == 5){ // seção finalizada e status desaprovação
+        if($status == 5){ // seção finalizada
             
             $enviado = $this->send_email($secao->usuario, auth()->user(), $secao, $status);
 
@@ -145,6 +170,9 @@ Class SecaoFormularioService
             }
             
         }elseif($status == 6){
+            $secao->formulario->update([
+                'status' => 1
+            ]);
 
             $secao->update([
                 'email_status' => 2,
@@ -194,6 +222,12 @@ Class SecaoFormularioService
             return redirect()->route('sec_forms.correcao', [$secao->uuid, $destinatario->uuid])->with('error', 'Não é possivel enviar o e-mail sem o conteúdo no corpo do e-mail.', 422);
         }
 
+        $anexoPath = null;
+        if ($request->hasFile('anexo')) {
+            $anexo = $request->file('anexo');
+            $anexoPath = $anexo->store('anexos_temp', 'public'); // Armazena o arquivo temporariamente na pasta public/anexos_temp
+        }
+
         $this->emailRepository->updateOrCreate([
             'remetente_id' => isset($data['remetente_id'])?$data['remetente_id']:auth()->user()->id,
             'destinatario_id' => isset($data['destinatario_id'])?$data['destinatario_id']:$destinatario->id,
@@ -201,7 +235,7 @@ Class SecaoFormularioService
             'corpo' => isset($data['corpo'])?$data['corpo']:null
         ]);
 
-        $enviado = $this->send_email($destinatario, auth()->user(), $secao, 3, $data['corpo']); //email de correção
+        $enviado = $this->send_email($destinatario, auth()->user(), $secao, 3, $data['corpo'], $anexoPath); //email de correção
 
         if($enviado->getStatusCode() == 200){
             $secao->update([
@@ -257,7 +291,7 @@ Class SecaoFormularioService
         return view('forms.confirmados', compact('confirmados'));
     }
 
-    private function send_email($destinatario, $remetente, $secao, $status, $corpo = null)
+    private function send_email($destinatario, $remetente, $secao, $status, $corpo = null, $anexo = null)
     {
         try {
             $host =         env('MAIL_HOST');
@@ -275,7 +309,7 @@ Class SecaoFormularioService
             Mail::setSwiftMailer($new_mail);
 
             if($status == 1 && $secao->status !== 3){ //seção em andamento e status finalizado
-                $viewName = 'mail.iniciando';
+                $viewName = 'mail.finalizado';
                 $subject = $secao->formulario->descricao." - Bio-Manguinhos";
                 $usuario = $destinatario;
                 $destinatario = $destinatario->email;
@@ -312,7 +346,12 @@ Class SecaoFormularioService
                 $remetente = $remetente;
             }
 
-            Mail::to($destinatario)->send(new SendMail($viewName, $usuario, $subject, $remetente, $secao, $corpo));
+            Mail::to($destinatario)->send(new SendMail($viewName, $usuario, $subject, $remetente, $secao, $corpo, $anexo));
+
+            // Remover o arquivo temporário após o envio do e-mail
+            if ($anexo && \Storage::disk('public')->exists($anexo)) {
+                \Storage::disk('public')->delete($anexo);
+            }
 
             return response()->json([
                 'message' => 'E-mail enviado com sucesso!'

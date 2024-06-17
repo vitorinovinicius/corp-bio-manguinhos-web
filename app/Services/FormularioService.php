@@ -178,10 +178,15 @@ class FormularioService
 
     public function destroy($formulario)
     {
+        dd($formulario);
         try {
             foreach ($formulario->secoes as $secao){
                 $secao->delete();
-            }
+            } 
+            $formulario->update([
+                'ano' => null
+            ]);
+
             $formulario->delete();
             return redirect()->route('forms.index')->with('message', 'Item deletado com sucesso.');
 
@@ -196,13 +201,15 @@ class FormularioService
             return redirect()->route('forms.index')->with('error', 'Somente o responsável pode confirmar e-mail e iniciar à seção.');
         }
 
-        foreach ($formulario->secoes as $secao){
-            dd($secao);
-            if($secao->user_id == $usuario->id){
-                $secao->update([
-                    'status' => 1,
-                    'email_status' => 2
-                ]);
+        foreach($usuario->setores as $setor){
+            foreach ($formulario->secoes as $secao){
+                if($secao->setor_id == $setor->id){
+                    $secao->update([
+                        'email_status' => 2
+                    ]);
+                    
+                    return redirect()->route('forms.index')->with('message', 'E-mail confirmado e setor informado sobre o formulário relacionadas.');
+                }
             }
         }
 
@@ -234,10 +241,24 @@ class FormularioService
             }
         }
 
-        if ($emailEnviado) {
-            return redirect()->back()->with('message', 'Todos os e-mails foram enviados com sucesso!');
-        } else {
-            return redirect()->back()->with('error', 'Nenhum e-mail foi enviado!');
+        if ($emailEnviado) {            
+
+            $this->formularioRepository->update([
+                'status' => 1
+            ], $formulario->id);
+
+            $this->secaoFormularioRepository->update([
+                'email_status' => 1
+            ], $secao->id);
+            return response()->json([
+                'status' => 200,
+                'message' => 'Todos os e-mails foram enviados com sucesso!'
+            ]);
+        } else {            
+            return response()->json([
+                'status' => 400,
+                'message' => 'Nenhum e-mail foi enviado!'
+            ]);
         }
     }
 
@@ -256,6 +277,8 @@ class FormularioService
                 $status = 3;
             }elseif($secao->status == 3){
                 $status = 2;
+            }elseif($secao->status == 4){
+                $status = 4;
             }
 
             $secao->update([
@@ -294,14 +317,6 @@ class FormularioService
             $subject = "Relatorio anual - Bio-Manguinhos";
 
             Mail::to($to)->send(new SendMailStart($viewName, $user, $subject, $formulario));
-
-            $this->formularioRepository->update([
-                'status' => 1
-            ], $formulario->id);
-
-            $this->secaoFormularioRepository->update([
-                'email_status' => 1
-            ], $secao->id);
 
             return response()->json([
                 'message' => 'E-mail enviado com sucesso!'

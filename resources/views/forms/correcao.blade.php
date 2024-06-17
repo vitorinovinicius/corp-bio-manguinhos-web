@@ -73,6 +73,12 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-8">
+                                            <div class="form-group">
+                                                <label for="anexo">Anexo</label>
+                                                <input type="file" name="anexo" class="form-control-file" id="anexo">
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-12 d-flex justify-content-center">
                                         <button type="submit" class="btn btn-primary">Enviar</button>
