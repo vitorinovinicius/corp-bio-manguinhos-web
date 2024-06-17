@@ -29,12 +29,13 @@ class RouteServiceProvider extends ServiceProvider
 
         Route::bind('configuration', function ($value) {return \App\Models\Configuration::where('uuid', $value)->first();});
         Route::bind('user', function ($value) {return \App\Models\User::where('uuid', $value)->first();});
-        Route::bind('operator', function ($value) {return \App\Models\User::where('uuid', $value)->first();});
+        Route::bind('user_id', function ($value) {return \App\Models\User::where('id', $value)->first();});
+        Route::bind('remetente', function ($value) {return \App\Models\User::where('uuid', $value)->first();});
+        Route::bind('destinatario', function ($value) {return \App\Models\User::where('uuid', $value)->first();});
         Route::bind('form', function ($value) {return \App\Models\Formulario::where('uuid', $value)->first();});
         Route::bind('sec_form', function ($value) {return \App\Models\SecaoFormulario::where('uuid', $value)->first();});
-        Route::bind('form_field', function ($value) {return \App\Models\FormField::where('uuid', $value)->first();});
-        Route::bind('form_group', function ($value) {return \App\Models\FormGroup::where('uuid', $value)->first();});
         Route::bind('general_setting', function($value){return \App\models\GeneralSetting::where('uuid', $value)->first();});
+        Route::bind('imagem', function($value){return \App\models\Imagem::where('uuid', $value)->first();});
     }
 
     /**
@@ -61,8 +62,8 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapWebRoutes()
     {
         Route::middleware('web')
-             ->namespace($this->namespace)
-             ->group(base_path('routes/web.php'));
+            ->namespace($this->namespace)
+            ->group(base_path('routes/web.php'));
     }
 
     /**
