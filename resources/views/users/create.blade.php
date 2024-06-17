@@ -47,6 +47,14 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
+                                            <label for="email">E-mail*</label>
+                                            <input type="text" class="form-control" name="email" value="{{ old('email') }}" placeholder="E-mail">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
                                             <label for="name">Senha*</label>
                                             <input type="password" class="form-control" name="password" placeholder="Senha" autocomplete="off" required>
                                         </div>
@@ -61,16 +69,16 @@
                                         </div>
                                     </div>
                                 </div>
-                                @is(['superuser','regiao'])
+                                @is(['superuser'])
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label for="name">Setor</label>
-                                            <select class="form-control select2 contractorSelect" name="contractor_id" data-placeholder="">
+                                            <select class="form-control select2 " name="setor_id" data-placeholder="">
                                                 <option value="0">Nenhuma empreiteira</option>
 
-                                                @foreach($contractors as $contractor)
-                                                    <option value="{{$contractor->id}}">{{$contractor->name}}</option>
+                                                @foreach($setores as $setor)
+                                                    <option value="{{$setor->id}}">{{$setor->name}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -108,9 +116,7 @@
                                 <div class="row">
                                     <div class="col-12 d-flex justify-content-end">
                                         <button type="submit" class="btn btn-primary">Criar</button>
-                                        <a class="btn btn-link pull-right"
-                                           href="{{ route('users.index') }}"><i
-                                                class="bx bx-arrow-back"></i> Voltar</a>
+                                        <a class="btn btn-link  pull-left" href="{{URL::previous()}}"><i class="bx bx-arrow-back"></i> Voltar</a>
                                     </div>
                                 </div>
                             </div>

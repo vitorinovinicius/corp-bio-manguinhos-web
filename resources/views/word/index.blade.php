@@ -18,11 +18,6 @@
             </div>
         </div>
     </div>
-    <div class="col-2 d-flex justify-content-end align-items-center">
-        @shield('files.create')
-        <a class="btn btn-success pull-right" href="{{ route('word.store') }}"><i class="bx bx-plus"></i> Novo</a>
-        @endshield
-    </div>
 @endsection
 
 @section('content')

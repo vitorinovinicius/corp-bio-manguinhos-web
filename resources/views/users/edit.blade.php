@@ -60,22 +60,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                @is('superuser')
-                                @endis
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label for="cpf">Assinatura</label>
-                                            <input type="file" class="form-control" name="signature">
-                                            @if($user->signature)
-                                                <div class="col-4">
-                                                    <img src="{{$user->signature}}" class="h-100 w-100 rounded-left img-assinatura">
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-
+                                
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
@@ -132,9 +117,7 @@
                                 <div class="row">
                                     <div class="col-12 d-flex justify-content-end">
                                         <button type="submit" class="btn btn-primary">Salvar</button>
-                                        <a class="btn btn-link pull-right"
-                                           href="{{ route('users.index') }}"><i
-                                                class="bx bx-arrow-back"></i> Voltar</a>
+                                        <a class="btn btn-link  pull-left" href="{{URL::previous()}}"><i class="bx bx-arrow-back"></i> Voltar</a>
                                     </div>
                                 </div>
                             </div>

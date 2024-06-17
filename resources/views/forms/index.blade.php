@@ -19,14 +19,13 @@
         </div>
     </div>
     <div class="col-2 d-flex justify-content-end align-items-center">
-        @shield('form.create')
+        @is(['superuser','admin'])
         <a class="btn btn-success pull-right" href="{{ route('forms.create') }}"><i class="bx bx-plus"></i> Novo</a>
         @endshield
     </div>
 @endsection
 
 @section('content')
-    @include('messages')
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -37,12 +36,13 @@
                     <div class="card-body">
                         @if($forms->count())
                             <div class="table-responsive">
-                                <table class="table table-condensed table-striped table-sm table-hover">
+                                <table class="table table-condensed table-striped table-sm table-hover" data-order='[[ 0, "desc" ]]' data-page-length='25'>
                                     <thead>
                                     <tr>
                                         <th>ID</th>
                                         <th>Titulo</th>
                                         <th>Ano</th>
+                                        <th>Situação</th>
                                         <th class="text-right">OPÇÕES</th>
                                     </tr>
                                     </thead>
@@ -52,19 +52,62 @@
                                         <tr>
                                             <td>{{$form->id}}</td>
                                             <td>{{ $form->descricao}}</td>
-                                            <td>{{Date('Y', strtotime($form->created_at))}}</td>
+                                            <td>{{$form->ano}}</td>
+                                            <td>{{$form->status()}}</td>
                                             <td class="text-right">
-                                                <a href="{{ route('forms.show', $form->uuid) }}" class="btn btn-icon btn-sm btn-primary" data-toggle="tooltip" data-placement="left" title="Exibir"><i class="bx bx-book-open"></i></a>
-                                                <a href="{{ route('forms.edit', $form->uuid) }}" class="btn btn-icon btn-sm btn-warning" data-toggle="tooltip" data-placement="left" title="Editar"><i class="bx bx-pencil"></i></a>
-                                                    @shield('forms.destroy')
+                                                
+                                                @is(['superuser', 'admin'])
+                                                    @if($form->status == 0)
+                                                        <a href="{{ route('forms.inicia_ajax', $form->uuid) }}" class="btn btn-icon btn-sm btn-success" data-toggle="tooltip" data-placement="left" title="Validar"><i class="bx bx-mail-send"></i></a>
+                                                    @endif
+                                                        <a href="{{ route('forms.show', $form->uuid) }}" class="btn btn-icon btn-sm btn-primary" data-toggle="tooltip" data-placement="left" title="Exibir"><i class="bx bx-receipt"></i></a>
+                                                @endis                                                
+                                                @is(['colaborador', 'gestor'])
+                                                    @php
+                                                        $userHasAccess = false;
+                                                        // Percorre todas as seções do formulário para verificar se o usuário está associado a alguma delas.
+                                                        foreach ($form->secoes as $secao) {
+                                                            if (isset($secao->usuario) && $secao->usuario->id == auth()->user()->id) {
+                                                                $userHasAccess = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    @endphp
+
+                                                    @if($userHasAccess)
+                                                        <a href="{{ route('forms.preenchimento', $form->uuid) }}" class="btn btn-icon btn-sm btn-primary" data-toggle="tooltip" data-placement="left" title="Exibir"><i class="bx bx-receipt"></i></a>
+                                                    @else
+                                                        <button type="button" class="btn btn-icon btn-sm btn-secondary" data-toggle="tooltip" data-placement="left" title="Exibir" disabled><i class="bx bx-low-vision"></i></button>
+                                                    @endif
+                                                @endis
+                                                    
+                                                @is('gestor')
+                                                    @php
+                                                        $userHasAccess = false;
+                                                        // Percorre todas as seções do formulário para verificar se o usuário está associado a alguma delas.
+                                                        foreach ($form->secoes as $secao) {
+                                                            if (isset($secao->setor) && auth()->user()->setores->contains('id', $secao->setor_id)) {
+                                                                $userHasAccess = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    @endphp
+                                                    @if($userHasAccess)
+                                                        <a href="{{ route('forms.vincula', $form->uuid) }}" class="btn btn-icon btn-sm btn-info" data-toggle="tooltip" data-placement="left" title="Vincular"><i class='bx bxs-user-check'></i></a>
+                                                    @else
+                                                        <button type="button" class="btn btn-icon btn-sm btn-secondary" data-toggle="tooltip" data-placement="left" title="Exibir" disabled><i class="bx bx-low-vision"></i></button>
+                                                    @endif
+                                                @endis
+
+                                                @is(['superuser', 'admin'])
                                                     <form action="{{ route('forms.destroy', $form->uuid) }}"
-                                                          method="POST" style="display: inline;"
-                                                          onsubmit="if(confirm('Deseja deletar esse item?')) { return true } else {return false };">
+                                                            method="POST" style="display: inline;"
+                                                            onsubmit="if(confirm('Deseja deletar esse item?')) { return true } else {return false };">
                                                         <input type="hidden" name="_method" value="DELETE">
                                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                         <button type="submit" class="btn btn-icon btn-sm btn-danger" data-toggle="tooltip" data-placement="left" title="Deletar"><i class="bx bx-trash"></i></button>
                                                     </form>
-                                                    @endshield
+                                                @endis
                                             </td>
                                         </tr>
                                     @endforeach
@@ -81,4 +124,60 @@
             </div>
         </div>
     </div>
+@endsection
+@section('scripts')
+    <!-- DataTables -->
+    @section('vendor-scripts')
+        <script src="{{asset('vendors/js/tables/datatable/datatables.min.js')}}"></script>
+        <script src="{{asset('vendors/js/tables/datatable/dataTables.bootstrap4.min.js')}}"></script>
+        <script src="{{asset('vendors/js/tables/datatable/dataTables.buttons.min.js')}}"></script>
+    @endsection
+    {{-- page scripts --}}
+    @section('page-scripts')
+        <script src="{{asset('js/scripts/datatables/datatable.js')}}"></script>
+    @endsection
+    <script nonce="{{ csp_nonce() }}">
+        $(document).ready(function() {
+        //Buttons examples
+            $('.table').DataTable({
+                lengthChange: false,
+                paginate: true,
+                info: false,
+                
+                language: {
+                    info: "Mostrando de _START_ a _END_ de um total de _TOTAL_ paginas",
+                    paginate: {
+                        first: "Primeira",
+                        previous: "Anterior",
+                        next: "Proxima",
+                        last: "Ultima",
+                        search: 'Filtro:'
+                    },
+                },
+                bFilter: true
+            });
+        });
+    </script>
+    
+@if(session('message'))
+    <script>
+        Swal.fire({
+            position: "center",
+            icon: "success",
+            title: '{{ session('message') }}',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    </script>
+@elseif(session('error'))
+<script>
+    Swal.fire({
+        position: "center",
+        icon: "error",
+        title: '{{ session('error') }}',
+        showConfirmButton: false,
+        timer: 4000
+    });
+</script>
+@endif
 @endsection

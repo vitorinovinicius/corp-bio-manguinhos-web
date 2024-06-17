@@ -18,16 +18,16 @@
                             <div class="form-group">
                                 <div class="form-group form-check form-check-inline">
                                     <input type="radio" name="tipo" value="1" class="form-check-input" id="titulo" checked>
-                                    <label class="form-check-label" for="titulo">Titulo</label>                                                        
+                                    <label class="form-check-label" for="titulo">Titulo</label>
                                 </div>
                                 <div class="form-group form-check form-check-inline">
                                     <input type="radio" name="tipo" value="2" class="form-check-input" id="sub-titulo">
-                                    <label class="form-check-label" for="sub-titulo">Sub-titulo</label>                                                        
+                                    <label class="form-check-label" for="sub-titulo">Sub-titulo</label>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="titulo-selection">
+                        <div id="titulo-selection" style="display:none;">
                             <div class="form-group">                                
                                 @if(isset($titulos) || isset($subTitulos))
                                 <label for="existing-titulos">Selecione um título existente</label>
@@ -58,8 +58,8 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label>Setor responsável</label>
-                                    <select class="form-control" name="setor_id" data-placeholder="Setor responsável pelo preenchimento">
+                                    <label for="setor">Setor responsável</label>
+                                    <select class="form-control select2" id="setor" name="setor_id" data-placeholder="Setor responsável pelo preenchimento">
                                         @foreach($teams as $setor)
                                         <option value="{{$setor->id}}">{{$setor->name}}</option>
                                         @endforeach

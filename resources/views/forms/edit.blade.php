@@ -108,8 +108,6 @@
             });
 
             
-
-            // Função para carregar as seções do formulário via AJAX
             function carregarSecoes() {
                 $.ajax({
                     url: "{{ route('sec_forms.consultar', $formulario->uuid) }}",
@@ -117,11 +115,23 @@
                     dataType: "json",
                     success: function(response) {
                         var secoesFormularioDiv = $('#secoes_formulario');
-                        secoesFormularioDiv.empty(); // Limpa o conteúdo existente
+                        secoesFormularioDiv.empty();
+
+                        var secoesMap = {};
 
                         $.each(response.secoes, function(index, secao) {
-                            console.log(secao);
-                            var secaoHtml = '<div class="card">' +
+                            secoesMap[secao.id] = secao;
+                            secoesMap[secao.id].subsecoes = [];
+                        });
+
+                        $.each(response.secoes, function(index, secao) {
+                            if (secao.secao_id) {
+                                secoesMap[secao.secao_id].subsecoes.push(secao);
+                            }
+                        });
+
+                        function gerarSecaoHtml(secao, indentacao) {
+                            var secaoHtml = '<div class="card" style="margin-left: ' + indentacao + 'px;">' +
                                                 '<div class="card-header">' +
                                                     '<div class="card-content">' +
                                                         '<div class="card-body">' +
@@ -154,16 +164,29 @@
                                                                     '<label>Limite de caracteres</label>'+
                                                                     '<input type="number" class="form-control" name="limite_caracteres" value="'+ secao.limite_caracteres +'" placeholder="Digite o limite de caracteres" autocomplete="off">'+
                                                                 '</div>'+
-                                                            '</div>'+
-                                                        '</div>' +
-                                                    '</div>' +
-                                                '</div>' +
-                                            '</div>';
-                            secoesFormularioDiv.append(secaoHtml);
+                                                            '</div>';
+
+                            if (secao.subsecoes.length > 0) {
+                                $.each(secao.subsecoes, function(index, subsecao) {
+                                    secaoHtml += gerarSecaoHtml(subsecao, indentacao + 20); // Incrementar a indentação para subseções
+                                });
+                            }
+
+                            secaoHtml += '</div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>';
+
+                            return secaoHtml;
+                        }
+                        $.each(secoesMap, function(id, secao) {
+                            if (!secao.secao_id) { // Só processe as seções principais
+                                var secaoHtml = gerarSecaoHtml(secao, 0);
+                                secoesFormularioDiv.append(secaoHtml);
+                            }
                         });
                     },
                     error: function(xhr) {
-                        console.log(xhr); // Exibe o objeto de erro no console
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             alert('Erro: ' + xhr.responseJSON.message);
                         } else {
@@ -173,14 +196,9 @@
                 });
             }
 
-            // Chamar a função para carregar as seções quando o documento estiver pronto
             carregarSecoes();
-
-            // Evento para recarregar as seções quando o botão for clicado (se necessário)
             $('#submitStore').click(function(e) {
                 e.preventDefault();
-                // Aqui vai o código para inserção dos dados...
-                // Depois da inserção, chame a função para carregar as seções novamente:
                 carregarSecoes();
             });
         });

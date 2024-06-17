@@ -1,24 +1,14 @@
 @extends('layouts.frest_template')
-
 @section('css')
     <!-- Select2 -->
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <style nonce="{{ csp_nonce() }}">
-        .grabbable {
-            cursor: grab;
-        }
-
-        .grabbable:active {
-            cursor: grabbing;
-        }
-    </style>
+    <link rel="stylesheet" href="/bower_components/AdminLTE/plugins/select2/select2.min.css">
 @endsection
 
 @section('content-header')
-    <div class="content-header-left col-7 mb-2 mt-1">
+    <div class="content-header-left col-8 mb-2 mt-1">
         <div class="row breadcrumbs-top">
             <div class="col-12">
-                <h5 class="content-header-title float-left pr-1 mb-0">Formulários / Exibir #{{$form->id}}</h5>
+                <h5 class="content-header-title float-left pr-1 mb-0">Formulários / Exibir</h5>
                 <div class="breadcrumb-wrapper col-12">
                     <ol class="breadcrumb p-0 mb-0">
                         <li class="breadcrumb-item"><i class="bx bx-home-alt"></i> Home</li>
@@ -29,231 +19,494 @@
             </div>
         </div>
     </div>
-    <div class="col-5 d-flex justify-content-end align-items-center">
-        <form action="{{ route('forms.destroy', $form->uuid) }}" method="POST" style="display: inline;" onsubmit="if(confirm('Deseja realmente excluir esse item?')) { return true } else {return false };">
-            <input type="hidden" name="_method" value="DELETE">
-            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+    <div class="col-4 d-flex justify-content-end align-items-center">
+        @is(['superuser', 'admin'])
+        <form action="{{ route('word.store', $formulario->uuid) }}" method="POST" style="display: inline;" onsubmit="if(confirm('Deseja realmente gerar o relatório?')) { return true } else {return false };">
+            @csrf
+            @method('POST')
             <div class="btn-group pull-right" role="group" aria-label="...">
-
-                @shield('form_section.create')
-                <a class="btn btn-success btn-group" role="group" href="{{ route('form_sections.create', $form->uuid) }}" title="Adicionar Seção"><i class="bx bx-plus"></i> Adicionar Seção</a>
-                @endshield
-
-                @shield('form.edit')
-                <a class="btn btn-warning btn-group" role="group" href="{{ route('forms.edit', $form->uuid) }}"><i class="bx bx-edit"></i> Editar</a>
-                @endshield
-
-                @shield('form.destroy')
-                <button type="submit" class="btn btn-danger">Excluir <i class="bx bx-trash"></i></button>
-                @endshield
+                @if($formulario->status == 2)
+                    <button type="submit" class="btn btn-icon btn-sm btn-success"><i class="bx bx-file"></i> Gerar relatório</button>
+                @endif
             </div>
         </form>
+        @endis
     </div>
 @endsection
 
 @section('content')
 
-    @if(Session::has('message_form'))
-        <div class="alert alert-success alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
-                <span aria-hidden="true">&times;</span></button>
-            <span class="bx bx-ok"></span><em> {!! session('message_form') !!}</em></div>
-    @endif
-    @if(Session::has('error_form'))
-        <div class="alert alert-error alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Fechar" style="color: #FFF;">
-                <span aria-hidden="true">&times;</span></button>
-            <span class="bx bx-alert"></span><em>  {!! session('error_form') !!}</em></div>
-    @endif
-
-    @include("forms.include.show_form")
-
-    @include('messages')
-    @include('error')
-
-    @if($form->form_sections->count())
-        <div class="sortable">
-            @foreach($form->form_sections()->orderBy("order","asc")->get() as $form_section)
-                <div id="{{$form_section->id}}">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="row">
-                                        <div class="col-7 grabbable">
-                                            <h3 class="box-title">
-                                                <i class="bx bx-move-vertical"></i>{{ $form_section->name }}
-                                            </h3>
-                                        </div>
-                                        <div class="col-5 d-flex justify-content-end align-items-center">
-                                            @shield('form_section.edit')
-                                            <a class="btn btn-warning btn-group" role="group" href="{{ route('form_sections.edit', $form_section->uuid) }}" title="Editar">Editar
-                                                <i class="bx bx-edit"></i></a>
-                                            @endshield
-
-                                            @shield('form_section.destroy')
-                                            <form action="{{ route('form_sections.destroy', $form_section->uuid) }}" method="POST" style="display: inline;" id="deleteForm">
-                                                <input type="hidden" name="_method" value="DELETE">
-                                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                <button type="submit" class="btn btn-danger btn-group deleteForm" style="color: #FFFFFF">Excluir
-                                                    <i class="bx bx-trash"></i></button>
-                                            </form>
-                                            @endshield
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <label for="name">Descrição</label>
-                                                <div class="form-control-static">{!! nl2br($form_section->description) !!}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-content">
-                                    <div class="card-body">
-                                        @if($form_section->form_fields->count())
-                                            <div class="table-responsive">
-                                                <table class="table table-condensed table-striped table-bordered table-sm table-hover th-center">
-                                                    <thead>
-                                                    <tr>
-                                                        <th>Nome</th>
-                                                        <th>Descrição</th>
-                                                        <th>Tipo</th>
-                                                        <th>Obrigatório</th>
-                                                        <th>Min. fotos obrigatórias</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    @foreach($form_section->form_fields as $form_field)
-                                                        <tr>
-                                                            <td class="font-medium-3" title="Nome">{{$form_field->name}}</td>
-                                                            <td title="Descrição">{{$form_field->description}}</td>
-                                                            <td title="Tipo"><span class="badge">{{$form_field->typeField()}}</span></td>
-                                                            <td title="Obrigatório"><span class="badge badge-primary {{bagde_color($form_field->required)}}">{{$form_field->required()}}</span></td>
-                                                            <td title="Mínimo de fotos obrigatórias">{{$form_field->min_photo}}</td>
-                                                        </tr>
-                                                        @if($form_field->type_field == 3 || $form_field->type_field == 1 || $form_field->type_field == 6)
-                                                            @php
-                                                                $lists =  array_filter(explode(";",$form_field->list));
-                                                            @endphp
-
-                                                            <tr>
-                                                                <td colspan="5">
-                                                                    <div style="padding: 0px 15px;">
-                                                                        <b>Respostas:</b> <br>
-                                                                        @foreach($lists as $list)
-                                                                            <div class="row">
-                                                                                <div class="col-12">
-                                                                                    <div class="form-group">
-                                                                                        <p class="form-control-static">{{$list}}</p>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        @endforeach
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                    @endforeach
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        @endif
+    <div class="row">
+        <div class="col-12">            
+            <div class="d-flex justify-content-end align-items-center">
+                @is(['superuser', 'admin'])
+                    @if($formulario->status == 0)
+                        <a href="javascript:void(0);" onclick="iniciarFormulario('{{ route('forms.inicia_ajax', $formulario->uuid) }}')" class="btn btn-sm btn-info pull-right" data-toggle="tooltip" data-placement="left" title="Iniciar">
+                            <i class="bx bx-mail-send"></i> INICIAR FORMULÁRIO
+                        </a>
+                    @endif
+                @endis
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-10">
+                        <h3 class="box-title">Formulário</h3>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label >Nome do formulário</label>
+                                        <p class="form-control-static">{{ $formulario->descricao }}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="card-footer">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-center">
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#storeModal">
+                                    <i class="bx bx-list-plus"></i> Adicionar seção</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            @endforeach
+                
+                @include('forms.include.add_secao_modal')
+            </div>
         </div>
-    @else
-        <div class="alert alert-info" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
-                <span aria-hidden="true">&times;</span></button>
-            <span class="bx bx-ok"></span><em> Você não tem nenhuma seção criada clique no botão acima (Adicionar Seção) para montar o seu formulário.</em>
-        </div>
-    @endif
+    </div>
+    @if($formulario->secoes->count())
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="box-title">Seções do formulário</h3>
+                </div>
+                <hr>
+                @foreach($formulario->secoes as $secao)
+                    <div class="card-header">
+                        <div class="btn-group" role="group" aria-label="...">
+                            @if($secao->status == 4)
+                                <a href="{{ route('sec_forms.status', [$secao->uuid, 5, auth()->user()->uuid]) }}" class="btn btn-sm btn-danger desaprova_status"><i class="bx bxs-dislike"></i> DESAPROVAR</a>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="name">Setor</label>
+                                        <p class="form-control-static">{{ $secao->setor()->where('id', $secao->setor_id)->pluck('name')->first() ?: '' }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="name">Usuário</label>
+                                        <p class="form-control-static">{{ $secao->usuario()->where('id', $secao->user_id)->pluck('name')->first() ?: 'Não designado' }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <span class="badge {{ $secao->badge_status() }}">{{ $secao->status() }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        @if(!$secao->secao_id)
+                                            <label for="name">Titulo</label>
+                                        @else
+                                            <label for="name">Sub-titulo</label>
+                                        @endif
+                                        <p class="form-control-static">{{ $secao->descricao }}</p>
+                                    </div>
+                                </div>
+                            </div>                        
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="texto1">Texto</label>
+                                        <textarea class="form-control" id="texto1" rows="6" readonly>{{ $secao->texto }}</textarea>
+                                        <small class="d-flex justify-content-end align-items-center">
+                                            {{ strlen($secao->texto) }} / {{ $secao->limite_caracteres }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            @php
+                                // Simulando o texto contendo as tags [img]
+                                $texto = $secao->texto;
+                                // Extraindo os IDs das imagens do texto usando expressão regular
+                                preg_match_all('/\[img(\d+)\]/', $texto, $matches);
+                                // IDs das imagens extraídos do texto
+                                $idsImagens = array_unique($matches[1]);
+                                // Filtrando a coleção de imagens para manter apenas aquelas com os IDs extraídos
+                                $imagensFiltradas = $secao->imagens->whereIn('id', $idsImagens);
+                            @endphp
 
-    <a class="btn btn-primary" href="{{ route('forms.index') }}"><i class="bx bx-arrow-back"></i> Voltar</a>
+                            @if($imagensFiltradas->count())
+                            <div class="form-group">
+                                <h5>Imagens utilizadas</h5>
+                                <div class="row">
+                                    @foreach($imagensFiltradas as $imagem)
+                                        <div class="col-6">
+                                            <div class="card">
+                                                <div class="card-content">
+                                                    <div class="card-body">
+                                                        <small class="badge badge-primary"><strong>[img{{ $imagem->id }}]</strong></small>
+                                                        <div style="display: inline-block; position: relative;">
+                                                            <img src="{{ asset($imagem->url_imagem) }}" alt="{{ $imagem->legenda }}" class="card-img-top" style="width: 100%;">
+                                                        </div>
+                                                        <p class="card-text">{{ $imagem->type() }}: {{ $imagem->legenda }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif 
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="col-12 d-flex justify-content-end align-items-center">
+                            <div class="btn-group pull-right" role="group" aria-label="...">
+                                @if($secao->status == 2)
+                                    @if($secao->user_id)
+                                        <a href="{{ route('sec_forms.correcao', [$secao->uuid, $secao->usuario->uuid]) }}" class="btn btn-sm btn-warning"><i class="bx bx-error"></i> SOLICITAR CORREÇÃO</a>
+                                        <a href="{{ route('sec_forms.status', [$secao->uuid, 4, auth()->user()->uuid]) }}" class="btn btn-sm btn-success atualiza_status"><i class="bx bxs-like"></i> APROVAR</a>
+                                    @endif
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                @endforeach
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-end">
+                            <a class="btn btn-link  pull-left" href="{{URL::previous()}}"><i class="bx bx-arrow-back"></i> Voltar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @else
+    <div class="card">
+        <div class="card-content">
+            <div class="card-body">
+                <h3 class="text-center alert alert-info">Não há seções!</h3>
+            </div>
+        </div>
+    </div>
+    @endif
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 @section('scripts')
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <!-- Jquery UI -->
-    <script src="{{ url('../bower_components/jquery-ui/jquery-ui.min.js') }}"></script>
-
-    <script nonce="{{ csp_nonce() }}">
-
-        $(function () {
-            $('.deleteForm').on('click', function (e) {
-                e.preventDefault();
-
-                let form = $(this).parent("form");
-
-                swal({
-                    title: "Tem certeza ?",
-                    text: "Atenção ao excluir este item será excluída todas as seções e formulários vinculados a ele. Deseja realmente excluir esse item? ",
-                    icon: "warning",
-                    buttons: ["Cancelar", true],
-                    dangerMode: true
-                })
-                    .then((willDelete) => {
-                        if (willDelete) {
-                            form.submit();
-                        }
-
-                        return false;
-                    });
-            });
+<script src="/bower_components/AdminLTE/plugins/select2/select2.full.min.js"></script>
+<script nonce="{{ csp_nonce() }}">
+    $(document).ready(function () {
+        $(".select2").select2({
+            allowClear: true,
         });
+    });
 
+    $(document).ready(function() {
+        $('#submitStore').click(function(e) {
+            e.preventDefault();
 
-        function submitForm(id) {
-            swal({
-                title: "Are you sure?",
-                text: "Once deleted, you will not be able to recover this imaginary file!",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        $("#deleteForm_" + id).submit();
+            var csrfToken = $('meta[name="csrf-token"]').attr('content');
+            var formularioId = {!! $formulario->id !!};
+            $('input[name="formulario_id"]').val(formularioId);
+
+            $.ajax({
+                url: "{{ route('sec_forms.ajax') }}",
+                type: "POST",
+                dataType: "json",
+                data: $('#storeSecao').serialize(),
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                success: function(response) {
+                    // Se o status HTTP é 200, considera sucesso
+                    $('#storeSecao')[0].reset();
+                    $('#storeModal').modal('hide');
+                    if(response.status == 200){                        
+                        Swal.fire(
+                            'Sucesso!',
+                            response.message,
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    }else{
+                        Swal.fire(
+                            'Ops!',
+                            'Erro: ' + response.message,
+                            'error'
+                        );
                     }
+                },
+                error: function(xhr) {
+                    console.log(xhr); // Exibe o objeto de erro no console
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        Swal.fire(
+                            'Ops!',
+                            'Erro: ' + xhr.responseJSON.message,
+                            'error'
+                        );
+                    } else {
+                        Swal.fire(
+                            'Erro!',
+                            'Erro desconhecido',
+                            'error'
+                        );
+                    }
+                }
+            });
+        });            
+    });
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        const radioTitulo = document.getElementById('titulo');
+        const radioSubTitulo = document.getElementById('sub-titulo');
+        const vinculoTituloSubtitulo = document.getElementById('titulo-selection'); // Corrigi o id para corresponder ao seu HTML
+        const existingTitulos = document.getElementById('existing-titulos');
 
-                    return false;
-                });
-
-            return false;
+        // Função para verificar se há títulos ou subtítulos existentes
+        function checkTitulosSubtitulos() {
+            if (existingTitulos.options.length > 1) { // Mais de uma opção (incluindo o placeholder)
+                vinculoTituloSubtitulo.style.display = 'block';
+            } else {
+                Swal.fire(
+                    'Aviso!',
+                    'Não há títulos ou subtítulos disponíveis. Por favor, adicione um título primeiro.',
+                    'warning'
+                );
+                radioTitulo.checked = true;
+                radioSubTitulo.checked = false;
+                vinculoTituloSubtitulo.style.display = 'none';
+            }
         }
 
-        $(function () {
-            $(".sortable").sortable({
-                handle: '.grabbable',
-                update: function () {
-                    var ordem_atual = $(this).sortable("toArray", "id");
-                    console.log(ordem_atual);
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-Token': $('input[name="_token"]').val()
-                        },
-                        type: 'PUT',
-                        url: '{{route("form_sections_order.order")}}',
-                        data: {ordem_atual: ordem_atual},
-                        success: function (data) {
-                            //Ok
-                        },
-                        error: function () {
-                            toastr.warning("Ocorreu um erro inesperado durante o processamento.\nRecarregue a página e tente novamente");
-                        },
-                    });
-
-                }
-
-            });
+        // Evento quando "Sub-titulo" é selecionado
+        radioSubTitulo.addEventListener('change', function () {
+            if (this.checked) {
+                checkTitulosSubtitulos();
+            }
         });
 
+        // Evento quando "Titulo" é selecionado
+        radioTitulo.addEventListener('change', function () {
+            if (this.checked) {
+                vinculoTituloSubtitulo.style.display = 'none';
+            }
+        });
+
+        // Inicialização da verificação de títulos e subtítulos no carregamento da página
+        if (radioSubTitulo.checked) {
+            checkTitulosSubtitulos();
+        }
+    });
+
+    $(document).ready(function() {
+        // Configura o AJAX com o token CSRF
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // Lida com o evento de clique no botão 'atualiza_status'
+        $('.atualiza_status').on('click', function(event) {
+            event.preventDefault(); // Impede a navegação padrão
+
+            var $button = $(this); // Referência ao botão clicado
+            var actionUrl = $button.attr('href'); // Obtém a URL do link
+
+            // Desabilita temporariamente todos os botões no grupo
+            $('.btn-group .btn').prop('disabled', true);
+
+            // Mostra o alerta de carregamento ao iniciar o processo
+            Swal.fire({
+                title: "Enviando e-mail e finalizando seção formulário",
+                html: "Aguarde...",
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Envia a requisição AJAX
+            $.ajax({
+                url: actionUrl,
+                method: 'GET', // Utilize PUT para a aprovação, ajuste conforme sua rota
+                success: function(response) {
+                    // Fechar o alerta de carregamento
+                    Swal.close();
+
+                    // Trata a resposta de sucesso aqui
+                    Swal.fire(
+                        'Sucesso!',
+                        response.message,
+                        'success'
+                    ).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function(xhr) {
+                    // Fechar o alerta de carregamento em caso de erro
+                    Swal.close();
+
+                    // Trata os erros aqui
+                    Swal.fire(
+                        'Erro!',
+                        'Ocorreu um erro ao atualizar o status.',
+                        'error'
+                    );
+                    console.log(xhr.responseText);
+                },
+                complete: function() {
+                    // Reativa os botões após o término da requisição (com ou sem erro)
+                    $('.btn-group .btn').prop('disabled', false);
+                }
+            });
+        });
+    });
+
+</script>
+<script>
+    function iniciarFormulario(route) {
+        // Mostrar o alerta de carregamento ao iniciar o processo
+        Swal.fire({
+            title: "Enviando e-mails e iniciando formulário",
+            html: "Aguarde...",
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Realizar a requisição AJAX
+        fetch(route)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao iniciar o formulário');
+                }
+                return response.json();
+            })
+            .then(response => {
+                // Fechar o alerta de carregamento
+                Swal.close();
+
+                // Exibir o SweetAlert com base no status recebido
+                if (response.status === 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso!',
+                        text: response.message
+                    }).then(() => {
+                        // Atualizar a página após o sucesso
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: response.message,
+                        footer: '<a href>Entre em contato conosco</a>'
+                    });
+                }
+            })
+            .catch(error => {
+                // Fechar o alerta de carregamento em caso de erro
+                Swal.close();
+
+                // Exemplo de mensagem de erro genérica
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro ao iniciar o formulário',
+                    text: 'Por favor, tente novamente mais tarde.',
+                    footer: '<a href>Entre em contato conosco</a>'
+                });
+            });
+    }
+</script>
+<script>
+    $(document).ready(function() {
+        // Configura o AJAX com o token CSRF
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // Lida com o evento de clique no botão 'atualiza_status'
+        $('.desaprova_status').on('click', function(event) {
+            event.preventDefault(); // Impede a navegação padrão
+
+            var $button = $(this); // Referência ao botão clicado
+            var actionUrl = $button.attr('href'); // Obtém a URL do link
+
+            // Desabilita temporariamente todos os botões no grupo
+            $('.btn-group .btn').prop('disabled', true);
+            // Envia a requisição AJAX
+            $.ajax({
+                url: actionUrl,
+                method: 'GET', // Utilize PUT para a aprovação, ajuste conforme sua rota
+                success: function(response) {
+                    // Fechar o alerta de carregamento
+                    Swal.close();
+
+                    // Trata a resposta de sucesso aqui
+                    Swal.fire(
+                        'Sucesso!',
+                        response.message,
+                        'success'
+                    ).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function(xhr) {
+                    // Fechar o alerta de carregamento em caso de erro
+                    Swal.close();
+
+                    // Trata os erros aqui
+                    Swal.fire(
+                        'Erro!',
+                        'Ocorreu um erro ao atualizar o status.',
+                        'error'
+                    );
+                    console.log(xhr.responseText);
+                },
+                complete: function() {
+                    // Reativa os botões após o término da requisição (com ou sem erro)
+                    $('.btn-group .btn').prop('disabled', false);
+                }
+            });
+        });
+    });
+</script>
+@if(session('message'))
+    <script>
+        Swal.fire({
+            position: "center",
+            icon: "success",
+            title: '{{ session('message') }}',
+            showConfirmButton: false,
+            timer: 1500
+        });
     </script>
+@endif
+
 
 @endsection

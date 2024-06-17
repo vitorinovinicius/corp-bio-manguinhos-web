@@ -1,6 +1,8 @@
 @extends('layouts.frest_template')
 @section('css')
-    <!-- Select2 -->
+    {{-- <link rel="stylesheet" type="text/css" href="{{asset('vendors/css/pickers/pickadate/default.css')}}"> --}}
+    <link rel="stylesheet" type="text/css" href="{{asset('vendors/css/pickers/pickadate/pickadate.css')}}">
+    {{-- <link rel="stylesheet" type="text/css" href="{{asset('vendors/css/pickers/pickadate/default.time.css')}}"> --}}
     <link rel="stylesheet" href="/bower_components/AdminLTE/plugins/select2/select2.min.css">
 @endsection
 
@@ -37,10 +39,16 @@
                             @csrf()
                             <div class="form-body">
                                 <div class="row">
-                                    <div class="col-12">
+                                    <div class="col-8">
                                         <div class="form-group">
                                             <label >Nome do relatório</label>
                                             <input type="text" class="form-control" name="descricao_relatorio" value="{{ old('descricao_relatorio') }}" placeholder="Insira o nome do relatorio anual">
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label >Ano</label>
+                                            <input type="text" id="yearpicker" class="form-control input-small " name="ano" value="{{ old('ano') }}" placeholder="Insira o ano do relatório" readonly>
                                         </div>
                                     </div>
 
@@ -54,11 +62,7 @@
                                 <div class="row">
                                     <div class="col-12 d-flex justify-content-end">
                                         <button type="submit" class="btn btn-primary">Criar</button>
-                                        <a  class="btn btn-link pull-right"
-                                            href="{{ route('forms.index') }}">
-                                            <i class="bx bx-arrow-back"></i>
-                                            Voltar
-                                        </a>
+                                        <a class="btn btn-link  pull-left" href="{{URL::previous()}}"><i class="bx bx-arrow-back"></i> Voltar</a>
                                     </div>
                                 </div>
                             </div>
@@ -70,13 +74,40 @@
     </div>
 @endsection
 @section('scripts')
+    {{-- <script src="{{asset('vendors/js/pickers/daterange/moment.min.js')}}"></script> --}}
+    <script src="{{asset('vendors/js/pickers/pickadate/picker.js')}}"></script>
+    <script src="{{asset('vendors/js/pickers/pickadate/picker.date.js')}}"></script>
+    <script src="{{asset('vendors/js/pickers/pickadate/picker.time.js')}}"></script>
     <script src="/bower_components/AdminLTE/plugins/select2/select2.full.min.js"></script>
     <script nonce="{{ csp_nonce() }}">
-        $(function () {
+
+        
+        $(document).ready(function () {
             //Initialize Select2 Elements
             $(".select2").select2({
                 allowClear: true,
             });
+
+            $('#yearpicker').pickadate({
+                monthsShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                selectDays: false,
+                selectYears: true,
+                selectMonths: false,
+                showMonthsShort: true,
+                format: 'yyyy',
+                max: new Date().getFullYear() + 5,
+                onSet: function(context) {
+                    // Evitar que o campo seja limpo ao selecionar um ano
+                    if (context.select) {
+                        this.close();
+                    }
+                },
+                onClose: function() {
+                    // Garantir que o campo seja atualizado com o ano selecionado
+                    $('#yearpicker').blur();
+                }
+            });
+
             $(document).on("click", "#addSubtitulo", function (e) {
                 e.preventDefault();
                 $('<div class="row">' +

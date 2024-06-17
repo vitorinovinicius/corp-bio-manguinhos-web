@@ -43,7 +43,7 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Nome</th>
-                                            <th>Supervisor</th>
+                                            <th>Gerente</th>
                                             <th>Criado</th>
                                             <th>Modificado</th>
 
@@ -58,7 +58,15 @@
                                             <td>
                                                 <a class="btn-link" href="{{ route('teams.show', $team->uuid) }}">{{$team->name}}</a>
                                             </td>
-                                            <td>{{ $team->users()->wherePivot('is_supervisor',1)->get()->implode('name', ' | ') }}</td>
+                                            <td>
+                                                <ul>
+                                                    @foreach($team->user_setores as $userSetor)
+                                                        @if(!$userSetor->user->hasRole('colaborador'))
+                                                        <li>{{ $userSetor->user->name}}</li>
+                                                        @endif
+                                                    @endforeach
+                                                </ul>
+                                            </td>
                                             <td>{{ date('d/m/Y H:i:s', strtotime($team->created_at)) }}</td>
                                             <td>{{ date('d/m/Y H:i:s', strtotime($team->updated_at)) }}</td>
 

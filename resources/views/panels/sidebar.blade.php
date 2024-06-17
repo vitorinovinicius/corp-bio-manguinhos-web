@@ -28,6 +28,8 @@
     <div class="shadow-bottom"></div>
     <div class="main-menu-content">
         <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation" data-icon-style="lines">
+            
+            @is(['superuser', 'admin'])
             <li class="nav-item @if(app('router')->is("admin.index")){{"active"}}@endif">
                 <a href="#">
                     <i class="menu-livicon" data-icon="box"></i>
@@ -42,44 +44,46 @@
                     </li>
                 </ul>
             </li>
+            @endis
+            
+            @is(['superuser', 'admin'])
             <li class="nav-item @if(app('router')->is("emails.*")){{"active"}}@endif">
                 <a href="#">
                     <i class="menu-livicon" data-icon="envelope-pull"></i>
                     <span class="menu-title">E-mail</span>
                 </a>
                 <ul class="menu-content"> 
-                    <li class="{{(app('router')->is("emails.send"))? "active": ""}}">
-                        <a href="{{route("emails.send")}}">
+                    <li class="{{(app('router')->is("emails.todos"))? "active": ""}}">
+                        <a href="{{route("emails.todos")}}">
+                            <i class="bx bx-right-arrow-alt"></i>
+                            <span class="menu-item">Todos</span>
+                        </a>
+                    </li>
+                    <li class="{{(app('router')->is("emails.envio"))? "active": ""}}">
+                        <a href="{{route("emails.envio")}}">
                             <i class="bx bx-right-arrow-alt"></i>
                             <span class="menu-item">Enviados</span>
                         </a>
                     </li>
-                    <li class="{{(app('router')->is("emails.confirmed"))? "active": ""}}">
-                        <a href="{{route("emails.confirmed")}}">
+                    <li class="{{(app('router')->is("emails.confirma"))? "active": ""}}">
+                        <a href="{{route("emails.confirma")}}">
                             <i class="bx bx-right-arrow-alt"></i>
                             <span class="menu-item">Confirmados</span>
                         </a>
                     </li>
                 </ul>
             </li>
+            @endis
             <li class="nav-item">
                 <a href="#">
                     <i class="menu-livicon" data-icon="briefcase"></i>
                     <span class="menu-title">Formulários</span>
                 </a>
                 <ul class="menu-content">
-                    @is(['superuser', 'admin'])
                     <li class="{{(app('router')->is("forms.*"))? "active": ""}}">
                         <a href="{{route("forms.index")}}">
                             <i class="bx bx-right-arrow-alt"></i>
                             <span class="menu-item">Todos</span>
-                        </a>
-                    </li>
-                    @endis
-                    <li class="{{(app('router')->is("forms.preenchimento"))? "active": ""}}">                    
-                        <a href="{{route("forms.preenchimento")}}">
-                            <i class="bx bx-right-arrow-alt"></i>
-                            <span class="menu-item">Preenchimento</span>
                         </a>
                     </li>
                 </ul>
