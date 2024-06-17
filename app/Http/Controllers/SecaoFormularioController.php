@@ -16,95 +16,65 @@ class SecaoFormularioController extends Controller
     private $secaoFormService;
 
     /**
-     * FormController constructor.
+     * SecaoFormularioController constructor.
      */
     public function __construct(SecaoFormularioService $secaoFormService)
     {
         $this->secaoFormService = $secaoFormService;
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         return $this->secaoFormService->store($request);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function update(Request $request, $secao)
     {
-        //
+        return $this->secaoFormService->update($request, $secao);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function atualiza_texto(Request $request, $secao)
     {
-        //
+        return $this->secaoFormService->atualiza_texto($request, $secao);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function status($sec_form, $status)
     {
-        //
+        return $this->secaoFormService->status($sec_form, $status);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function correcao(Request $request,$sec_form, $user)
     {
-        //
+        return $this->secaoFormService->correcao($request,$sec_form, $user);
     }
 
+    public function email_correcao(Request $request,$sec_form, $destinatario)
+    {
+        return $this->secaoFormService->email_correcao($request,$sec_form, $destinatario);
+    }
+    
     public function consulta_ajax(Formulario $formulario)
     {
         return $this->secaoFormService->consulta_ajax($formulario);
     }
-
-    public function envioEmail()
+    
+    public function todos_email()
     {
-        return $this->secaoFormService->envioEmail();
+        return $this->secaoFormService->todos_email();
+    }
+
+    public function enviado()
+    {
+        return $this->secaoFormService->enviado();
+    }
+    
+    public function confirmado()
+    {
+        return $this->secaoFormService->confirmado();
+    }
+
+    public function destroy($sec_form)
+    {
+        $sec_form->delete();
     }
 }

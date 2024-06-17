@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 
-use App\Services\FormularioService;
-use App\Models\Relatorio;
+use App\Models\User;
 use App\Models\Formulario;
 use Illuminate\Http\Request;
+use App\Services\FormularioService;
+use App\Http\Requests\FormularioRequest;
 
 class FormularioController extends Controller
 {
@@ -50,7 +51,7 @@ class FormularioController extends Controller
 	 * @param Request $request
 	 * @return \App\Services\Response
 	 */
-	public function store(Request $request)
+	public function store(FormularioRequest $request)
     {
         return $this->formService->store($request);
     }
@@ -61,9 +62,19 @@ class FormularioController extends Controller
 	 * @param  int  $id
 	 * @return \App\Services\Response
 	 */
-	public function show(Formulario $formulario)
+	public function show($formulario)
     {
         return $this->formService->show($formulario);
+    }
+
+	public function preenchimento($formulario)
+    {
+        return $this->formService->preenchimento($formulario);
+    }
+
+	public function vincula($formulario)
+    {
+        return $this->formService->vincula($formulario);
     }
 
 	/**
@@ -98,5 +109,15 @@ class FormularioController extends Controller
 	public function destroy(Formulario $formulario)
     {
         return $this->formService->destroy($formulario);
+    }
+
+	public function inicia_ajax($formulario)
+    {
+        return $this->formService->inicia_ajax($formulario);
+    }
+
+	public function confirmacao($user, $secao)
+    {
+        return $this->formService->confirmacao($user, $secao);
     }
 }

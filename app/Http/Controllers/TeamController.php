@@ -10,7 +10,7 @@ use App\Services\SetorService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
-class TeamController extends Controller {
+class  TeamController extends Controller {
 
 	/**
 	 * @var SetorService

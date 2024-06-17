@@ -72,9 +72,9 @@ class UserController extends Controller {
 	public function create()
 	{
 		$roles = Defender::rolesList();
-		$contractors    = $this->setorRepository->all();
+		$setores    = $this->setorRepository->all();
 
-		return view('users.create', compact('roles','contractors'));
+		return view('users.create', compact('roles','setores'));
 	}
 
 	/**
