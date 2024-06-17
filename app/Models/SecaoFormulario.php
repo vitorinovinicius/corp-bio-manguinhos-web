@@ -40,13 +40,14 @@ class SecaoFormulario extends Model implements Transformable
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
     
     public function pai()
     {
         return $this->belongsTo(SecaoFormulario::class, 'secao_id');
     }
 
-    public function filho ()
+    public function filhos()
     {
         return $this->hasMany(SecaoFormulario::class, 'secao_id');
     }
@@ -143,6 +144,17 @@ class SecaoFormulario extends Model implements Transformable
         }else {
             return "text-warning";
         }
+    }
+
+    public function getHierarchicalLevel()
+    {
+        $level = 1;
+        $parent = $this->pai;
+        while ($parent) {
+            $level++;
+            $parent = $parent->pai;
+        }
+        return $level;
     }
 
 

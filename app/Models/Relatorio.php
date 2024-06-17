@@ -32,4 +32,27 @@ class Relatorio extends Model implements Transformable
         'status'
     ];
 
+    public function formularios()
+    {
+        return $this->hasMany(Formulario::class, 'relatorio_id');
+    }
+
+    public function status()
+    {
+        if ($this->status == 0) {
+            return "Indisponível";
+        } else {
+            return "Disponível";
+        }
+    }
+
+    public function badge_status()
+    {
+        if ($this->status == 0) {
+            return "btn-secondary";
+        }else {
+            return "btn-success";
+        }
+    }
+
 }

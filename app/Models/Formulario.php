@@ -42,6 +42,11 @@ class Formulario extends Model implements Transformable
     {
         return $this->hasMany(SecaoFormulario::class);
     }
+    
+    public function relatorio()
+    {
+        return $this->belongsTo(Relatorio::class, 'id');
+    }
 
     public function status()
     {
