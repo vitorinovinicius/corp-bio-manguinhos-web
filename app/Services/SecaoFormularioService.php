@@ -71,7 +71,7 @@ Class SecaoFormularioService
 
         try {
             
-            $this->secaoFormularioRepository->create($data);
+            $this->secaoFormularioRepository->updateOrCreate($data);
     
             return response()->json([
                 'status'    => 200,
@@ -130,10 +130,7 @@ Class SecaoFormularioService
     {
 
         if($status == 5){ // seção finalizada e status desaprovação
-
-            $secao->update([
-                'status' => 4
-            ]);
+            
             $enviado = $this->send_email($secao->usuario, auth()->user(), $secao, $status);
 
             if($enviado->getStatusCode() == 200){
@@ -150,6 +147,7 @@ Class SecaoFormularioService
         }elseif($status == 6){
 
             $secao->update([
+                'email_status' => 2,
                 'status' => 2
             ]);
             return response()->json([
@@ -161,7 +159,7 @@ Class SecaoFormularioService
         $admins = Role::where('id', 2)->get();
         foreach ($admins as $admin){
             foreach($admin->role_users as $role_user){
-                if($status !== 6 || $status !== 6){
+                if($status !== 5 || $status !== 6){
                     $email = $this->send_email($role_user->user, $secao->usuario,  $secao, $status);
                     if($email->getStatusCode() == 200){
                         $secao->update([
@@ -207,7 +205,7 @@ Class SecaoFormularioService
 
         if($enviado->getStatusCode() == 200){
             $secao->update([
-                'status' => 3
+                'email_status' => 1
             ]);
 
             return redirect()->route('forms.show', $secao->formulario->uuid)->with('message', 'E-mail enviado com sucesso.');
@@ -276,17 +274,13 @@ Class SecaoFormularioService
 
             Mail::setSwiftMailer($new_mail);
 
-            if($secao->status == 1 && $status == 1){ //seção em andamento e status finalizado
-                $viewName = 'mail.analise';
+            if($status == 1 && $secao->status !== 3){ //seção em andamento e status finalizado
+                $viewName = 'mail.iniciando';
                 $subject = $secao->formulario->descricao." - Bio-Manguinhos";
                 $usuario = $destinatario;
                 $destinatario = $destinatario->email;
                 $remetente = $remetente;
-                //envia email e atualiza o status
-                $secao->update([ // seção em analise
-                    'status' => 2
-                ]);
-    
+                
             }elseif($status == 2){ //seção em correção e status finalizado
                 
                 $viewName = 'mail.vinculo';
@@ -302,7 +296,7 @@ Class SecaoFormularioService
                 $destinatario = $destinatario->email;
                 $remetente = $remetente;
 
-            }elseif($secao->status == 4 && $status == 1){ //seção em correção e status finalizado
+            }elseif($secao->status == 3 && $status == 1){ //seção em correção e status finalizado
                 
                 $viewName = 'mail.corrigido';
                 $subject = $secao->formulario->descricao." - Bio-Manguinhos: ".$secao->descricao;

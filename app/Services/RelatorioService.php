@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Repositories\SecaoImagemRepository;
-use App\Repositories\ImagemRepository;
 use App\Repositories\RelatorioRepository;
+use App\Repositories\ImagemRepository;
 use Illuminate\Support\Facades\File;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\Style\TOC;
@@ -45,7 +45,7 @@ class RelatorioService
     public function store($formulario)
     {
         // Diretório onde os documentos serão salvos
-        $savePath = public_path('relatórios');
+        $savePath = public_path('relatorios');
 
         // Verificar se o diretório existe, se não, criá-lo
         if (!File::isDirectory($savePath)) {
@@ -55,6 +55,8 @@ class RelatorioService
         // Inicializar o objeto PhpWord
         $phpWord = new PhpWord();
         $phpWord->getSettings()->setUpdateFields(true);
+        
+        // Adiciona o estilo de numeração
         $phpWord->addNumberingStyle(
             'hNum',
             array(
@@ -70,20 +72,15 @@ class RelatorioService
             )
         );
 
-        $phpWord->addTitleStyle(1, array('size' => 16), array('numStyle' => 'hNum', 'numLevel' => 0));
-        $phpWord->addTitleStyle(2, array('size' => 14), array('numStyle' => 'hNum', 'numLevel' => 1));
-        $phpWord->addTitleStyle(3, array('size' => 12), array('numStyle' => 'hNum', 'numLevel' => 2));
-        $fonte = [
-            "name" => "Arial"
-        ];
-        $estilo = [
-            "tabLeader" => TOC::TAB_LEADER_UNDERSCORE,
-        ];
+        // Adiciona estilos de título para cada nível
+        for ($i = 1; $i <= 6; $i++) {
+            $phpWord->addTitleStyle($i, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => $i - 1));
+        }
 
-        // Adiciona o primeiro sumário com títulos de texto
+        // Adiciona o sumário e outras seções iniciais
         $section1 = $phpWord->addSection();
         $section1->addText('Sumário');
-        $section1->addTOC($fonte, $estilo);
+        $section1->addTOC(array('name' => 'Arial'), array('tabLeader' => TOC::TAB_LEADER_UNDERSCORE));
         $section1->addTextBreak(1);
 
         $section1 = $phpWord->addSection();
@@ -104,7 +101,7 @@ class RelatorioService
         foreach ($formulario->secoes as $formularioSecao) {
             if ($formularioSecao->secao_imagem->count()) {
                 foreach ($formularioSecao->secao_imagem as $imagem) {
-                    $imagemObj = $this->imagemRepository->where(['id' => $imagem->imagem_id])->first();
+                    $imagemObj = $this->imagemRepository->find($imagem->imagem_id);
                     if ($imagemObj) {
                         $tagsToImages['[img' . $imagem->id . ']'] = $imagemObj;
                     }
@@ -115,23 +112,27 @@ class RelatorioService
         // Adiciona as seções hierarquicamente
         $rootSections = $formulario->secoes->where('secao_id', null);
         foreach ($rootSections as $rootSection) {
-            $this->secaoRecursiva($section1, $rootSection, $tagsToImages, 0);
+            $this->addSectionRecursively($section1, $rootSection, $tagsToImages, 0);
         }
 
         // Adiciona um rodapé
         $footer = $section1->addFooter();
-        // Define a numeração das páginas no rodapé
         $footer->addPreserveText('{PAGE}', null, ['alignment' => 'right']);
 
         // Salva o documento
-        $filename = 'Relatório_Corporativo_' . date('Y') . '.docx';
+        $filename = $formulario->relatorio->where('id', $formulario->relatorio_id)->first()->descricao. '.docx';
         if (file_exists($savePath . DIRECTORY_SEPARATOR . $filename)) {
             unlink($savePath . DIRECTORY_SEPARATOR . $filename);
         }
 
         $phpWord->save($savePath . DIRECTORY_SEPARATOR . $filename);
+        
+        $formulario->relatorio->where('id', $formulario->relatorio_id)->update([
+            'url_documento' => 'relatorios' . DIRECTORY_SEPARATOR . $filename,
+            'status' => 1
+        ]);
 
-        return redirect()->route('admin.index')->with('message', 'Arquivo criado com sucesso!');
+        return redirect()->route('relatorio.index')->with('message', 'Arquivo criado com sucesso!');
     }
 
     /**
@@ -142,9 +143,9 @@ class RelatorioService
      * @param array $tagsToImages
      * @param int $level
      */
-    private function secaoRecursiva($section, $formularioSecao, $tagsToImages, $level)
+    private function addSectionRecursively($section, $formularioSecao, $tagsToImages, $level)
     {
-        // Adiciona o título da seção
+        // Adiciona o título da seção com o nível correto
         $section->addTitle($formularioSecao->descricao, $level + 1);
 
         // Processa o texto para encontrar e substituir as tags de imagem
@@ -180,8 +181,8 @@ class RelatorioService
         }
 
         // Adiciona as seções filhas recursivamente
-        foreach ($formularioSecao->filho as $childSection) {
-            $this->secaoRecursiva($section, $childSection, $tagsToImages, $level + 1);
+        foreach ($formularioSecao->filhos as $secaoFilho) {
+            $this->addSectionRecursively($section, $secaoFilho, $tagsToImages, $level + 1);
         }
     }
 
@@ -191,6 +192,12 @@ class RelatorioService
         'Tabela' => 1
     ];
 
+    /**
+     * Cria o campo SEQ para legendas.
+     *
+     * @param string $identifier O identificador do campo SEQ (e.g., 'Figura', 'Gráfico', 'Tabela')
+     * @return string O XML do campo SEQ
+     */
     private function createSEQField($identifier)
     {
         if (!isset($this->seqCounters[$identifier])) {
@@ -199,6 +206,29 @@ class RelatorioService
 
         $seqNumber = $this->seqCounters[$identifier]++;
         return '<w:fldSimple w:instr=" SEQ ' . $identifier . ' \* ARABIC "><w:r><w:t>' . $seqNumber . '</w:t></w:r></w:fldSimple>';
+    }
+
+    public function destroy($relatorio)
+    {
+        try{
+            \DB::beginTransaction();
+            foreach ($relatorio->formularios as $formulario){
+                foreach($formulario->secoes as $secao){
+                    $secao->delete();
+                }
+                $formulario->delete();
+            }
+    
+            $relatorio->delete();
+    
+            \DB::commit();
+            
+            return redirect()->back()->with('message', 'Relatório deletado com sucesso.');
+
+        }catch(\Exception $e){
+            \DB::rollBack();
+            return redirect()->back()->with('error', 'Não foi possível deletar relatório. Erro: ' . $e->getMessage());
+        }
     }
     
 }

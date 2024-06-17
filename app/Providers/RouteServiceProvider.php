@@ -36,6 +36,7 @@ class RouteServiceProvider extends ServiceProvider
         Route::bind('sec_form', function ($value) {return \App\Models\SecaoFormulario::where('uuid', $value)->first();});
         Route::bind('general_setting', function($value){return \App\models\GeneralSetting::where('uuid', $value)->first();});
         Route::bind('imagem', function($value){return \App\models\Imagem::where('uuid', $value)->first();});
+        Route::bind('document', function($value){return \App\models\Relatorio::where('uuid', $value)->first();});
     }
 
     /**

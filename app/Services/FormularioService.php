@@ -99,11 +99,6 @@ class FormularioService
         return view('forms.vincula', compact('formulario', 'setores'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     */
     public function create()
     {
         
@@ -112,12 +107,6 @@ class FormularioService
         return view('forms.create', compact('teams'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function store($request)
     {                
         $data = $request->all();
@@ -131,7 +120,8 @@ class FormularioService
         $formulario = $this->formularioRepository->create([
             'relatorio_id' => $relatorio->id,
             'descricao' => $data['descricao_formulario'],
-            'ano' => $data['ano']
+            'ano' => $data['ano'],
+            'status' => 0
         ]);
 
         return redirect()->route('forms.show', $formulario->uuid)->with('message', 'Formulário criado com sucesso.');
@@ -141,16 +131,16 @@ class FormularioService
     public function show($formulario)
     {
         $formularioConcluido = true;
-        if($formulario->secoes){
+        if($formulario->secoes->count()){
             foreach ($formulario->secoes as $secao) {
                 if ($secao->status != 4) {
                     $formularioConcluido = false;
                     break; // Se encontrar uma seção com status diferente de 4, podemos parar de verificar
                 }
             }
+        }else{
+            $formularioConcluido = false;
         }
-
-        // dd($formularioConcluido);
 
         if($formularioConcluido){
             $formulario->update([
@@ -158,19 +148,13 @@ class FormularioService
             ]);
         }
 
-        $teams = Setor::all();
+        $setores = Setor::all();
         $titulos = $formulario->secoes;
         $subTitulos = $formulario->secoes;
 
-        return view('forms.show', compact('formulario', 'teams', 'titulos', 'subTitulos'));
+        return view('forms.show', compact('formulario', 'setores', 'titulos', 'subTitulos'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param $form
-     * @return Response|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
-     */
     public function edit($formulario)
     {
         $teams = Setor::all();
@@ -179,13 +163,6 @@ class FormularioService
         return view('forms.edit', compact('formulario', 'teams', 'titulos', 'subTitulos'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param $form
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function update($form, $request)
     {
         $data = $request->all();
@@ -199,22 +176,37 @@ class FormularioService
         return redirect()->route('forms.index')->with('message', 'Item atualizado com sucesso.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param $form
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy($form)
+    public function destroy($formulario)
     {
         try {
-
-            $form->delete();
+            foreach ($formulario->secoes as $secao){
+                $secao->delete();
+            }
+            $formulario->delete();
             return redirect()->route('forms.index')->with('message', 'Item deletado com sucesso.');
 
         } catch (Exception $e) {
             return redirect()->route('forms.index')->with('error', 'Erro ao tentar excluir o item. <br>Erro: '.$e->getMessage());
         }
+    }
+
+    public function iniciar($usuario, $formulario)
+    {
+        if($usuario->id !== auth()->user()->id){
+            return redirect()->route('forms.index')->with('error', 'Somente o responsável pode confirmar e-mail e iniciar à seção.');
+        }
+
+        foreach ($formulario->secoes as $secao){
+            dd($secao);
+            if($secao->user_id == $usuario->id){
+                $secao->update([
+                    'status' => 1,
+                    'email_status' => 2
+                ]);
+            }
+        }
+
+        return redirect()->route('forms.index')->with('message', 'E-mail confirmado e seção iniciada.');
     }
 
     public function inicia_ajax($formulario)
@@ -243,15 +235,9 @@ class FormularioService
         }
 
         if ($emailEnviado) {
-            return response()->json([
-                'status' => 200,
-                'message' => 'Todos os e-mails foram enviados com sucesso!'
-            ]);
+            return redirect()->back()->with('message', 'Todos os e-mails foram enviados com sucesso!');
         } else {
-            return response()->json([
-                'status' => 400,
-                'message' => 'Nenhum e-mail foi enviado!'
-            ]);
+            return redirect()->back()->with('error', 'Nenhum e-mail foi enviado!');
         }
     }
 
@@ -262,7 +248,18 @@ class FormularioService
         }
         
         try{
+            if($secao->status == 0){
+                $status = 1;
+            }elseif($secao->status == 1){
+                $status = 2;
+            }elseif($secao->status == 2){
+                $status = 3;
+            }elseif($secao->status == 3){
+                $status = 2;
+            }
+
             $secao->update([
+                'status' => $status,
                 'email_status' => 2
             ]);            
             return redirect()->route('forms.index')->with('message', 'E-mail confirmado!.');
@@ -296,7 +293,7 @@ class FormularioService
             $viewName = 'mail.send_relatorio_anual';
             $subject = "Relatorio anual - Bio-Manguinhos";
 
-            Mail::to($to)->send(new SendMailStart($viewName, $user, $subject));
+            Mail::to($to)->send(new SendMailStart($viewName, $user, $subject, $formulario));
 
             $this->formularioRepository->update([
                 'status' => 1
@@ -313,7 +310,7 @@ class FormularioService
         } catch (\Exception $e) {
 
             return response()->json([
-                'message' => 'E-mail não enviado!'
+                'message' => 'E-mail não enviado! Error: ' . $e->getMessage()
             ], 422);
         }
     }
