@@ -70,30 +70,6 @@ class RolesAndPermissionTableSeeder extends Seeder
             $adminRole->attachPermission($permissionNow);
             $gestorRole->attachPermission($permissionNow);
             $colaboradorRole->attachPermission($permissionNow);
-
-            $tipo = explode('.', $permission);
-
-            //Regras para Gestor
-            // if (
-            //     ($tipo[0] == "admin")
-            //     or ($tipo[0] == "log")
-            //     or ($tipo[0] == "occurrences")
-            //     or (($tipo[0] == "occurrence" && $tipo[1] == "index") || ($tipo[0] == "occurrence" && $tipo[1] == "show"))
-            //     or (($tipo[0] == "users" && $tipo[1] == "index") || ($tipo[0] == "users" && $tipo[1] == "show"))
-            //     or (($tipo[0] == "operator" && $tipo[1] == "index") || ($tipo[0] == "operator" && $tipo[1] == "show") || ($tipo[0] == "operator" && $tipo[1] == "edit"))
-            //     or (($tipo[0] == "occurrence_clients" && $tipo[1] == "index") || ($tipo[0] == "occurrence_clients" && $tipo[1] == "show") || ($tipo[0] == "occurrence_clients" && $tipo[1] == "edit"))
-            //     or (($tipo[0] == "document" && $tipo[1] == "index") || ($tipo[0] == "document" && $tipo[1] == "show"))
-            //     or (($tipo[0] == "importOs" && $tipo[1] == "index") || ($tipo[0] == "importOs" && $tipo[1] == "show"))
-            //     or (($tipo[0] == "log_imports" && $tipo[1] == "index") || ($tipo[0] == "log_imports" && $tipo[1] == "show"))
-            //     or (($tipo[0] == "log_import_errors" && $tipo[1] == "index") || ($tipo[0] == "log_import_errors" && $tipo[1] == "show"))
-            //     or (($tipo[0] == "export" && $tipo[1] == "index") || ($tipo[0] == "export" && $tipo[1] == "show"))
-            //     or (($tipo[0] == "form" && $tipo[1] == "index") || ($tipo[0] == "form" && $tipo[1] == "show"))
-            //     or (($tipo[0] == "occurrence_type_form" && $tipo[1] == "index") || ($tipo[0] == "occurrence_type_form" && $tipo[1] == "show"))
-            //     or (($tipo[0] == "occurrence_type" && $tipo[1] == "index") || ($tipo[0] == "occurrence_type" && $tipo[1] == "show"))
-            //     or (($tipo[0] == "equipment" && $tipo[1] == "index") || ($tipo[0] == "equipment" && $tipo[1] == "show"))
-            // ) {
-            //     $gestorRole->attachPermission($permissionNow);
-            // }
         }
     }
 }

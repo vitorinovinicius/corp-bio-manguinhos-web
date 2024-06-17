@@ -27,8 +27,8 @@ class BioManguinhosSeeder extends Seeder
         $user = DB::table('users')->insertGetId(
             [
                 'uuid'              => Uuid::generate(),
-                'name'              => 'Gerente',
-                'email'             => 'gerente@fiotec.com.br',
+                'name'              => 'Gerente TI',
+                'email'             => 'gerenteti@fiotec.com.br',
                 'password'          => bcrypt('admin123'),
                 'remember_token'    => str_random(10),
                 'created_at'        => Carbon::now(),
@@ -38,18 +38,25 @@ class BioManguinhosSeeder extends Seeder
         
         DB::table('user_setores')->insert(
             [
-                'user_id' => $user,
-                'setor_id' => $setores
+                'user_id'           => $user,
+                'setor_id'          => 3,
+                'created_at'        => Carbon::now(),
+                'updated_at'        => Carbon::now()
             ]
         );
-        DB::table('role_user')->insert(['user_id' => $user, 'role_id' => 3]);
+        DB::table('role_user')->insert(
+            [
+                'user_id' => $user,
+                'role_id' => 3
+            ]
+        );
 
 
         //ID = 6
         $user = DB::table('users')->insertGetId(
             [
                 'uuid'              => Uuid::generate(),
-                'name'              => 'Colaborador Bio-Manguinhos',
+                'name'              => 'Colaborador TI',
                 'email'             => 'colaborador@fiotec.com.br',
                 'cpf'               => '11111111111',
                 'password'          => bcrypt('123456'),
@@ -59,12 +66,12 @@ class BioManguinhosSeeder extends Seeder
             ]
         );
 
-        DB::table('user_setores')->insert(['user_id' => $user, 'setor_id' => 2]);
+        DB::table('user_setores')->insert(['user_id' => $user, 'setor_id' => 3]);
 
         DB::table('role_user')->insert(
             [
-                'user_id' => $user,
-                'role_id' => 4
+                'user_id'           => $user,
+                'role_id'           => 4
             ]
         );
     }
