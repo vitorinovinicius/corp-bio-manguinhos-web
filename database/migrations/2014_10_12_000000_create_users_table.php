@@ -37,13 +37,10 @@ class CreateUsersTable extends Migration
 
             $table->index(["name"], 'users_name_idx');
 
-            $table->index(["email"], 'users_email_idx');
-
             $table->unique(["id"], 'id_UNIQUE');
 
             $table->unique(["uuid"], 'users_uuid_unique');
 
-            $table->unique(["email"], 'users_email_unique');
         });
     }
 

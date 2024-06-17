@@ -26,7 +26,7 @@ return new class extends Migration
 			$table->uuid('uuid')->unique();
 			$table->string('url_imagem')->nullable()->comment('Caminho da imagem');
 			$table->integer('tipo_imagem')->nullable()->comment('1 - imagem, 2 - gráfico, 3 - tabela');
-			$table->integer('legenda')->nullable()->comment('Legenda da imagem');
+			$table->string('legenda')->nullable()->comment('Legenda da imagem');
 
             $table->timestamps();
             $table->softDeletes();

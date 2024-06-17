@@ -29,12 +29,11 @@ return new class extends Migration
             $table->integer('status')->default(0)->comment(
 				'
 					0 - Pendente,
-					1 - Em andamento,
-					2 - analisando,
-					3 - Em correção,
-					4 - Concluído
+					1 - Não inciado,
+					2 - Concluído
 				'
 			);
+			$table->year('ano')->unique()->nullable();
 
             $table->timestamps();
             $table->softDeletes();

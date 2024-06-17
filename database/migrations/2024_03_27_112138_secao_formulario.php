@@ -31,8 +31,18 @@ class SecaoFormulario extends Migration
 			$table->string('descricao')->nullable();
 			$table->text('texto')->nullable()->comment('Conteúdo do corpo da seção do formulário');
 			$table->integer('limite_caracteres')->nullable()->comment('Limite de caracteres para o usuário preencher');
-			$table->integer('status')->default(0)->comment('0 - Pendente, 1 - Em andamento, 2 - analisando, 3 - Em correção, 4 - Concluído');
-			$table->integer('email_status')->nullable()->comment('1 - Enviado, 2 - Confirmado');
+			$table->integer('ordem_secao')->nullable()->comment('Ordena as seções');
+			$table->integer('status')->default(0)->comment(
+                '
+                    0 - Pendente,
+                    1 - Em andamento,
+                    2 - Analisando,
+                    3 - Correção solicitada,
+                    4 - Em correção,
+                    5 - Concluído
+                '
+            );
+			$table->integer('email_status')->default(0)->nullable()->comment('0 - não enviado, 1 - Enviado, 2 - Confirmado');
 
             $table->timestamps();
             $table->softDeletes();
