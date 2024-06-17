@@ -10,11 +10,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', function(){
-    if(Defender::hasRole('colaborador') || Defender::hasRole('gestor')){
-        return redirect()->route('forms.index');
-    }else{
-        return redirect()->route('admin.index');
-    }
+    return redirect()->route('forms.index');
 });
 // Route::get('/home', function(){
 //     return redirect()->route('word.index');
@@ -22,27 +18,16 @@ Route::get('/home', function(){
 
 Route::group(['prefix' => 'admin','middleware'=>['auth','systemConfiguration', 'checkStatus', 'tenant', 'bindings']], function () {
 
-    //Rotas
-    // - Relatorio
-    // - Formulario
-    // - Usuario
-    // - Email
-    // - Setores
-
     Route::group(['prefix' => 'documentos'], function () {        
-        Route::get('/',                             [App\Http\Controllers\WordController::class,            'index',            'middleware'=>['needsPermission'], 'shield' => 'admin.index' ])->name('admin.index');
-        Route::get('/show/{document}',              [App\Http\Controllers\WordController::class,            'show',             'middleware'=>['needsPermission'], 'shield' => 'admin.show' ])->name('word.show');
-        Route::get('/create',                       [App\Http\Controllers\WordController::class,            'create',           'middleware'=>['needsPermission'], 'shield' => 'admin.create' ])->name('word.create');
-        Route::post('/{form}',                      [App\Http\Controllers\WordController::class,            'store',            'middleware'=>['needsPermission'], 'shield' => 'admin.store' ])->name('word.store');
-        Route::get('/edit/{document}',              [App\Http\Controllers\WordController::class,            'edit',             'middleware'=>['needsPermission'], 'shield' => 'admin.edit' ])->name('word.edit');
-        Route::put('/update',                       [App\Http\Controllers\WordController::class,            'update',           'middleware'=>['needsPermission'], 'shield' => 'admin.edit' ])->name('word.update');
-        Route::delete('/delete/{document}',         [App\Http\Controllers\WordController::class,            'delete',           'middleware'=>['needsPermission'], 'shield' => 'admin.destroy' ])->name('word.destroy');
+        Route::get('/',                                 [App\Http\Controllers\RelatorioController::class,       'index',            'middleware'=>['needsPermission'], 'shield' => 'admin.index' ])->name('relatorio.index');
+        Route::post('/{form}',                          [App\Http\Controllers\RelatorioController::class,       'store',            'middleware'=>['needsPermission'], 'shield' => 'admin.store' ])->name('relatorio.store');
+        Route::delete('/delete/{document}',             [App\Http\Controllers\RelatorioController::class,       'destroy',           'middleware'=>['needsPermission'], 'shield' => 'admin.destroy' ])->name('relatorio.destroy');
     });
 
     Route::group(['prefix' => 'emails'], function(){
-        Route::get('/todos',                        [App\Http\Controllers\SecaoFormularioController::class, 'todos_email',      'middleware'=>['needsPermission'], 'shield' => 'form.mail'])->name('emails.todos');
-        Route::get('/enviados',                     [App\Http\Controllers\SecaoFormularioController::class, 'enviado',          'middleware'=>['needsPermission'], 'shield' => 'form.send'])->name('emails.envio');
-        Route::get('/confirmados',                  [App\Http\Controllers\SecaoFormularioController::class, 'confirmado',       'middleware'=>['needsPermission'], 'shield' => 'form.confirmed'])->name('emails.confirma');
+        Route::get('/todos',                            [App\Http\Controllers\SecaoFormularioController::class, 'todos_email',      'middleware'=>['needsPermission'], 'shield' => 'form.mail'])->name('emails.todos');
+        Route::get('/enviados',                         [App\Http\Controllers\SecaoFormularioController::class, 'enviado',          'middleware'=>['needsPermission'], 'shield' => 'form.send'])->name('emails.envio');
+        Route::get('/confirmados',                      [App\Http\Controllers\SecaoFormularioController::class, 'confirmado',       'middleware'=>['needsPermission'], 'shield' => 'form.confirmed'])->name('emails.confirma');
     });
 
     Route::group(['prefix' => 'setores'], function () {
@@ -62,6 +47,7 @@ Route::group(['prefix' => 'admin','middleware'=>['auth','systemConfiguration', '
         Route::get('/{form}/edit',                      [App\Http\Controllers\FormularioController::class,      'edit',             'middleware'=>['needsPermission'], 'shield' => 'form.edit'])->name('forms.edit');
         Route::get('/{form}',                           [App\Http\Controllers\FormularioController::class,      'show',             'middleware'=>['needsPermission'], 'shield' => 'form.show'])->name('forms.show');
         Route::delete('/{form}',                        [App\Http\Controllers\FormularioController::class,      'destroy',          'middleware'=>['needsPermission'], 'shield' => 'form.destroy'])->name('forms.destroy');
+        Route::get('/iniciar/{user}/{form}',            [App\Http\Controllers\FormularioController::class,      'iniciar',          'middleware'=>['needsPermission'], 'shield' => 'form.index'])->name('forms.iniciar');
         Route::get('/inicia_ajax/{form}',               [App\Http\Controllers\FormularioController::class,      'inicia_ajax',      'middleware'=>['needsPermission'], 'shield' => 'form.index'])->name('forms.inicia_ajax');
         Route::get('/confirmation/{user}/{sec_form}',   [App\Http\Controllers\FormularioController::class,      'confirmacao',      'middleware'=>['needsPermission'], 'shield' => 'form.store'])->name('sec_forms.confirmacao');
     });
