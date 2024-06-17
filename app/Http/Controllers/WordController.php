@@ -8,7 +8,6 @@ use PhpOffice\PhpWord\Style\TOC;
 use PhpOffice\PhpWord\PhpWord;
 use App\Models\Imagem;
 
-
 class WordController extends Controller
 {
     /**
@@ -18,7 +17,6 @@ class WordController extends Controller
      */
     public function index()
     {
-
         // Diretório onde os documentos serão salvos
         $savePath = public_path('relatórios');
 
@@ -30,7 +28,6 @@ class WordController extends Controller
         $files = File::files($savePath);
 
         return view('word.index', compact('files'));
-        
     }
 
     public function store($formulario)
@@ -46,6 +43,8 @@ class WordController extends Controller
         // Inicializar o objeto PhpWord
         $phpWord = new PhpWord();
         $phpWord->getSettings()->setUpdateFields(true);
+        
+        // Adiciona o estilo de numeração
         $phpWord->addNumberingStyle(
             'hNum',
             array(
@@ -61,23 +60,15 @@ class WordController extends Controller
             )
         );
 
-        $phpWord->addTitleStyle(1, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => 0));
-        $phpWord->addTitleStyle(2, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => 1));
-        $phpWord->addTitleStyle(3, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => 2));
-        $phpWord->addTitleStyle(4, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => 3));
-        $phpWord->addTitleStyle(5, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => 4));
-        $phpWord->addTitleStyle(6, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => 5));
-        $fonte = [
-            "name" => "Arial"
-        ];
-        $estilo = [
-            "tabLeader" => TOC::TAB_LEADER_UNDERSCORE,
-        ];
+        // Adiciona estilos de título para cada nível
+        for ($i = 1; $i <= 6; $i++) {
+            $phpWord->addTitleStyle($i, array('size' => 10), array('numStyle' => 'hNum', 'numLevel' => $i - 1));
+        }
 
-        // Adiciona o primeiro sumário com títulos de texto
+        // Adiciona o sumário e outras seções iniciais
         $section1 = $phpWord->addSection();
         $section1->addText('Sumário');
-        $section1->addTOC($fonte, $estilo);
+        $section1->addTOC(array('name' => 'Arial'), array('tabLeader' => TOC::TAB_LEADER_UNDERSCORE));
         $section1->addTextBreak(1);
 
         $section1 = $phpWord->addSection();
@@ -98,7 +89,7 @@ class WordController extends Controller
         foreach ($formulario->secoes as $formularioSecao) {
             if ($formularioSecao->secao_imagem->count()) {
                 foreach ($formularioSecao->secao_imagem as $imagem) {
-                    $imagemObj = Imagem::where(['id' => $imagem->imagem_id])->first();
+                    $imagemObj = Imagem::find($imagem->imagem_id);
                     if ($imagemObj) {
                         $tagsToImages['[img' . $imagem->id . ']'] = $imagemObj;
                     }
@@ -114,7 +105,6 @@ class WordController extends Controller
 
         // Adiciona um rodapé
         $footer = $section1->addFooter();
-        // Define a numeração das páginas no rodapé
         $footer->addPreserveText('{PAGE}', null, ['alignment' => 'right']);
 
         // Salva o documento
@@ -173,8 +163,8 @@ class WordController extends Controller
         }
 
         // Adiciona as seções filhas recursivamente
-        foreach ($formularioSecao->filhos as $childSection) {
-            $this->addSectionRecursively($section, $childSection, $tagsToImages, $level + 1);
+        foreach ($formularioSecao->filhos as $secaoFilho) {
+            $this->addSectionRecursively($section, $secaoFilho, $tagsToImages, $level + 1);
         }
     }
 
@@ -200,4 +190,3 @@ class WordController extends Controller
         return '<w:fldSimple w:instr=" SEQ ' . $identifier . ' \* ARABIC "><w:r><w:t>' . $seqNumber . '</w:t></w:r></w:fldSimple>';
     }
 }
-

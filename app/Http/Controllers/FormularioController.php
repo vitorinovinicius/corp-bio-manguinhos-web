@@ -25,43 +25,21 @@ class FormularioController extends Controller
         $this->formService = $formService;
     }
 
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @return \App\Services\Response
-	 */
 	public function index(Request $request)
     {
         return $this->formService->index($request);
     }
-
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return \App\Services\Response
-	 */
+	
 	public function create()
     {
         return $this->formService->create();
     }
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @param Request $request
-	 * @return \App\Services\Response
-	 */
 	public function store(FormularioRequest $request)
     {
         return $this->formService->store($request);
     }
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return \App\Services\Response
-	 */
 	public function show($formulario)
     {
         return $this->formService->show($formulario);
@@ -77,39 +55,25 @@ class FormularioController extends Controller
         return $this->formService->vincula($formulario);
     }
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return \App\Services\Response
-	 */
 	public function edit(Formulario $formulario)
     {
         return $this->formService->edit($formulario);
     }
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @param Request $request
-	 * @return \App\Services\Response
-	 */
 	public function update(Request $request,Formulario $formulario)
     {
         return $this->formService->update($request, $formulario);
     }
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return \App\Services\Response
-	 */
-	public function destroy(Formulario $formulario)
+	public function destroy($formulario)
     {
         return $this->formService->destroy($formulario);
     }
+
+	public function iniciar($usuario, $formulario)
+	{
+		return $this->formService->iniciar($usuario, $formulario);
+	}
 
 	public function inicia_ajax($formulario)
     {
