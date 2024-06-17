@@ -14,17 +14,19 @@ class SendMailStart extends Mailable
     private $viewName;
     private $data;
     private $subjectSend;
+    private $formulario;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($view, $data, $subjectSend)
+    public function __construct($view, $data, $subjectSend, $formulario)
     {
         $this->viewName = $view;
         $this->data = $data;
         $this->subjectSend = $subjectSend;
+        $this->formulario = $formulario;
     }
 
     /**
@@ -38,9 +40,13 @@ class SendMailStart extends Mailable
         $from_name = env('MAIL_FROM_NAME');
 
         try{
-            $this->view($this->viewName, ['data'=>$this->data])
+            $this->view($this->viewName)
                 ->from($from_email, $from_name)
-                ->subject($this->subjectSend);
+                ->subject($this->subjectSend)
+                ->with([
+                    'data'=>$this->data,
+                    'formulario'=> $this->formulario
+                ]);
         }catch(\Exception $e){
             return $e->getMessage();
         }
