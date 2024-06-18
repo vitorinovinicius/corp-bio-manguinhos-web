@@ -94,10 +94,16 @@
                                 <input type="hidden" name="gerente_id" value="{{auth()->user()->id}}">
                                 <div class="card-body">
                                     <div class="row">
-                                        @if($secao->status == 0 && $secao->email_status == 1)
+                                        @if($secao->status == 0 && $secao->email_status == 1 || $secao->status == 4)
+                                            @if($secao->status  == 4)
+                                                <div class="col-12 d-flex justify-content-center">
+                                                    <p><span class="badge badge-success"> Concluído</span></p>
+                                                </div>
+                                            @else
                                             <div class="col-12 d-flex justify-content-center">
                                                 <p><span class="badge badge-warning"> Aguardando confirmação de e-mail</span></p>
                                             </div>
+                                        @endif
                                             <div class="col-6">
                                                 <div class="form-group">
                                                     <label for="name">Setor</label>
@@ -186,10 +192,12 @@
                                 <div class="card-footer">
                                     <div class="row">
                                         <div class="col-12 d-flex justify-content-end">
-                                            @if(!$secao->user_id)
-                                            <button type="button" class="btn btn-primary" onclick="document.getElementById('vincula_usuario_{{ $secao->uuid }}').submit();">Vincular responsável</button>
-                                            @else
-                                            <button type="button" class="btn btn-primary" onclick="document.getElementById('vincula_usuario_{{ $secao->uuid }}').submit();">Alterar responsável</button>
+                                            @if($secao->status == 0 && $secao->email_status !== 1)
+                                                @if(!$secao->user_id)
+                                                <button type="button" class="btn btn-primary" onclick="document.getElementById('vincula_usuario_{{ $secao->uuid }}').submit();">Vincular responsável</button>
+                                                @elseif($secao->status !== 4)
+                                                <button type="button" class="btn btn-primary" onclick="document.getElementById('vincula_usuario_{{ $secao->uuid }}').submit();">Alterar responsável</button>
+                                                @endif
                                             @endif
                                         </div>
                                     </div>

@@ -155,30 +155,30 @@
                                             </div>
                                         </div>
                                         @if($secao->imagens->count())
-                                        <div class="form-group">
-                                            <h5>Imagens disponíveis</h5>
-                                            <div class="row">
-                                                @foreach($secao->imagens as $imagem)
-                                                    <div class="col-6">
-                                                        <div class="card">
-                                                            <div class="card-content">
-                                                                <div class="card-body">
-                                                                    <small class="badge badge-primary"><strong>[img{{ $imagem->id }}]</strong></small>
-                                                                    <div style="display: inline-block; position: relative;">
-                                                                        <img src="{{ asset($imagem->url_imagem) }}" alt="{{ $imagem->legenda }}" class="card-img-top" style="width: 100%; cursor: pointer;" onclick="inserirImagemTag('{{ $imagem->id }}','{{ $secao->id }}')">
-                                                                        <a href="{{ route('imagens.edit', $imagem->uuid) }}" class="btn btn-warning btn-icon btn-sm" data-toggle="tooltip" data-placement="bottom" title="Editar imagem" data-uuid="{{ $imagem->uuid }}" style="position: absolute; top: 40px; right: 5px;"><i class="bx bx-pencil"></i></a>
-                                                                        <button class="btn btn-danger btn-icon btn-sm delete-button" data-toggle="tooltip" data-placement="top" title="Excluir imagem" data-uuid="{{ $imagem->uuid }}" style="position: absolute; top: 5px; right: 5px;">
-                                                                            <i class="bx bx-x"></i>
-                                                                        </button>
+                                            <div class="form-group">
+                                                <h5>Imagens disponíveis</h5>
+                                                <div class="row">
+                                                    @foreach($secao->imagens as $imagem)
+                                                        <div class="col-6">
+                                                            <div class="card">
+                                                                <div class="card-content">
+                                                                    <div class="card-body">
+                                                                        <small class="badge badge-primary"><strong>[img{{ $imagem->id }}]</strong></small>
+                                                                        <div style="display: inline-block; position: relative;">
+                                                                            <img src="{{ asset($imagem->url_imagem) }}" alt="{{ $imagem->legenda }}" class="card-img-top" style="width: 100%; cursor: pointer;" onclick="inserirImagemTag('{{ $imagem->id }}','{{ $secao->id }}')">
+                                                                            <a href="{{ route('imagens.edit', $imagem->uuid) }}" class="btn btn-warning btn-icon btn-sm" data-toggle="tooltip" data-placement="bottom" title="Editar imagem" data-uuid="{{ $imagem->uuid }}" style="position: absolute; top: 40px; right: 5px;"><i class="bx bx-pencil"></i></a>
+                                                                            <button class="btn btn-danger btn-icon btn-sm delete-button" data-toggle="tooltip" data-placement="top" title="Excluir imagem" data-uuid="{{ $imagem->uuid }}" style="position: absolute; top: 5px; right: 5px;">
+                                                                                <i class="bx bx-x"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                        <p class="card-text">{{ $imagem->type() }}: {{ $imagem->legenda }}</p>
                                                                     </div>
-                                                                    <p class="card-text">{{ $imagem->type() }}: {{ $imagem->legenda }}</p>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                @endforeach
+                                                    @endforeach
+                                                </div>
                                             </div>
-                                        </div>
                                         @endif
                                         
                                         <div class="col-12">
@@ -325,12 +325,34 @@
             // Contador inicial ao carregar a página
             updateCharCount();
 
+            // Função para inserir a tag da imagem no texto
+            window.inserirImagemTag = function(imagemId, secaoId) {
+                var textarea = $('#texto_' + secaoId);
+                var texto = textarea.val();
+                var tag = '[img' + imagemId + ']';
+                textarea.val(texto + tag);
+                isDirty = true; // Marca como alterado
+                updateCharCount(secaoId); // Atualiza a contagem de caracteres
+            }
+
+            // Função para deletar tag inteira
+            function removePartialTags(text) {
+                return text.replace(/\[img\d*\]?/, '');
+            }
+
             // Evento de digitação no textarea
             $('.texto_salvo_' + secaoId).on('input', function () {
                 var texto = $(this).val();
                 var textoSemTags = removeTags(texto);
 
                 var charCount = textoSemTags.length;
+
+                // Verifica se uma parte de uma tag foi deletada e remove a tag inteira
+                if (texto.match(/\[img\d*$/)) {
+                    texto = removePartialTags(texto);
+                    $(this).val(texto);
+                }
+
                 if (charCount > maxLength) {
                     var excessLength = charCount - maxLength;
                     var cleanText = textoSemTags.substring(0, maxLength);

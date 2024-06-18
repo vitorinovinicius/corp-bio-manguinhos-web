@@ -178,7 +178,6 @@ class FormularioService
 
     public function destroy($formulario)
     {
-        dd($formulario);
         try {
             foreach ($formulario->secoes as $secao){
                 $secao->delete();
